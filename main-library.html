@@ -140,10 +140,21 @@
       </div>
 
       <div class="card">
-        <h2>🎭 Identity Systems [locked]</h2>
-        <p>Documents on self, awareness, character, role assignment, role gravity, identity debt, and the borrowed self.</p>
-        <a href="identity-systems/identity-systems.html">Try To Pick The Lock</a>
-      </div>
+  <h2>🎭 Identity Systems [locked]</h2>
+
+  <p>
+    Documents on self, awareness, character,
+    role assignment, role gravity, identity debt,
+    and the borrowed self.
+  </p>
+
+  <a
+    href="#"
+    id="lockButton"
+  >
+    Try To Pick The Lock
+  </a>
+</div>
 
       <div class="card hidden-card">
         <h2>📡 Signal Theory [construction area]</h2>
@@ -199,6 +210,47 @@
   <footer>
     <p><a href="index.html">← Back to Main Index</a></p>
   </footer>
+<script>
+  const lockButton = document.getElementById("lockButton");
 
+  const sequence = [
+    "Inserting pick...",
+    "Feeling pins...",
+    "Tension wrench set...",
+    "Click...",
+    "Click click...",
+    "Unlocked."
+  ];
+
+  lockButton.addEventListener("click", function (event) {
+
+    event.preventDefault();
+
+    let step = 0;
+
+    lockButton.style.pointerEvents = "none";
+
+    const lockpick = setInterval(function () {
+
+      lockButton.textContent = sequence[step];
+
+      step++;
+
+      if (step >= sequence.length) {
+
+        clearInterval(lockpick);
+
+        setTimeout(function () {
+
+          window.location.href =
+            "identity-systems/identity-systems.html";
+
+        }, 700);
+      }
+
+    }, 700);
+
+  });
+</script>
 </body>
 </html>
