@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Testing Switch</title>
+
+  <style>
+    body {
+      background: #000;
+      color: #ff9bd5;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      color: #ff9bd5;
+      text-shadow: 0 0 10px #00ff66;
+      font-size: 2rem;
+      margin-bottom: 30px;
+    }
+
+    #switchImage {
+      max-width: 90%;
+      width: 420px;
+      cursor: pointer;
+      filter: drop-shadow(0 0 18px #00ff66);
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    #switchImage:hover {
+      transform: scale(1.04);
+      filter: drop-shadow(0 0 28px #00ff66);
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1 id="switchText">testing this switch: OFF</h1>
+
+  <img 
+    id="switchImage"
+    src="../gallery/switch-1-off.png"
+    alt="Switch is off"
+  >
+
+  <script>
+    const switchImage = document.getElementById("switchImage");
+    const switchText = document.getElementById("switchText");
+
+    let isOn = false;
+
+    switchImage.addEventListener("click", function () {
+      isOn = !isOn;
+
+      if (isOn) {
+        switchImage.src = "../gallery/switch-1-on.png";
+        switchImage.alt = "Switch is on";
+        switchText.textContent = "testing this switch: ON";
+      } else {
+        switchImage.src = "../gallery/switch-1-off.png";
+        switchImage.alt = "Switch is off";
+        switchText.textContent = "testing this switch: OFF";
+      }
+    });
+  </script>
+<p><a href="entrance.html">Back to Entrance</a></p>
+</body>
+</html>
