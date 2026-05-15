@@ -156,10 +156,10 @@
   </a>
 </div>
 
-      <div class="card hidden-card">
+      <div class="card">
         <h2>📡 Signal Theory [construction area]</h2>
         <p>Semiotics, memetics, pre-reaction signals, narrative gravity, symbolic systems, and language engines.</p>
-        <a href="signal-theory/signal-theory.html">Enter Section</a>
+        <a href="#" id="failedLockButton">Try To Pick The Lock</a>
       </div>
 
       <div class="card hidden-card">
@@ -250,6 +250,40 @@
 
     }, 700);
 
+  });
+</script>
+<script>
+  const failedLockButton = document.getElementById("failedLockButton");
+
+  const failedSequence = [
+    "Inserting pick...",
+    "Feeling pins...",
+    "Tension slipping...",
+    "Click...",
+    "SNAP.",
+    "Lockpick broke. Access denied."
+  ];
+
+  failedLockButton.addEventListener("click", function (event) {
+    event.preventDefault();
+
+    let step = 0;
+
+    failedLockButton.style.pointerEvents = "none";
+
+    const failedLockpick = setInterval(function () {
+      failedLockButton.textContent = failedSequence[step];
+      step++;
+
+      if (step >= failedSequence.length) {
+        clearInterval(failedLockpick);
+
+        setTimeout(function () {
+          failedLockButton.textContent = "Try Again Later";
+          failedLockButton.style.pointerEvents = "auto";
+        }, 900);
+      }
+    }, 700);
   });
 </script>
 </body>
