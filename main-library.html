@@ -108,6 +108,24 @@
       text-decoration: none;
       font-weight: bold;
     }
+    .thumbnail-link {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.thumbnail-image {
+  width: 220px;
+  max-width: 90%;
+  border-radius: 14px;
+  border: 1px solid #31444d;
+  box-shadow: 0 0 18px rgba(0,0,0,0.35);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.thumbnail-image:hover {
+  transform: scale(1.03);
+  border-color: #8fd6c7;
+}
   </style>
 </head>
 
@@ -205,6 +223,15 @@
       </div>
 
     </section>
+    <div class="thumbnail-link">
+  <a href="library/book-dandelion-memetics.html">
+    <img 
+      src="gallery/book-dandelion-memetics.jpg" 
+      alt="Dandelion Memetics Book"
+      class="thumbnail-image"
+    >
+  </a>
+</div>
   </main>
 
   <footer>
