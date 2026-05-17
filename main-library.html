@@ -176,8 +176,8 @@
 
       <div class="card">
         <h2>📡 Signal Theory [locked]</h2>
-        <p>Semiotics, memetics, pre-reaction signals, narrative gravity, symbolic systems, and language engines. It's locked. Too bad you can't just teleport into a document in there, maybe through a static TV screen...</p>
-        <a href="#" id="failedLockButton">Try To Pick The Lock</a>
+        <p>Semiotics, memetics, pre-reaction signals, narrative gravity, symbolic systems, and language engines. It's still locked, but I think it's almost unlocked...</p>
+        <a href="#" id="signalLockButton">Try To Pick The Lock</a>
       </div>
 
       <div class="card hidden-card">
@@ -318,6 +318,40 @@
           failedLockButton.textContent = "Try Again Later";
           failedLockButton.style.pointerEvents = "auto";
         }, 900);
+      }
+    }, 700);
+  });
+</script>
+<script>
+  const signalLockButton = document.getElementById("signalLockButton");
+
+  const signalSequence = [
+    "Inserting pick...",
+    "Feeling pins...",
+    "Tension wrench set...",
+    "Click...",
+    "Click click...",
+    "Unlocked."
+  ];
+
+  signalLockButton.addEventListener("click", function (event) {
+    event.preventDefault();
+
+    let step = 0;
+
+    signalLockButton.style.pointerEvents = "none";
+
+    const signalLockpick = setInterval(function () {
+      signalLockButton.textContent = signalSequence[step];
+
+      step++;
+
+      if (step >= signalSequence.length) {
+        clearInterval(signalLockpick);
+
+        setTimeout(function () {
+          window.location.href = "signal-theory/signal-theory.html";
+        }, 700);
       }
     }, 700);
   });
