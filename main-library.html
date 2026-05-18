@@ -141,7 +141,13 @@
       signal theory maps, and deep-field briefings of the Identity Panic Toolkit.
     </p>
   </header>
-
+<div style="text-align: center;">
+  <img 
+  id="cabinetThumbnail"
+  class="thumbnail-image"
+  src="gallery/filing-cabinet-red-black.png"
+  alt="IPT filing cabinet thumbnail"
+></div>
   <main>
     <section class="nav-grid">
 
@@ -363,6 +369,36 @@
         }, 700);
       }
     }, 700);
+  });
+</script>
+<script>
+  const cabinetThumbnail = document.getElementById("cabinetThumbnail");
+
+  const cabinetImages = [
+    "gallery/filing-cabinet-red-black.png",
+    "gallery/filing-cabinet-yellow-green.png",
+    "gallery/filing-cabinet-blue-pink.png",
+    "gallery/filing-cabinet-gray.png"
+  ];
+
+  const cabinetAltText = [
+    "Red and black striped filing cabinet",
+    "Yellow and green striped filing cabinet",
+    "Blue filing cabinet with pink polka dots",
+    "Gray filing cabinet"
+  ];
+
+  let cabinetIndex = 0;
+
+  cabinetThumbnail.addEventListener("click", function () {
+    cabinetIndex++;
+
+    if (cabinetIndex >= cabinetImages.length) {
+      cabinetIndex = 0;
+    }
+
+    cabinetThumbnail.src = cabinetImages[cabinetIndex];
+    cabinetThumbnail.alt = cabinetAltText[cabinetIndex];
   });
 </script>
 </body>
