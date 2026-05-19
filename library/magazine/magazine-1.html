@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>IPT Magazine Exhibit Floor</title>
+
+<style>
+
+body {
+    margin: 0;
+    padding: 30px;
+    background: #06090c;
+    color: #f2f2f2;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* =========================
+   MAGAZINE TITLE
+========================= */
+
+.magazine-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.magazine-header h1 {
+    font-size: 3rem;
+    letter-spacing: 4px;
+    margin-bottom: 10px;
+}
+
+.magazine-header p {
+    opacity: 0.7;
+    max-width: 700px;
+    margin: auto;
+}
+
+/* =========================
+   MASONRY GRID
+========================= */
+
+.exhibit-grid {
+    column-count: 4;
+    column-gap: 20px;
+}
+
+@media (max-width: 1100px) {
+    .exhibit-grid {
+        column-count: 3;
+    }
+}
+
+@media (max-width: 800px) {
+    .exhibit-grid {
+        column-count: 2;
+    }
+}
+
+@media (max-width: 550px) {
+    .exhibit-grid {
+        column-count: 1;
+    }
+}
+
+/* =========================
+   CARD STYLES
+========================= */
+
+.exhibit-card {
+    break-inside: avoid;
+    margin-bottom: 20px;
+    background: #111820;
+    border: 1px solid #22303b;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0,0,0,0.35);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.exhibit-card img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    display: block;
+}
+
+.exhibit-card:hover {
+    transform: translateY(-3px);
+    border-color: #7fd6d1;
+
+    box-shadow:
+        0 0 25px rgba(0,0,0,0.5),
+        0 0 10px rgba(127,214,209,0.2);
+}
+
+
+/* =========================
+   IMAGE
+========================= */
+/* =========================
+   TEXT SECTION
+========================= */
+
+.exhibit-info {
+    padding: 16px;
+}
+
+.exhibit-info h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+}
+
+.exhibit-info p {
+    margin: 0;
+
+    opacity: 0.78;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* =========================
+   OPTIONAL LABELS
+========================= */
+
+.exhibit-tag {
+    display: inline-block;
+
+    margin-bottom: 12px;
+    padding: 5px 10px;
+
+    background: #1e2c36;
+    border-radius: 999px;
+
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    opacity: 0.75;
+}
+
+/* =========================
+   SPECIAL SIZE MODIFIERS
+========================= */
+
+.tall img {
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+}
+
+.wide img {
+    aspect-ratio: 16 / 8;
+    object-fit: cover;
+}
+
+.mega img {
+    aspect-ratio: 21 / 9;
+    object-fit: cover;
+}
+
+.square img {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+.micro .exhibit-info {
+    padding: 10px;
+}
+
+.micro h2 {
+    font-size: 0.9rem;
+}
+
+.micro p {
+    font-size: 0.8rem;
+}
+
+/* =========================
+   OPTIONAL WEIRDNESS
+========================= */
+
+.rotate-left {
+    transform: rotate(-1deg);
+}
+
+.rotate-right {
+    transform: rotate(1deg);
+}
+
+.rotate-left:hover,
+.rotate-right:hover {
+    transform:
+        rotate(0deg)
+        translateY(-3px);
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<div class="magazine-header">
+
+    <h1>IPT MAGAZINE</h1>
+
+    <p>
+        Recovered exhibits, circulation residue,
+        and emotional artifacts from the signal field.
+    </p>
+
+</div>
+<div>
+    <img src="../../gallery/shuttle-launch.jpg" alt="space shuttle launch" style="width: 100%; border-radius: 14px; margin-bottom: 30px;">
+</div>
+
+<!-- =========================
+     EXHIBIT GRID
+========================= -->
+
+<div class="exhibit-grid">
+
+<!-- =========================
+     CARD 1
+========================= -->
+
+<div class="exhibit-card tall rotate-left">
+
+    <img src="../../gallery/tall-can.png"
+    alt="Placeholder Exhibit">
+
+    <div class="exhibit-info">
+
+        <div class="exhibit-tag">
+            RECOVERED ITEM
+        </div>
+
+        <h2>
+            Basement Circulation Artifact
+        </h2>
+
+        <p>
+            Found beneath the observation deck.
+            Source origin remains disputed.
+        </p>
+
+    </div>
+
+</div>
+
+<!-- =========================
+     CARD 2
+========================= -->
+
+<div class="exhibit-card square">
+
+    <img src="../../gallery/shuttle-launch.jpg"
+    alt="Shuttle Launch">
+
+</div>
+
+<!-- =========================
+     CARD 3
+========================= -->
+
+<div class="exhibit-card tall rotate-right">
+
+    <img src="../../gallery/fast-food.png"
+    alt="Fast Food">
+
+    <div class="exhibit-info">
+
+        <div class="exhibit-tag">
+            SIGNAL OBJECT
+        </div>
+
+        <h2>
+            Unknown Packaging Variant
+        </h2>
+
+        <p>
+            Appeared in circulation before official
+            campaign documentation existed.
+        </p>
+
+    </div>
+
+</div>
+
+<!-- =========================
+     CARD 4
+========================= -->
+
+<div class="exhibit-card micro">
+
+    <img src="gallery/placeholder-image-4.jpg"
+    alt="Placeholder Exhibit">
+
+    <div class="exhibit-info">
+
+        <div class="exhibit-tag">
+            MICROFILE
+        </div>
+
+        <h2>
+            Sticker Fragment
+        </h2>
+
+        <p>
+            Recovered from an abandoned terminal.
+        </p>
+
+    </div>
+
+</div>
+
+<!-- =========================
+     CARD 5
+========================= -->
+
+<div class="exhibit-card tall">
+
+    <img src="../../gallery/factory-floor.png"
+    alt="Placeholder Exhibit">
+
+    <div class="exhibit-info">
+
+        <div class="exhibit-tag">
+            DREAM LOGIC
+        </div>
+
+        <h2>
+            Identity Drift Composition
+        </h2>
+
+        <p>
+            No known explanation accompanies this exhibit.
+            Multiple conflicting captions exist.
+        </p>
+
+    </div>
+
+</div>
+
+<!-- =========================
+     CARD 6
+========================= -->
+
+<div class="exhibit-card square rotate-left">
+
+    <img src="../../gallery/nintendo-lucretius.jpg"
+    alt="Nintendo Lucretius">
+
+    <div class="exhibit-info">
+
+        <div class="exhibit-tag">
+            PUBLIC SIGNAL
+        </div>
+
+        <h2>
+            Emergency Tone Advertisement
+        </h2>
+
+        <p>
+            Observed during heightened emotional
+            engagement cycles.
+        </p>
+
+    </div>
+
+</div>
+
+</div>
+
+</body>
+</html>
