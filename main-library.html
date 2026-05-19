@@ -268,8 +268,9 @@
   </a>
 </div>
 <div class="thumbnail-link">
-  <a href="library/esteem-briefing.html">
+  <a href="library/esteem-briefing.html" id="flickerLink">
     <img
+    id="esteemThumbnail"
   src="gallery/book-composition-esteem-briefing.jpg"
   alt="Esteem Briefing Composition Notebook image"
   class="thumbnail-image esteem-thumbnail"
@@ -436,24 +437,16 @@
     cabinetThumbnail.alt = cabinetAltText[cabinetIndex];
   });
 </script>
-<a href="esteem-briefing.html" id="flickerLink">
-  <img
-    id="esteemThumbnail"
-    src="../gallery/book-composition-esteem-briefing.jpg"
-    alt="Esteem Briefing thumbnail"
-    class="thumbnail-image"
-  >
-</a>
 
 <script>
   const flickerLink = document.getElementById("flickerLink");
   const esteemThumbnail = document.getElementById("esteemThumbnail");
 
   const normalImage =
-    "../gallery/book-composition-esteem-briefing.jpg";
+    "gallery/book-composition-esteem-briefing.jpg";
 
   const flickerImage =
-    "../gallery/book-composition-esteem-briefing-glow.png";
+    "gallery/book-composition-esteem-briefing-glow.png";
 
   flickerLink.addEventListener("click", function (event) {
 
@@ -476,7 +469,7 @@
         clearInterval(flickerLoop);
 
         window.location.href =
-          "esteem-briefing.html";
+          "library/esteem-briefing.html";
       }
 
     }, 80);
