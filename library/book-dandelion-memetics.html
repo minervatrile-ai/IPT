@@ -38,6 +38,60 @@
       border: 1px solid #31444d;
     }
 
+    .thumbnail-image {
+  width: 220px;
+  max-width: 90%;
+  display: block;
+  margin: 25px auto;
+  border-radius: 14px;
+  border: 1px solid #31444d;
+  box-shadow: 0 0 12px rgba(143,214,199,0.2);
+
+  animation: flicker 2.8s infinite;
+}
+
+/* subtle flicker effect */
+@keyframes flicker {
+
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  4% {
+    opacity: 0.82;
+  }
+
+  6% {
+    opacity: 1;
+  }
+
+  12% {
+    opacity: 0.88;
+  }
+
+  14% {
+    opacity: 1;
+  }
+
+  55% {
+    opacity: 1;
+  }
+
+  57% {
+    opacity: 0.76;
+  }
+
+  60% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.01);
+  }
+}
+
     a {
       color: #8fd6c7;
       font-weight: bold;
@@ -134,6 +188,12 @@
 
     <a class="back-link" href="../main-library.html">Close Book...</a>
   
+<img
+  src="../gallery/dandelion-diagram-1.png"
+  alt="thumbnail"
+  class="thumbnail-image"
+>
+
     </main>
 
 </body>
