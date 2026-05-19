@@ -436,5 +436,52 @@
     cabinetThumbnail.alt = cabinetAltText[cabinetIndex];
   });
 </script>
+<a href="esteem-briefing.html" id="flickerLink">
+  <img
+    id="esteemThumbnail"
+    src="../gallery/book-composition-esteem-briefing.jpg"
+    alt="Esteem Briefing thumbnail"
+    class="thumbnail-image"
+  >
+</a>
+
+<script>
+  const flickerLink = document.getElementById("flickerLink");
+  const esteemThumbnail = document.getElementById("esteemThumbnail");
+
+  const normalImage =
+    "../gallery/book-composition-esteem-briefing.jpg";
+
+  const flickerImage =
+    "../gallery/book-composition-esteem-briefing-glow.png";
+
+  flickerLink.addEventListener("click", function (event) {
+
+    event.preventDefault();
+
+    let flickers = 0;
+
+    const flickerLoop = setInterval(function () {
+
+      if (flickers % 2 === 0) {
+        esteemThumbnail.src = flickerImage;
+      } else {
+        esteemThumbnail.src = normalImage;
+      }
+
+      flickers++;
+
+      if (flickers >= 8) {
+
+        clearInterval(flickerLoop);
+
+        window.location.href =
+          "esteem-briefing.html";
+      }
+
+    }, 80);
+
+  });
+</script>
 </body>
 </html>
