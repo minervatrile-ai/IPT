@@ -28,6 +28,65 @@ body {
 .card img {
     width: 100%;
     display: block;
+
+    animation: flicker 2.8s infinite;
+
+    filter: brightness(1);
+}
+
+@keyframes flicker {
+
+    0% {
+        opacity: 1;
+        filter: brightness(1);
+    }
+
+    3% {
+        opacity: 0.82;
+        filter: brightness(1.15);
+    }
+
+    6% {
+        opacity: 1;
+    }
+
+    11% {
+        opacity: 0.9;
+    }
+
+    14% {
+        opacity: 1;
+    }
+
+    35% {
+        opacity: 1;
+    }
+
+    37% {
+        opacity: 0.78;
+        filter: brightness(1.25);
+    }
+
+    40% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+        filter: brightness(1);
+    }
+}
+
+.card:nth-child(odd) img {
+    animation-duration: 3.4s;
+}
+
+.card:nth-child(3n) img {
+    animation-duration: 2.1s;
+}
+
+.card:nth-child(4n) img {
+    animation-duration: 4.7s;
 }
 
 </style>
