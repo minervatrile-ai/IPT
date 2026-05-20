@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Alien Cabinet Archive</title>
+
+<style>
+
+body {
+    margin: 0;
+    padding: 40px 20px;
+    background:
+        radial-gradient(circle at top, rgba(0,255,170,0.08), transparent 40%),
+        radial-gradient(circle at bottom, rgba(0,180,255,0.08), transparent 40%),
+        #03070a;
+
+    color: #dfffee;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.archive-shell {
+    max-width: 1000px;
+    margin: auto;
+    padding: 30px;
+    border: 1px solid #29444f;
+    border-radius: 18px;
+    background: rgba(5, 12, 16, 0.92);
+
+    box-shadow:
+        0 0 30px rgba(0,255,170,0.08),
+        inset 0 0 20px rgba(0,255,170,0.03);
+}
+
+.archive-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.archive-header h1 {
+    margin-bottom: 10px;
+    font-size: 2.7rem;
+    letter-spacing: 4px;
+    color: #9effd4;
+
+    text-shadow:
+        0 0 12px rgba(0,255,170,0.25);
+}
+
+.archive-header p {
+    opacity: 0.75;
+    max-width: 700px;
+    margin: auto;
+    line-height: 1.7;
+}
+
+.return-link {
+    display: inline-block;
+    margin-bottom: 35px;
+    padding: 14px 22px;
+
+    background: #08161d;
+    border: 1px solid #3b5f69;
+    border-radius: 12px;
+
+    color: #bdfce7;
+    text-decoration: none;
+    font-weight: bold;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.return-link:hover {
+    transform: scale(1.03);
+    border-color: #8affd5;
+    box-shadow: 0 0 18px rgba(0,255,170,0.18);
+}
+
+.file-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+}
+
+.file-button {
+    display: flex;
+    align-items: flex-end;
+
+    min-height: 260px;
+    padding: 0;
+
+    background-size: cover;
+    background-position: center;
+
+    border: 1px solid #2f4c56;
+    border-radius: 14px;
+
+    color: #dfffee;
+    text-decoration: none;
+
+    position: relative;
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.file-button::before {
+    content: "";
+
+    position: absolute;
+    top: -120%;
+    left: -40%;
+
+    width: 180%;
+    height: 220%;
+
+    background:
+        linear-gradient(
+            transparent,
+            rgba(0,255,170,0.08),
+            transparent
+        );
+
+    transform: rotate(20deg);
+    pointer-events: none;
+}
+
+.file-button:hover {
+    transform: translateY(-4px);
+    border-color: #8effd4;
+    box-shadow: 0 0 22px rgba(0,255,170,0.15);
+}
+
+.file-overlay {
+    width: 100%;
+    padding: 18px;
+
+    background:
+        linear-gradient(
+            transparent,
+            rgba(0,0,0,0.88)
+        );
+
+    position: relative;
+    z-index: 2;
+}
+
+.file-button h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+
+    font-size: 1rem;
+    letter-spacing: 2px;
+
+    color: #9effd4;
+}
+
+.file-button p {
+    margin: 0;
+    opacity: 0.82;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.footer-note {
+    margin-top: 50px;
+    text-align: center;
+    opacity: 0.4;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="archive-shell">
+
+    <a href="../../library-basement/library-basement.html" class="return-link">
+        Close Cabinet and Return to Library Basement
+    </a>
+
+    <div class="archive-header">
+        <h1>DEPROGRAMMING PROTOCOL MAGAZINE ARCHIVE</h1>
+
+        <p>
+            Recovered magazine fragments, psychological recovery notes,
+            identity destabilization studies, and deprogramming materials.
+        </p>
+    </div>
+
+    <div class="file-grid">
+
+        <a href="1-issue.html" class="file-button" style="background-image: url('../../gallery/deprogramming-protocol-1-magazine.jpg');">
+            <div class="file-overlay">
+                <h2>FILE 01</h2>
+                <p>Placeholder transmission slot.</p>
+            </div>
+        </a>
+
+        <a href="#" class="file-button" style="background-image: url('../../gallery/deprogramming-file-02.jpg');">
+            <div class="file-overlay">
+                <h2>FILE 02</h2>
+                <p>Placeholder transmission slot.</p>
+            </div>
+        </a>
+
+        <a href="#" class="file-button" style="background-image: url('../../gallery/deprogramming-file-03.jpg');">
+            <div class="file-overlay">
+                <h2>FILE 03</h2>
+                <p>Placeholder transmission slot.</p>
+            </div>
+        </a>
+
+        <a href="#" class="file-button" style="background-image: url('../../gallery/deprogramming-file-04.jpg');">
+            <div class="file-overlay">
+                <h2>FILE 04</h2>
+                <p>Placeholder transmission slot.</p>
+            </div>
+        </a>
+
+        <a href="#" class="file-button" style="background-image: url('../../gallery/deprogramming-file-05.jpg');">
+            <div class="file-overlay">
+                <h2>FILE 05</h2>
+                <p>Placeholder transmission slot.</p>
+            </div>
+        </a>
+
+        <a href="#" class="file-button" style="background-image: url('../../gallery/deprogramming-file-06.jpg');">
+            <div class="file-overlay">
+                <h2>FILE 06</h2>
+                <p>Placeholder transmission slot.</p>
+            </div>
+        </a>
+
+        <a href="#" class="file-button" style="background-image: url('../../gallery/deprogramming-file-07.jpg');">
+            <div class="file-overlay">
+                <h2>FILE 07</h2>
+                <p>Placeholder transmission slot.</p>
+            </div>
+        </a>
+
+        <a href="#" class="file-button" style="background-image: url('../../gallery/deprogramming-file-08.jpg');">
+            <div class="file-overlay">
+                <h2>FILE 08</h2>
+                <p>Placeholder transmission slot.</p>
+            </div>
+        </a>
+
+        <a href="#" class="file-button" style="background-image: url('../../gallery/deprogramming-file-09.jpg');">
+            <div class="file-overlay">
+                <h2>FILE 09</h2>
+                <p>Placeholder transmission slot.</p>
+            </div>
+        </a>
+
+        <a href="#" class="file-button" style="background-image: url('../../gallery/deprogramming-file-10.jpg');">
+            <div class="file-overlay">
+                <h2>FILE 10</h2>
+                <p>Placeholder transmission slot.</p>
+            </div>
+        </a>
+
+        <a href="#" class="file-button" style="background-image: url('../../gallery/deprogramming-file-11.jpg');">
+            <div class="file-overlay">
+                <h2>FILE 11</h2>
+                <p>Placeholder transmission slot.</p>
+            </div>
+        </a>
+
+        <a href="#" class="file-button" style="background-image: url('../../gallery/deprogramming-file-12.jpg');">
+            <div class="file-overlay">
+                <h2>FILE 12</h2>
+                <p>Placeholder transmission slot.</p>
+            </div>
+        </a>
+
+        <a href="#" class="file-button" style="background-image: url('../../gallery/deprogramming-file-13.jpg');">
+            <div class="file-overlay">
+                <h2>FILE 13</h2>
+                <p>Placeholder transmission slot.</p>
+            </div>
+        </a>
+
+    </div>
+
+    <div class="footer-note">
+        ARCHIVE STATUS: UNSTABLE
+    </div>
+
+</div>
+
+</body>
+</html>
