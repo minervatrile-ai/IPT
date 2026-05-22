@@ -60,6 +60,27 @@
   transform: scale(1.03);
   border-color: #8fd6c7;
 }
+
+.slideshow-box {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.slideshow-image {
+    width: 100%;
+    max-width: 900px;
+    border-radius: 12px;
+}
+
+.button-row {
+    margin-top: 15px;
+}
+
+.button-row button {
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+}
   </style>
 </head>
 <body>
@@ -230,5 +251,68 @@ This is the index of the IPT (Identity Panic Toolkit), a public-domain awareness
 >
 <br>
 <h2><a href="background.html" style="color:bisque">BACKGROUND/FINE PRINT: Release Statement/Record of Contribution/Addressing the Use of AI</a></h2>
+
+<div class="slideshow-box">
+
+    <img
+        id="slideshowImage"
+        src="gallery/0-slideshow.jpg"
+        alt="Slideshow Image"
+        class="slideshow-image"
+    >
+
+    <div class="button-row">
+        <button id="prevSlide">Previous</button>
+        <button id="nextSlide">Next</button>
+    </div>
+
+</div>
+
+<script>
+const slideshowImage = document.getElementById("slideshowImage");
+const prevSlide = document.getElementById("prevSlide");
+const nextSlide = document.getElementById("nextSlide");
+
+const slides = [
+    "gallery/0-slideshow.jpg",
+    "gallery/1-slideshow.jpg",
+    "gallery/2-slideshow.jpg",
+    "gallery/3-slideshow.jpg",
+    "gallery/4-slideshow.jpg",
+    "gallery/5-slideshow.jpg",
+    "gallery/6-slideshow.jpg",
+    "gallery/7-slideshow.jpg",
+    "gallery/8-slideshow.jpg",
+    "gallery/9-slideshow.jpg",
+    "gallery/10-slideshow.jpg"
+];
+
+let currentSlide = 0;
+
+function showSlide() {
+    slideshowImage.src = slides[currentSlide];
+}
+
+nextSlide.addEventListener("click", function() {
+    currentSlide++;
+
+    if (currentSlide >= slides.length) {
+        currentSlide = 0;
+    }
+
+    showSlide();
+});
+
+prevSlide.addEventListener("click", function() {
+    currentSlide--;
+
+    if (currentSlide < 0) {
+        currentSlide = slides.length - 1;
+    }
+
+    showSlide();
+});
+</script>
+
 </body>
 </html>
