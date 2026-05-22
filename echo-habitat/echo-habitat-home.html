@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Cloud Archive</title>
+<title>Aquarium Archive</title>
 
 <style>
 
@@ -12,8 +12,8 @@ body {
     margin: 0;
     padding: 30px;
     font-family: Arial, Helvetica, sans-serif;
-    background: linear-gradient(to bottom, #87ceeb, #dff4ff);
-    color: #022d4e;
+    background: #080808;
+    color: #f2f2f2;
 }
 
 .container {
@@ -28,32 +28,24 @@ body {
 
 .archive-header h1 {
     font-size: 3rem;
-    margin-bottom: 10px;
+    color: #ff2d9a;
+    text-shadow: 0 0 12px rgba(255,45,154,.7);
 }
 
 .archive-header p {
-    font-size: 1.1rem;
-    opacity: 0.85;
-}
-
-.nav-button {
-    text-align: center;
-    margin: 25px 0;
+    color: #d7ff23;
 }
 
 .nav-button a {
     display: inline-block;
-    background: white;
-    color: #2a5f87;
+    background: #161616;
+    color: #d7ff23;
     text-decoration: none;
     padding: 12px 22px;
-    border-radius: 10px;
+    border-radius: 12px;
+    border: 2px solid #ff2d9a;
     font-weight: bold;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-}
-
-.nav-button a:hover {
-    transform: translateY(-2px);
+    box-shadow: 0 0 18px rgba(255,45,154,.4);
 }
 
 .link-grid {
@@ -63,10 +55,15 @@ body {
 }
 
 .link-card {
-    background: rgba(255,255,255,0.85);
+    background: #111;
+    border-left: 5px solid #d7ff23;
     border-radius: 14px;
     padding: 20px;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+    box-shadow: 0 0 16px rgba(255,45,154,.18);
+}
+
+.link-card:nth-child(even) {
+    border-left-color: #ff2d9a;
 }
 
 .link-card h3 {
@@ -74,13 +71,13 @@ body {
 }
 
 .link-card a {
-    color: #2a5f87;
-    font-weight: bold;
+    color: #d7ff23;
     text-decoration: none;
+    font-weight: bold;
 }
 
 .link-card a:hover {
-    text-decoration: underline;
+    color: #ff2d9a;
 }
 
 .footer-space {
@@ -102,7 +99,8 @@ body {
         <h1>Aquarium Archive</h1>
 
         <p>
-            Echo Habitat Theory + IPT...
+            Echo Habitat Theory + IPT... Recovered habitat records from the IPT Aquarium Archive.
+Observe the environment. Avoid becoming the environment.
         </p>
     </div>
 
@@ -110,7 +108,7 @@ body {
 
         <div class="link-card">
             <h3>Echo Habitat Index 1</h3>
-            <a href="../temporary-construction.html">[under construction]</a>
+            <a href="echo-habitat-index-1.html">Open Record [active link]</a>
         </div>
 
         <div class="link-card">
