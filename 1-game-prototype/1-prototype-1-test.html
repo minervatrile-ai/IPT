@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<body>
+
+<div class="game">
+  <div class="hud">
+    <button onclick="selectWeapon('tomato')">🍅 IPT Tomatoes</button>
+    <button onclick="selectWeapon('mirror')">🪞 Mirror Engine</button>
+    <button onclick="selectWeapon('pause')">⏸️ Pause Field</button>
+  </div>
+
+  <div id="enemy" onclick="hitEnemy()">
+    <div class="tv">💀</div>
+    <div class="wheel">⚙️</div>
+    <div id="quote">YOUR WORLDVIEW IS UNDER THREAT!</div>
+  </div>
+
+  <div id="effect"></div>
+</div>
+
+<script>
+let weapon = "tomato";
+
+function selectWeapon(choice) {
+  weapon = choice;
+}
+
+function hitEnemy() {
+  const effect = document.getElementById("effect");
+  const enemy = document.getElementById("enemy");
+
+  if (weapon === "tomato") {
+    effect.textContent = "🍅 SPLAT!";
+  } else if (weapon === "mirror") {
+    effect.textContent = "🪞 MANIPULATION REFLECTED!";
+  } else if (weapon === "pause") {
+    effect.textContent = "⏸️ SIGNAL SLOWED!";
+  }
+
+  enemy.classList.add("hit");
+
+  setTimeout(() => {
+    enemy.classList.remove("hit");
+    effect.textContent = "";
+  }, 600);
+}
+</script>
+
+</body>
+</html>
