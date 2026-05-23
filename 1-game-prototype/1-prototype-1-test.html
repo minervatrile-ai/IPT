@@ -2,55 +2,133 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Skull Influencer</title>
 
+  <style>
+    body {
+      background: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    .game {
+      position: relative;
+      height: 500px;
+      border: 3px solid white;
+      overflow: hidden;
+      background: #111;
+    }
+
+    #enemy {
+      position: absolute;
+      left: 100px;
+      top: 100px;
+      cursor: crosshair;
+      font-size: 3rem;
+      user-select: none;
+    }
+
+    .hit {
+      transform: scale(1.25);
+    }
+
+    #scoreboard {
+      font-size: 1.5rem;
+      margin: 15px;
+    }
+
+    #effect {
+      font-size: 2rem;
+      margin-top: 20px;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="game">
+  <h1>📺💀 The Skull Influencer</h1>
+
   <div class="hud">
     <button onclick="selectWeapon('tomato')">🍅 IPT Tomatoes</button>
     <button onclick="selectWeapon('mirror')">🪞 Mirror Engine</button>
     <button onclick="selectWeapon('pause')">⏸️ Pause Field</button>
   </div>
 
-  <div id="enemy" onclick="hitEnemy()">
-    <div class="tv">💀</div>
-    <div class="wheel">⚙️</div>
-    <div id="quote">YOUR WORLDVIEW IS UNDER THREAT!</div>
+  <div id="scoreboard">Score: <span id="score">0</span></div>
+
+  <div class="game">
+    <div id="enemy" onclick="hitEnemy()">
+      <div class="tv">💀</div>
+      <div class="wheel">⚙️</div>
+      <div id="quote">YOUR WORLDVIEW IS UNDER THREAT!</div>
+    </div>
+
+    <div id="effect"></div>
   </div>
 
-  <div id="effect"></div>
-</div>
+  <script>
+    let weapon = "tomato";
+    let score = 0;
 
-<script>
-let weapon = "tomato";
+    const quotes = [
+      "YOUR WORLDVIEW IS UNDER THREAT!",
+      "ENGAGE IMMEDIATELY!",
+      "YOU MUST PICK A SIDE!",
+      "EVERYTHING IS AN EMERGENCY!",
+      "OUTRAGE GENERATES CLICKS!"
+    ];
 
-function selectWeapon(choice) {
-  weapon = choice;
-}
+    function selectWeapon(choice) {
+      weapon = choice;
+    }
 
-function hitEnemy() {
-  const effect = document.getElementById("effect");
-  const enemy = document.getElementById("enemy");
+    function hitEnemy() {
+      score++;
+      document.getElementById("score").textContent = score;
 
-  if (weapon === "tomato") {
-    effect.textContent = "🍅 SPLAT!";
-  } else if (weapon === "mirror") {
-    effect.textContent = "🪞 MANIPULATION REFLECTED!";
-  } else if (weapon === "pause") {
-    effect.textContent = "⏸️ SIGNAL SLOWED!";
-  }
+      const effect = document.getElementById("effect");
+      const enemy = document.getElementById("enemy");
 
-  enemy.classList.add("hit");
+      if (weapon === "tomato") {
+        effect.textContent = "🍅 SPLAT!";
+      } else if (weapon === "mirror") {
+        effect.textContent = "🪞 MANIPULATION REFLECTED!";
+      } else if (weapon === "pause") {
+        effect.textContent = "⏸️ SIGNAL SLOWED!";
+      }
 
-  setTimeout(() => {
-    enemy.classList.remove("hit");
-    effect.textContent = "";
-  }, 600);
-}
-</script>
+      document.getElementById("quote").textContent =
+        quotes[Math.floor(Math.random() * quotes.length)];
+
+      enemy.classList.add("hit");
+
+      setTimeout(() => {
+        enemy.classList.remove("hit");
+        effect.textContent = "";
+      }, 300);
+
+      moveEnemy();
+    }
+
+    function moveEnemy() {
+      const enemy = document.getElementById("enemy");
+      const game = document.querySelector(".game");
+
+      const maxX = game.clientWidth - enemy.offsetWidth;
+      const maxY = game.clientHeight - enemy.offsetHeight;
+
+      const randomX = Math.floor(Math.random() * maxX);
+      const randomY = Math.floor(Math.random() * maxY);
+
+      enemy.style.left = randomX + "px";
+      enemy.style.top = randomY + "px";
+    }
+
+    setInterval(moveEnemy, 1200);
+  </script>
 
 </body>
 </html>
