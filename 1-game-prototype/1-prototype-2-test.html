@@ -91,7 +91,10 @@
 <button id="btn-pause" class="weapon-btn" onclick="selectWeapon('pause')">⏸️ Pause Field</button>
   </div>
 
-  <div id="scoreboard">Villain Charisma: <span id="charisma">100</span></div>
+  <div id="scoreboard">
+  Villain Charisma: <span id="charisma">100</span><br>
+  Status: <span id="status">🔥 Viral</span>
+</div>
 
   <div class="game">
 
@@ -149,6 +152,11 @@ const enemyImages = {
 }
 
     function hitEnemy() {
+
+if (charisma <= 0) {
+  return;
+}
+
       const enemyImg = document.getElementById("enemy-img");
 
 charisma--;
@@ -158,6 +166,25 @@ if (charisma < 0) {
 }
 
 document.getElementById("charisma").textContent = charisma;
+
+const status = document.getElementById("status");
+
+if (charisma >= 76) {
+  status.textContent = "🔥 Viral";
+}
+else if (charisma >= 51) {
+  status.textContent = "📈 Trending";
+}
+else if (charisma >= 26) {
+  status.textContent = "😬 Losing Influence";
+}
+else if (charisma >= 1) {
+  status.textContent = "📉 Irrelevant";
+}
+else {
+  status.textContent = "💀 Deplatformed by Reality";
+}
+
 
       const effect = document.getElementById("effect");
       const enemy = document.getElementById("enemy");
@@ -173,8 +200,13 @@ document.getElementById("charisma").textContent = charisma;
         enemyImg.src = enemyImages.pause;
       }
 
-      document.getElementById("quote").textContent =
-        quotes[Math.floor(Math.random() * quotes.length)];
+      if (charisma <= 0) {
+  document.getElementById("quote").textContent =
+    "YOU HAVE RECOGNIZED THE MANIPULATION ENGINE.";
+} else {
+  document.getElementById("quote").textContent =
+    quotes[Math.floor(Math.random() * quotes.length)];
+}
 
       enemy.classList.add("hit");
 
@@ -188,6 +220,11 @@ document.getElementById("charisma").textContent = charisma;
     }
 
     function moveEnemy() {
+
+if (charisma <= 0) {
+  return;
+}
+
       const enemy = document.getElementById("enemy");
       const game = document.querySelector(".game");
 
