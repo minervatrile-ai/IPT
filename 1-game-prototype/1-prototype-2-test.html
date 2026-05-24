@@ -14,8 +14,8 @@
       text-align: center;
     }
 
-    h3 {
-      color: #b4438c;
+    a {
+      color: #b4438c
     }
 
     .game {
@@ -91,7 +91,7 @@
 <button id="btn-pause" class="weapon-btn" onclick="selectWeapon('pause')">⏸️ Pause Field</button>
   </div>
 
-  <div id="scoreboard">Score: <span id="score">0</span></div>
+  <div id="scoreboard">Villain Charisma: <span id="charisma">100</span></div>
 
   <div class="game">
 
@@ -108,7 +108,7 @@
 
   <script>
     let weapon = "tomato";
-    let score = 0;
+    let charisma = 100;
 
     const quotes = [
       "YOUR WORLDVIEW IS UNDER THREAT!",
@@ -116,7 +116,7 @@
       "YOU MUST PICK A SIDE!",
       "EVERYTHING IS AN EMERGENCY!",
       "OUTRAGE GENERATES CLICKS!",
-      "DEHUMANIZE OTHERS!",
+      "DEHUMANIZE differing OTHERS!",
       "THEY are NOT like US!",
       "THEY aren't even HUMAN!",
       "Only THIS channel knows!",
@@ -151,8 +151,13 @@ const enemyImages = {
     function hitEnemy() {
       const enemyImg = document.getElementById("enemy-img");
 
-      score++;
-      document.getElementById("score").textContent = score;
+charisma--;
+
+if (charisma < 0) {
+  charisma = 0;
+}
+
+document.getElementById("charisma").textContent = charisma;
 
       const effect = document.getElementById("effect");
       const enemy = document.getElementById("enemy");
