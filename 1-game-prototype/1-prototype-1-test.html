@@ -91,7 +91,10 @@
 <button id="btn-pause" class="weapon-btn" onclick="selectWeapon('pause')">⏸️ Pause Field</button>
   </div>
 
-  <div id="scoreboard">Score: <span id="score">0</span></div>
+  <div id="scoreboard">
+  Villain Charisma: <span id="charisma">20</span><br>
+  Evil Channel Status: <span id="status">🔥 Viral</span>
+</div>
 
   <div class="game">
 
@@ -108,7 +111,7 @@
 
   <script>
     let weapon = "tomato";
-    let score = 0;
+    let charisma = 20;
 
     const quotes = [
       "YOUR WORLDVIEW IS UNDER THREAT!",
@@ -149,10 +152,39 @@ const enemyImages = {
 }
 
     function hitEnemy() {
+
+if (charisma <= 0) {
+  return;
+}
+
       const enemyImg = document.getElementById("enemy-img");
 
-      score++;
-      document.getElementById("score").textContent = score;
+charisma--;
+
+if (charisma < 0) {
+  charisma = 0;
+}
+
+document.getElementById("charisma").textContent = charisma;
+
+const status = document.getElementById("status");
+
+if (charisma >= 16) {
+  status.textContent = "🔥 Viral";
+}
+else if (charisma >= 11) {
+  status.textContent = "📈 Trending";
+}
+else if (charisma >= 6) {
+  status.textContent = "😬 Losing Influence";
+}
+else if (charisma >= 1) {
+  status.textContent = "📉 Irrelevant";
+}
+else {
+  status.textContent = "💀 Deplatformed by Reality";
+}
+
 
       const effect = document.getElementById("effect");
       const enemy = document.getElementById("enemy");
@@ -168,8 +200,13 @@ const enemyImages = {
         enemyImg.src = enemyImages.pause;
       }
 
-      document.getElementById("quote").textContent =
-        quotes[Math.floor(Math.random() * quotes.length)];
+      if (charisma <= 0) {
+  document.getElementById("quote").textContent =
+    "YOU HAVE RECOGNIZED THE MANIPULATION ENGINE.";
+} else {
+  document.getElementById("quote").textContent =
+    quotes[Math.floor(Math.random() * quotes.length)];
+}
 
       enemy.classList.add("hit");
 
@@ -183,6 +220,11 @@ const enemyImages = {
     }
 
     function moveEnemy() {
+
+if (charisma <= 0) {
+  return;
+}
+
       const enemy = document.getElementById("enemy");
       const game = document.querySelector(".game");
 
