@@ -69,7 +69,8 @@
   <div class="game">
 
   <div id="enemy" onclick="hitEnemy()">
-  <img src="../gallery/1-game-images/1-game-skull-influencer.png"
+  <img id="enemy-img"
+       src="../gallery/1-game-images/1-game-skull-influencer.png"
        alt="The Skull Influencer">
 
   <div id="quote">YOUR WORLDVIEW IS UNDER THREAT!</div>
@@ -90,11 +91,20 @@
       "OUTRAGE GENERATES CLICKS!"
     ];
 
+const enemyImages = {
+  normal: "../gallery/1-game-images/1-game-skull-influencer.png",
+  tomato: "../gallery/1-game-images/1-game-skull-influencer-hit-tomato.png",
+  mirror: "../gallery/1-game-images/1-game-skull-influencer-hit-mirror.png",
+  pause: "../gallery/1-game-images/1-game-skull-influencer-hit-pause.png"
+};
+
     function selectWeapon(choice) {
       weapon = choice;
     }
 
     function hitEnemy() {
+      const enemyImg = document.getElementById("enemy-img");
+
       score++;
       document.getElementById("score").textContent = score;
 
@@ -103,10 +113,13 @@
 
       if (weapon === "tomato") {
         effect.textContent = "🍅 SPLAT!";
+        enemyImg.src = enemyImages.tomato;
       } else if (weapon === "mirror") {
         effect.textContent = "🪞 MANIPULATION REFLECTED!";
+        enemyImg.src = enemyImages.mirror;
       } else if (weapon === "pause") {
         effect.textContent = "⏸️ SIGNAL SLOWED!";
+        enemyImg.src = enemyImages.pause;
       }
 
       document.getElementById("quote").textContent =
@@ -117,7 +130,8 @@
       setTimeout(() => {
         enemy.classList.remove("hit");
         effect.textContent = "";
-      }, 300);
+        enemyImg.src = enemyImages.normal;
+      }, 700);
 
       moveEnemy();
     }
