@@ -92,8 +92,8 @@
   </div>
 
   <div id="scoreboard">
-  Villain Charisma: <span id="charisma">100</span><br>
-  Status: <span id="status">🔥 Viral</span>
+  Villain Charisma: <span id="charisma">20</span><br>
+  Evil Channel Status: <span id="status">🔥 Viral</span>
 </div>
 
   <div class="game">
@@ -111,7 +111,7 @@
 
   <script>
     let weapon = "tomato";
-    let charisma = 100;
+    let charisma = 20;
 
     const quotes = [
       "YOUR WORLDVIEW IS UNDER THREAT!",
@@ -169,13 +169,13 @@ document.getElementById("charisma").textContent = charisma;
 
 const status = document.getElementById("status");
 
-if (charisma >= 76) {
+if (charisma >= 16) {
   status.textContent = "🔥 Viral";
 }
-else if (charisma >= 51) {
+else if (charisma >= 11) {
   status.textContent = "📈 Trending";
 }
-else if (charisma >= 26) {
+else if (charisma >= 6) {
   status.textContent = "😬 Losing Influence";
 }
 else if (charisma >= 1) {
