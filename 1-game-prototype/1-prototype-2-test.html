@@ -14,6 +14,10 @@
       text-align: center;
     }
 
+    h3 {
+      color: #b4438c;
+    }
+
     .game {
       position: relative;
       height: 500px;
@@ -23,7 +27,7 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-}
+    }
 
     #enemy {
       position: absolute;
@@ -54,17 +58,37 @@
   display: block;
   margin: 0 auto;
 }
+
+.weapon-btn {
+  background: #222;
+  color: white;
+  border: 2px solid #777;
+  padding: 10px 14px;
+  margin: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.weapon-btn.selected {
+  background: red;
+  color: white;
+  border: 3px solid yellow;
+  box-shadow: 0 0 12px red, 0 0 22px yellow;
+  transform: scale(1.08);
+}
   </style>
 </head>
 
 <body>
 
   <h1>📺💀 The Skull Influencer</h1>
+  <h3><a href="1-console.html">Go back...</a></h3>
+  <h4 style="color: yellowgreen">Toggle between IPT Tomatoes, the Mirror Engine, or the Pause Field, by selecting any one of the 3 by clicking on the button of choice. These are your Modes of Engagement. Then click on the Skull Influencer, a skull on a TV screen with a unicycle wheel, rolling around all over the place, to engage it. Check back, as this prototype of the game will be upgraded more in due time.</h4>
 
   <div class="hud">
-    <button onclick="selectWeapon('tomato')">🍅 IPT Tomatoes</button>
-    <button onclick="selectWeapon('mirror')">🪞 Mirror Engine</button>
-    <button onclick="selectWeapon('pause')">⏸️ Pause Field</button>
+    <button id="btn-tomato" class="weapon-btn selected" onclick="selectWeapon('tomato')">🍅 IPT Tomatoes</button>
+<button id="btn-mirror" class="weapon-btn" onclick="selectWeapon('mirror')">🪞 Mirror Engine</button>
+<button id="btn-pause" class="weapon-btn" onclick="selectWeapon('pause')">⏸️ Pause Field</button>
   </div>
 
   <div id="scoreboard">Score: <span id="score">0</span></div>
@@ -91,7 +115,20 @@
       "ENGAGE IMMEDIATELY!",
       "YOU MUST PICK A SIDE!",
       "EVERYTHING IS AN EMERGENCY!",
-      "OUTRAGE GENERATES CLICKS!"
+      "OUTRAGE GENERATES CLICKS!",
+      "DEHUMANIZE OTHERS!",
+      "THEY are NOT like US!",
+      "THEY aren't even HUMAN!",
+      "Only THIS channel knows!",
+      "We can't TOLERATE differences!",
+      "Let ME control the NARRATIVE!",
+      "It's US vs THEM!",
+      "THEY are REPLACING us!",
+      "Our IDENTITIES are in LIMBO!",
+      "Only OUR group is WORTHY!",
+      "Go ahead; TRY to change the channel!",
+      "Only TRAITORS turn the CHANNEL!",
+      "DIVISION is PROFITABLE!"
     ];
 
 const enemyImages = {
@@ -102,8 +139,14 @@ const enemyImages = {
 };
 
     function selectWeapon(choice) {
-      weapon = choice;
-    }
+  weapon = choice;
+
+  document.querySelectorAll(".weapon-btn").forEach(button => {
+    button.classList.remove("selected");
+  });
+
+  document.getElementById("btn-" + choice).classList.add("selected");
+}
 
     function hitEnemy() {
       const enemyImg = document.getElementById("enemy-img");
@@ -134,7 +177,7 @@ const enemyImages = {
         enemy.classList.remove("hit");
         effect.textContent = "";
         enemyImg.src = enemyImages.normal;
-      }, 700);
+      }, 1500);
 
       moveEnemy();
     }

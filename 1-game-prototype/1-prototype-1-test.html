@@ -58,6 +58,24 @@
   display: block;
   margin: 0 auto;
 }
+
+.weapon-btn {
+  background: #222;
+  color: white;
+  border: 2px solid #777;
+  padding: 10px 14px;
+  margin: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.weapon-btn.selected {
+  background: red;
+  color: white;
+  border: 3px solid yellow;
+  box-shadow: 0 0 12px red, 0 0 22px yellow;
+  transform: scale(1.08);
+}
   </style>
 </head>
 
@@ -65,12 +83,12 @@
 
   <h1>📺💀 The Skull Influencer</h1>
   <h3><a href="1-console.html">Go back...</a></h3>
-  <h4 style="color: yellowgreen">Toggle between IPT Tomatoes, the Mirror Engine, or the Pause Field, by selecting any one of the 3 by clicking on the button of choice. These are your Modes of Engagement. Then click on the Skull Influencer, a skull on a TV screen with a unicycle wheel, rolling around all over the place, to engage it. The buttons don't change to show which one is selected, so be mindful of the last one you clicked on... Check back, as this prototype of the game will be upgraded more in due time.</h4>
+  <h4 style="color: yellowgreen">Toggle between IPT Tomatoes, the Mirror Engine, or the Pause Field, by selecting any one of the 3 by clicking on the button of choice. These are your Modes of Engagement. Then click on the Skull Influencer, a skull on a TV screen with a unicycle wheel, rolling around all over the place, to engage it. Check back, as this prototype of the game will be upgraded more in due time.</h4>
 
   <div class="hud">
-    <button onclick="selectWeapon('tomato')">🍅 IPT Tomatoes</button>
-    <button onclick="selectWeapon('mirror')">🪞 Mirror Engine</button>
-    <button onclick="selectWeapon('pause')">⏸️ Pause Field</button>
+    <button id="btn-tomato" class="weapon-btn selected" onclick="selectWeapon('tomato')">🍅 IPT Tomatoes</button>
+<button id="btn-mirror" class="weapon-btn" onclick="selectWeapon('mirror')">🪞 Mirror Engine</button>
+<button id="btn-pause" class="weapon-btn" onclick="selectWeapon('pause')">⏸️ Pause Field</button>
   </div>
 
   <div id="scoreboard">Score: <span id="score">0</span></div>
@@ -121,8 +139,14 @@ const enemyImages = {
 };
 
     function selectWeapon(choice) {
-      weapon = choice;
-    }
+  weapon = choice;
+
+  document.querySelectorAll(".weapon-btn").forEach(button => {
+    button.classList.remove("selected");
+  });
+
+  document.getElementById("btn-" + choice).classList.add("selected");
+}
 
     function hitEnemy() {
       const enemyImg = document.getElementById("enemy-img");
