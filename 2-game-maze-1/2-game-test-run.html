@@ -56,14 +56,14 @@ but HOW does the "D" square on the grid behave like a WALL, UNLESS: KEY's x-y po
 <script>
 const maze = [
 "#############################",
-"#PBC S    O##             AG#",
-"#    T    F##       W       #",
-"DV         ##               #",
+"#PBC S    O##      XXX    AG#",
+"#    T    F##      XWX      #",
+"DV         ##      XXX      #",
 "#####  ######               #",
 "#           ########        #",
 "#   I            K##        #",
 "#                 ##        #",
-"#                 VD        #",
+"#E                VD        #",
 "#############################"
 ];
 
@@ -103,6 +103,16 @@ function drawMaze() {
   if (hasKey) display += " ";
   else display += "🗝️"; 
   }
+
+  else if (cell === "E") {
+    if (hasExtinguisher) display += " ";
+    else display += "🧯";
+  }
+
+  else if (cell === "X") {
+    if (fireOut) display += " ";
+    else display += "🔥";
+  }
   
   else display += cell;
 
@@ -115,6 +125,8 @@ function drawMaze() {
 }
 
 let hasKey = false
+let hasExtinguisher = false
+let fireOut = false
 
 function isNextToG() {
   const spots = [
@@ -152,6 +164,32 @@ function movePlayer(dx, dy) {
   if (nextSpace === "D" && !hasKey) {
   document.getElementById("message").textContent = "This test door is locked, aka stuck shut, aka behaving as if it were actually a wall. try picking up the key first.";
 return;
+}
+
+  if (nextSpace === "X" && hasExtinguisher) {
+    fireOut = true;
+    document.getElementById("message").textContent =
+"🧯 You extinguished the fire!";
+}
+
+  if (nextSpace === "W" && hasExtinguisher) {
+    fireOut = true;
+    document.getElementById("message").textContent =
+"🧯 You saved the books!";
+  }
+
+  if (nextSpace === "X" && !hasExtinguisher) {
+  document.getElementById("message").textContent = "🔥 Too hot! You need the fire extinguisher.";
+  return;
+}
+
+if (nextSpace === "E") {
+  hasExtinguisher = true;
+  document.getElementById("message").textContent = "🧯 You picked up the fire extinguisher!";
+  playerX = newX;
+  playerY = newY;
+  drawMaze();
+  return;
 }
 
   playerX = newX;
