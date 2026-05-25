@@ -46,7 +46,7 @@ const maze = [
 "###########################",
 "#PBC S KO#                #",
 "#    T  F#         W      #",
-"#        #                #",
+"DV       #                #",
 "#####U####                #",
 "#                         #",
 "#                         #",
@@ -113,6 +113,18 @@ function movePlayer(dx, dy) {
   } else {
     document.getElementById("message").textContent = "Where is the damn key at?";
   }
+
+if (nextSpace === "U") {
+    document.getElementById("message").textContent = "The padlock is open, despite perhapse appearing latched on mobile Try a laptop PC or tower w/monitor. Emoji render differently.";
+    return;
+  }
+
+if (nextSpace === "V") {
+    document.getElementById("message").textContent = "I am Bogg Gog Magog, you guess it. But anyway, step away from the door and get out of my face, man!";
+    return;
+  }
+
+
 
   drawMaze();
 }
