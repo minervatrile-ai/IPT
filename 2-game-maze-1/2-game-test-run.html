@@ -28,7 +28,19 @@
 </head>
 <body>
 
-<!-- change 1: in #maze; GOAL=altering FONT SIZE to make maze zoomed bigger, VIA changing maze line-height from 24px to 1.1, adding font-family: monospace, changing font-size from 24px to 40px, leaving white-space the same (pre;) , leaving margin: 20px. also for phone screens i will try adding "overflow-x: auto;" AND there are more possible options in notepad "4-instructions-font-size.txt" in "2-game-maze" folder. -->
+<!--
+
+let's talk about  working key function...
+
+IF the "K" on the x-y grid has been visited (the same square it's on)
+THEN the "K" key emoji displays as " " (nothing)
+and ALSO THEN the "D" door emoji CEASES to BEHAVE LIKE A WALL so the player can pass through that grid tile...
+but HOW does the "D" square on the grid behave like a WALL, UNLESS: KEY's x-y position has been REACHED once, (which like said, makes the "K" invisibly display blank quote box, giving the illusion of having picked it up. Later we'll actually make it PICK UP ITEM code and PUT IN INVENTORY and a PUT ITEM DOWN type-deal...
+-->
+
+<!-- change 1: in #maze; GOAL=altering FONT SIZE to make maze zoomed bigger, VIA changing maze line-height from 24px to 1.1, adding font-family: monospace, changing font-size from 24px to 40px, leaving white-space the same (pre;) , leaving margin: 20px. also for phone screens i will try adding "overflow-x: auto;" AND there are more possible options in notepad "4-instructions-font-size.txt" in "2-game-maze" folder. 
+
+-->
 
 <h1>Text Maze Prototype</h1>
 
@@ -43,16 +55,16 @@
 
 <script>
 const maze = [
-"###########################",
-"#PBC S KO#              AG#",
-"#    T  F#         W      #",
-"DV       #                #",
-"#####U####                #",
-"#                         #",
-"#   I                     #",
-"#                         #",
-"#               VD        #",
-"###########################"
+"#############################",
+"#PBC S    O##             AG#",
+"#    T    F##       W       #",
+"DV         ##               #",
+"#####  ######               #",
+"#           ########        #",
+"#   I            K##        #",
+"#                 ##        #",
+"#                 VD        #",
+"#############################"
 ];
 
 let playerX = 1;
@@ -72,7 +84,7 @@ function drawMaze() {
   if (cell === "#") display += "🧱";
   else if (cell === "R") display += "📻";
   else if (cell === "D") display += "🚪";
-  else if (cell === "K") display += "🗝️";
+
   else if (cell === "T") display += "📺";
   else if (cell === "S") display += "🛋️";
   else if (cell === "B") display += "⌨️";
@@ -87,6 +99,11 @@ function drawMaze() {
   else if (cell === "G") display += "🕹️";
   else if (cell === "I") display += "🪧";
   
+  else if (cell === "K") {
+  if (hasKey) display += " ";
+  else display += "🗝️"; 
+  }
+  
   else display += cell;
 
 }
@@ -96,6 +113,8 @@ function drawMaze() {
 
   document.getElementById("maze").textContent = display;
 }
+
+let hasKey = false
 
 function isNextToG() {
   const spots = [
@@ -116,7 +135,7 @@ function isNextToO() {
     [playerX, playerY - 1]
   ];
 
-  return spots.some(([x,y]) => maze[y] && maze[y][x] === "O");
+  return spots.some(([x, y]) => maze[y] && maze[y][x] === "O");
 }
 
 function movePlayer(dx, dy) {
@@ -130,6 +149,11 @@ function movePlayer(dx, dy) {
     return;
   }
 
+  if (nextSpace === "D" && !hasKey) {
+  document.getElementById("message").textContent = "This test door is locked, aka stuck shut, aka behaving as if it were actually a wall. try picking up the key first.";
+return;
+}
+
   playerX = newX;
   playerY = newY;
 
@@ -141,8 +165,15 @@ if (isNextToG()) {
   return;
 }
 
+if (nextSpace === "K") {
+    hasKey = true;
+    document.getElementById("message").textContent = "ah ha, that key. duh! knew it was here. key acquired!";
+    drawMaze();
+    return;
+}
+
 if (isNextToO()) {
-  let go = confirm("Do you want to open the Catalog Conglomerate Listings file system? It's a super-index of the Identity Panic Toolkit website portfolio of materials.");
+  let go = confirm("This is the Catalog Conglomerate Listings file database. It's a super-index of Identity Panic Toolkit portfolio. Once there, you can just hit the Back button of your browser to return to this maze experiment.");
   if (go) {
     window.location.href = "../catalog-conglomerate-listings.html";
   }
@@ -152,7 +183,7 @@ if (isNextToO()) {
   if (nextSpace === "T") {
     document.getElementById("message").textContent = "Hey, wizard! Don't block the television set, man!";
   } else {
-    document.getElementById("message").textContent = "Where is the damn key at?";
+    document.getElementById("message").textContent = "wizard: i keep forgetting, what was i doing!?";
   }
 
 if (nextSpace === "U") {
@@ -161,14 +192,9 @@ if (nextSpace === "U") {
   }
 
 if (nextSpace === "V") {
-    document.getElementById("message").textContent = "I am Bogg Gog Magog, you guess it. But anyway, step away from the door and get out of my face, man!";
+    document.getElementById("message").textContent = "I am Zugazog Gog Magog, you guessed it. But anyway, step away from the door and get out of my face, man!";
     return;
   }
-
-if (nextSpace === "K") {
-    document.getElementById("message").textContent = "ah ha, that key. duh! knew it was here;"
-    return;
-}
 
 if (nextSpace === "B") {
     document.getElementById("message").textContent = "typing stuff in...";
@@ -176,7 +202,7 @@ if (nextSpace === "B") {
 }
 
 if (nextSpace === "C") {
-    document.getElementById("message").textContent = "computer screen search bar: pretty witches emoji pics";
+    document.getElementById("message").textContent = "computer screen search bar: pretty witches emoji picsf";
     return;
 }
 
