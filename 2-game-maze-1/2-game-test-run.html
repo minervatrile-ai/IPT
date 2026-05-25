@@ -13,8 +13,8 @@
     #maze {
       white-space: pre;
       font-family: monospace;
-      font-size: 50px;
-      line-height: 1;
+      font-size: 40px;
+      line-height: 1.1;
       margin: 20px;
       overflow-x: auto;
     }
@@ -28,7 +28,7 @@
 </head>
 <body>
 
-<!-- change 2: altering FONT SIZE from 40 to 50px, and line height from 1.1 to 1. change 1: in #maze; GOAL=altering FONT SIZE to make maze zoomed bigger, VIA changing maze line-height from 24px to 1.1, adding font-family: monospace, changing font-size from 24px to 40px, leaving white-space the same (pre;) , leaving margin: 20px. also for phone screens i will try adding "overflow-x: auto;" AND there are more possible options in notepad "4-instructions-font-size.txt" in "2-game-maze" folder. -->
+<!-- change 1: in #maze; GOAL=altering FONT SIZE to make maze zoomed bigger, VIA changing maze line-height from 24px to 1.1, adding font-family: monospace, changing font-size from 24px to 40px, leaving white-space the same (pre;) , leaving margin: 20px. also for phone screens i will try adding "overflow-x: auto;" AND there are more possible options in notepad "4-instructions-font-size.txt" in "2-game-maze" folder. -->
 
 <h1>Text Maze Prototype</h1>
 
@@ -39,17 +39,17 @@
 <button onclick="movePlayer(1, 0)">➡️ Right</button><br>
 <button onclick="movePlayer(0, 1)">⬇️ Down</button>
 
-<p id="message">Unlock the padlock, leave room, get the books, dodge the villain. Pardon: all the Object Activation is in development... Return to this letter P for these instructions to appear.</p>
+<p id="message">Unlock the padlock, leave room, get the books, dodge the villain. Pardon: all the Object Activation is in development...</p>
 
 <script>
 const maze = [
 "###########################",
-"#PBC S KO#                #",
+"#PBC S KO#              AG#",
 "#    T  F#         W      #",
-"#        #                #",
+"DV       #                #",
 "#####U####                #",
 "#                         #",
-"#                         #",
+"#   I                     #",
 "#                         #",
 "#               VD        #",
 "###########################"
@@ -83,6 +83,9 @@ function drawMaze() {
   else if (cell === "F") display += "🗄️";
   else if (cell === "O") display += "🗃️";
   else if (cell === "W") display += "📚";
+  else if (cell === "A") display += "🎮";
+  else if (cell === "G") display += "🕹️";
+  else if (cell === "I") display += "🪧";
   
   else display += cell;
 
@@ -92,6 +95,17 @@ function drawMaze() {
   }
 
   document.getElementById("maze").textContent = display;
+}
+
+function isNextToG() {
+  const spots = [
+    [playerX + 1, playerY],
+    [playerX - 1, playerY],
+    [playerX, playerY + 1],
+    [playerX, playerY - 1]
+  ];
+
+  return spots.some(([x, y]) => maze[y] && maze[y][x] === "G");
 }
 
 function movePlayer(dx, dy) {
@@ -108,11 +122,59 @@ function movePlayer(dx, dy) {
   playerX = newX;
   playerY = newY;
 
+if (isNextToG()) {
+  let go = confirm("Boot up the Skeleten Circus Game Console and play The Skull Influencer cartridge?");
+  if (go) {
+    window.location.href = "../1-game-prototype/1-prototype-1-test.html";
+  }
+  return;
+}
+
   if (nextSpace === "T") {
     document.getElementById("message").textContent = "Hey, wizard! Don't block the television set, man!";
   } else {
     document.getElementById("message").textContent = "Where is the damn key at?";
   }
+
+if (nextSpace === "U") {
+    document.getElementById("message").textContent = "The padlock is open, despite perhapse appearing latched on mobile Try a laptop PC or tower w/monitor. Emoji render differently.";
+    return;
+  }
+
+if (nextSpace === "V") {
+    document.getElementById("message").textContent = "I am Bogg Gog Magog, you guess it. But anyway, step away from the door and get out of my face, man!";
+    return;
+  }
+
+if (nextSpace === "K") {
+    document.getElementById("message").textContent = "ah ha, that key. duh! knew it was here;"
+    return;
+}
+
+if (nextSpace === "B") {
+    document.getElementById("message").textContent = "typing stuff in...";
+    return;
+}
+
+if (nextSpace === "C") {
+    document.getElementById("message").textContent = "computer screen search bar: pretty witches emoji pics";
+    return;
+}
+
+if (nextSpace === "F") {
+    document.getElementById("message").textContent = "file 1: what ya gotta do is feel along the wall to find that padlock square on the x/y grid. you CAN get thru it. it's just visually problematic.";
+    return;
+}
+
+if (nextSpace === "W") {
+    document.getElementById("message").textContent = "hmm.. books about authors of books about books about authors. yay. can't pick up items yet; that'll be quite the trick! coming soon: INVENTORY display!";
+    return;
+}
+
+if (nextSpace === "I") {
+    document.getElementById("message").textContent = "check it out: there's a video game in here. a game within a game. Go to the joystick emoji to play the Skeleton Circus Game Console; the cartridge in the deck is currently: The Skull Influencer!";
+    return;
+}
 
   drawMaze();
 }
