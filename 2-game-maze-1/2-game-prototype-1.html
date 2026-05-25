@@ -59,8 +59,16 @@ function drawMaze() {
       if (x === playerX && y === playerY) {
         display += "🙂";
       } else {
-        display += maze[y][x];
-      }
+
+  let cell = maze[y][x];
+
+  if (cell === "#") display += "🧱";
+  else if (cell === "T") display += "💰";
+  else if (cell === "D") display += "🚪";
+  else if (cell === "K") display += "🗝️";
+  else display += cell;
+
+}
     }
     display += "\n";
   }
