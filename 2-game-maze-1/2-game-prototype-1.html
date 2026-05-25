@@ -35,29 +35,20 @@
 <button onclick="movePlayer(1, 0)">➡️ Right</button><br>
 <button onclick="movePlayer(0, 1)">⬇️ Down</button>
 
-<p id="message">Find the treasure!</p>
+<p id="message">Unlock the padlock, leave room, get the books, dodge the villain. Pardon: Object Activation is in development...</p>
 
 <script>
 const maze = [
-"#######################################",
-"#P                                    #",
-"#      ######          #######        #",
-"#                                     #",
-"#             ######         K        #",
-"#                                     #",
-"#    ######                ######     #",
-"#                                     #",
-"#                  ###               ##",
-"#               ######                #",
-"#                                     #",
-"#                            ####     #",
-"#                                     #",
-"#      #######                        #",
-"#                                     #",
-"#                       ###############",
-"#                       #             #",
-"#                       D         T   #",
-"#######################################"
+"###########################",
+"#PBC S KO#                #",
+"#    T  F#         W      #",
+"#        #                #",
+"#####L####                #",
+"#                         #",
+"#                         #",
+"#                         #",
+"#               VD        #",
+"###########################"
 ];
 
 let playerX = 1;
@@ -75,9 +66,20 @@ function drawMaze() {
   let cell = maze[y][x];
 
   if (cell === "#") display += "🧱";
-  else if (cell === "T") display += "📻";
+  else if (cell === "R") display += "📻";
   else if (cell === "D") display += "🚪";
   else if (cell === "K") display += "🗝️";
+  else if (cell === "T") display += "📺";
+  else if (cell === "S") display += "🛋️";
+  else if (cell === "B") display += "⌨️";
+  else if (cell === "C") display += "🖥️";
+  else if (cell === "L") display += "🔒";
+  else if (cell === "U") display += "🔓";
+  else if (cell === "V") display += "👹";
+  else if (cell === "F") display += "🗄️";
+  else if (cell === "O") display += "🗃️";
+  else if (cell === "W") display += "📚";
+  
   else display += cell;
 
 }
@@ -95,7 +97,7 @@ function movePlayer(dx, dy) {
   let nextSpace = maze[newY][newX];
 
   if (nextSpace === "#") {
-    document.getElementById("message").textContent = "Bonk! That's a wall.";
+    document.getElementById("message").textContent = "A wall is here. Are you reading the writing on the wall or what?";
     return;
   }
 
@@ -103,9 +105,9 @@ function movePlayer(dx, dy) {
   playerY = newY;
 
   if (nextSpace === "T") {
-    document.getElementById("message").textContent = "You found the treasure! 🏆";
+    document.getElementById("message").textContent = "Don't stare at the television! 🏆";
   } else {
-    document.getElementById("message").textContent = "Keep going...";
+    document.getElementById("message").textContent = "Where is the damn key at?";
   }
 
   drawMaze();
