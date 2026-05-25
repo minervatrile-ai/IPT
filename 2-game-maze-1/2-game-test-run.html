@@ -108,6 +108,17 @@ function isNextToG() {
   return spots.some(([x, y]) => maze[y] && maze[y][x] === "G");
 }
 
+function isNextToO() {
+  const spots = [
+    [playerX + 1, playerY],
+    [playerX - 1, playerY],
+    [playerX, playerY + 1],
+    [playerX, playerY - 1]
+  ];
+
+  return spots.some(([x,y]) => maze[y] && maze[y][x] === "O");
+}
+
 function movePlayer(dx, dy) {
   let newX = playerX + dx;
   let newY = playerY + dy;
@@ -126,6 +137,14 @@ if (isNextToG()) {
   let go = confirm("Boot up the Skeleten Circus Game Console and play The Skull Influencer cartridge?");
   if (go) {
     window.location.href = "../1-game-prototype/1-prototype-1-test.html";
+  }
+  return;
+}
+
+if (isNextToO()) {
+  let go = confirm("Do you want to open the Catalog Conglomerate Listings file system? It's a super-index of the Identity Panic Toolkit website portfolio of materials.");
+  if (go) {
+    window.location.href = "../catalog-conglomerate-listings.html";
   }
   return;
 }

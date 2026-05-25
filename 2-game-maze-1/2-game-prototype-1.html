@@ -108,6 +108,17 @@ function isNextToG() {
   return spots.some(([x, y]) => maze[y] && maze[y][x] === "G");
 }
 
+function isNextToO() {
+  const spots = [
+    [playerX + 1, playerY],
+    [playerX - 1, playerY],
+    [playerX, playerY + 1],
+    [playerX, playerY - 1]
+  ];
+
+  return spots.some(([x, y]) => maze[y] && maze[y][x] === "O");
+}
+
 function movePlayer(dx, dy) {
   let newX = playerX + dx;
   let newY = playerY + dy;
@@ -130,6 +141,14 @@ if (isNextToG()) {
   return;
 }
 
+if (isNextToO()) {
+  let go = confirm("This is the Catalog Conglomerate Listings file database. It's a super-index of Identity Panic Toolkit portfolio. Once there, you can just hit the Back button of your browser to return to this maze experiment.");
+  if (go) {
+    window.location.href = "../catalog-conglomerate-listings.html";
+  }
+  return;
+}
+
   if (nextSpace === "T") {
     document.getElementById("message").textContent = "Hey, wizard! Don't block the television set, man!";
   } else {
@@ -142,7 +161,7 @@ if (nextSpace === "U") {
   }
 
 if (nextSpace === "V") {
-    document.getElementById("message").textContent = "I am Bogg Gog Magog, you guess it. But anyway, step away from the door and get out of my face, man!";
+    document.getElementById("message").textContent = "I am Zugazog Gog Magog, you guessed it. But anyway, step away from the door and get out of my face, man!";
     return;
   }
 
@@ -157,7 +176,7 @@ if (nextSpace === "B") {
 }
 
 if (nextSpace === "C") {
-    document.getElementById("message").textContent = "computer screen search bar: pretty witches emoji pics";
+    document.getElementById("message").textContent = "computer screen search bar: pretty witches emoji picsf";
     return;
 }
 
