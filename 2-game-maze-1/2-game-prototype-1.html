@@ -44,12 +44,12 @@
 <script>
 const maze = [
 "###########################",
-"#PBC S KO#                #",
+"#PBC S KO#              AG#",
 "#    T  F#         W      #",
 "DV       #                #",
 "#####U####                #",
 "#                         #",
-"#                         #",
+"#   I                     #",
 "#                         #",
 "#               VD        #",
 "###########################"
@@ -83,6 +83,9 @@ function drawMaze() {
   else if (cell === "F") display += "🗄️";
   else if (cell === "O") display += "🗃️";
   else if (cell === "W") display += "📚";
+  else if (cell === "A") display += "🎮";
+  else if (cell === "G") display += "🕹️";
+  else if (cell === "I") display += "🪧";
   
   else display += cell;
 
@@ -92,6 +95,17 @@ function drawMaze() {
   }
 
   document.getElementById("maze").textContent = display;
+}
+
+function isNextToG() {
+  const spots = [
+    [playerX + 1, playerY],
+    [playerX - 1, playerY],
+    [playerX, playerY + 1],
+    [playerX, playerY - 1]
+  ];
+
+  return spots.some(([x, y]) => maze[y] && maze[y][x] === "G");
 }
 
 function movePlayer(dx, dy) {
@@ -107,6 +121,14 @@ function movePlayer(dx, dy) {
 
   playerX = newX;
   playerY = newY;
+
+if (isNextToG()) {
+  let go = confirm("Boot up the Skeleten Circus Game Console and play The Skull Influencer cartridge?");
+  if (go) {
+    window.location.href = "../1-game-prototype/1-prototype-1-test.html";
+  }
+  return;
+}
 
   if (nextSpace === "T") {
     document.getElementById("message").textContent = "Hey, wizard! Don't block the television set, man!";
@@ -146,6 +168,11 @@ if (nextSpace === "F") {
 
 if (nextSpace === "W") {
     document.getElementById("message").textContent = "hmm.. books about authors of books about books about authors. yay. can't pick up items yet; that'll be quite the trick! coming soon: INVENTORY display!";
+    return;
+}
+
+if (nextSpace === "I") {
+    document.getElementById("message").textContent = "check it out: there's a video game in here. a game within a game. Go to the joystick emoji to play the Skeleton Circus Game Console; the cartridge in the deck is currently: The Skull Influencer!";
     return;
 }
 
