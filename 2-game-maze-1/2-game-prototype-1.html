@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Basic Text Maze</title>
+  <style>
+    body {
+      background: black;
+      color: lime;
+      font-family: monospace;
+      text-align: center;
+    }
+
+    #maze {
+      white-space: pre;
+      font-size: 24px;
+      line-height: 24px;
+      margin: 20px;
+    }
+
+    button {
+      font-size: 20px;
+      margin: 5px;
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Text Maze Prototype</h1>
+
+<div id="maze"></div>
+
+<button onclick="movePlayer(0, -1)">⬆️ Up</button><br>
+<button onclick="movePlayer(-1, 0)">⬅️ Left</button>
+<button onclick="movePlayer(1, 0)">➡️ Right</button><br>
+<button onclick="movePlayer(0, 1)">⬇️ Down</button>
+
+<p id="message">Find the treasure!</p>
+
+<script>
+const maze = [
+  "########",
+  "#P     #",
+  "# ###  #",
+  "#   #  #",
+  "### # T#",
+  "#      #",
+  "########"
+];
+
+let playerX = 1;
+let playerY = 1;
+
+function drawMaze() {
+  let display = "";
+
+  for (let y = 0; y < maze.length; y++) {
+    for (let x = 0; x < maze[y].length; x++) {
+      if (x === playerX && y === playerY) {
+        display += "🙂";
+      } else {
+        display += maze[y][x];
+      }
+    }
+    display += "\n";
+  }
+
+  document.getElementById("maze").textContent = display;
+}
+
+function movePlayer(dx, dy) {
+  let newX = playerX + dx;
+  let newY = playerY + dy;
+
+  let nextSpace = maze[newY][newX];
+
+  if (nextSpace === "#") {
+    document.getElementById("message").textContent = "Bonk! That's a wall.";
+    return;
+  }
+
+  playerX = newX;
+  playerY = newY;
+
+  if (nextSpace === "T") {
+    document.getElementById("message").textContent = "You found the treasure! 🏆";
+  } else {
+    document.getElementById("message").textContent = "Keep going...";
+  }
+
+  drawMaze();
+}
+
+drawMaze();
+</script>
+
+</body>
+</html>
