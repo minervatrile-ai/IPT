@@ -51,19 +51,19 @@ but HOW does the "D" square on the grid behave like a WALL, UNLESS: KEY's x-y po
 <button onclick="movePlayer(1, 0)">➡️ Right</button><br>
 <button onclick="movePlayer(0, 1)">⬇️ Down</button>
 
-<p id="message">Unlock the padlock, leave room, get the books, dodge the villain. Pardon: all the Object Activation is in development...</p>
+<p id="message">Top corner. Wizard. That's you. Explore using the arrow buttons... Go read the sign post. And watch out for Zugazog Gog Magog!</p>
 
 <script>
 const maze = [
 "#############################",
-"#PBC S    O##      XXX    AG#",
-"#    T    F##      XWX      #",
-"DV         ##      XXX      #",
+"#PBC S    O##E     XXX    AG#",
+"#    T    F##       XWX     #",
+"DV         ##        XXX    #",
 "#####  ######               #",
-"#           ########        #",
+"#           #######         #",
 "#   I            K##        #",
 "#                 ##        #",
-"#E                VD        #",
+"#                 VD        #",
 "#############################"
 ];
 
@@ -157,12 +157,12 @@ function movePlayer(dx, dy) {
   let nextSpace = maze[newY][newX];
 
   if (nextSpace === "#") {
-    document.getElementById("message").textContent = "A wall is here. Are you reading the writing on the wall or what?";
+    document.getElementById("message").textContent = "A wall is here. Are you reading the writing on the wall or what? Finding the passage through can be tricky, but it's there...";
     return;
   }
 
   if (nextSpace === "D" && !hasKey) {
-  document.getElementById("message").textContent = "This test door is locked, aka stuck shut, aka behaving as if it were actually a wall. try picking up the key first.";
+  document.getElementById("message").textContent = "The door is locked...";
 return;
 }
 
@@ -232,11 +232,6 @@ if (isNextToO()) {
     document.getElementById("message").textContent = "wizard: i keep forgetting, what was i doing!?";
   }
 
-if (nextSpace === "U") {
-    document.getElementById("message").textContent = "The padlock is open, despite perhapse appearing latched on mobile Try a laptop PC or tower w/monitor. Emoji render differently.";
-    return;
-  }
-
 if (nextSpace === "V") {
     document.getElementById("message").textContent = "I am Zugazog Gog Magog, you guessed it. But anyway, step away from the door and get out of my face, man!";
     return;
@@ -249,16 +244,6 @@ if (nextSpace === "B") {
 
 if (nextSpace === "C") {
     document.getElementById("message").textContent = "computer screen search bar: pretty witches emoji picsf";
-    return;
-}
-
-if (nextSpace === "F") {
-    document.getElementById("message").textContent = "file 1: what ya gotta do is feel along the wall to find that padlock square on the x/y grid. you CAN get thru it. it's just visually problematic.";
-    return;
-}
-
-if (nextSpace === "W") {
-    document.getElementById("message").textContent = "hmm.. books about authors of books about books about authors. yay. can't pick up items yet; that'll be quite the trick! coming soon: INVENTORY display!";
     return;
 }
 
