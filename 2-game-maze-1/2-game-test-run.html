@@ -11,13 +11,12 @@
     }
 
     #maze {
-      white-space: pre;
-      font-family: monospace;
-      font-size: 40px;
-      line-height: 1.1;
-      margin: 20px;
-      overflow-x: auto;
-    }
+  white-space: pre;
+  font-size: 32px;
+  line-height: 1;
+  margin: 20px;
+  overflow-x: auto;
+}
 
     button {
       font-size: 20px;
@@ -55,16 +54,16 @@ but HOW does the "D" square on the grid behave like a WALL, UNLESS: KEY's x-y po
 
 <script>
 const maze = [
-"#############################",
-"#PBC S    O##      XXX    AG#",
-"#    T    F##      XWX      #",
-"DV         ##      XXX      #",
-"#####  ######               #",
-"#           ########        #",
-"#   I            K##        #",
-"#                 ##        #",
-"#E                VD        #",
-"#############################"
+"####################################",
+"#    S         O#         XXX    AG#",
+"#    T         F#         XWX      #",
+"DV              #E        XXX      #",
+"#####        ####                  #",
+"#               #                  #",
+"#   I          K#                  #",
+"#               #                  #",
+"#PBC           VD                  #",
+"####################################"
 ];
 
 let playerX = 1;
@@ -81,7 +80,7 @@ function drawMaze() {
 
   let cell = maze[y][x];
 
-  if (cell === "#") display += "🧱";
+  if (cell === "#") display += "🟦";
   else if (cell === "R") display += "📻";
   else if (cell === "D") display += "🚪";
 

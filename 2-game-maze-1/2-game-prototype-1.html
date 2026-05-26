@@ -51,20 +51,20 @@ but HOW does the "D" square on the grid behave like a WALL, UNLESS: KEY's x-y po
 <button onclick="movePlayer(1, 0)">➡️ Right</button><br>
 <button onclick="movePlayer(0, 1)">⬇️ Down</button>
 
-<p id="message">Top corner. Wizard. That's you. Explore using the arrow buttons... Go read the sign post. And watch out for Zugazog Gog Magog!</p>
+<p id="message">Corner, top left, that wizard. That's you. Explore using the arrow buttons... Go read the sign post. And watch out for Zugazog Gog Magog!</p>
 
 <script>
 const maze = [
-"#############################",
-"#PBC S    O##E     XXX    AG#",
-"#    T    F##       XWX     #",
-"DV         ##        XXX    #",
-"#####  ######               #",
-"#           #######         #",
-"#   I            K##        #",
-"#                 ##        #",
-"#                 VD        #",
-"#############################"
+"####################################",
+"#P   S         O#         XXX    AG#",
+"#    T         F#         XWX      #",
+"DV              #E        XXX      #",
+"#####        ####                  #",
+"#               #                  #",
+"#   I          K#                  #",
+"#               #                  #",
+"# CB           VD                  #",
+"####################################"
 ];
 
 let playerX = 1;
@@ -243,7 +243,7 @@ if (nextSpace === "B") {
 }
 
 if (nextSpace === "C") {
-    document.getElementById("message").textContent = "computer screen search bar: pretty witches emoji picsf";
+    document.getElementById("message").textContent = "computer screen search bar: pretty witches emoji pics";
     return;
 }
 
