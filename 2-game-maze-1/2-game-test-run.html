@@ -166,17 +166,25 @@ function movePlayer(dx, dy) {
 return;
 }
 
-  if (nextSpace === "X" && hasExtinguisher) {
-    fireOut = true;
-    document.getElementById("message").textContent =
-"🧯 You extinguished the fire!";
+ if (nextSpace === "X" && hasExtinguisher) {
+  fireOut = true;
+  playerX = newX;
+  playerY = newY;
+  document.getElementById("message").textContent =
+    "🧯 You extinguished the fire!";
+  drawMaze();
+  return;
 }
 
-  if (nextSpace === "W" && hasExtinguisher) {
+if (nextSpace === "W" && hasExtinguisher) {
     fireOut = true;
+    playerX = newX;
+    playerY = newY;
     document.getElementById("message").textContent =
-"🧯 You saved the books!";
-  }
+    "📚🧯 You saved the books! Hmm... books about authors of books about books about authors. The wisdom survives.";
+    drawMaze();
+    return;
+}
 
   if (nextSpace === "X" && !hasExtinguisher) {
   document.getElementById("message").textContent = "🔥 Too hot! You need the fire extinguisher.";
