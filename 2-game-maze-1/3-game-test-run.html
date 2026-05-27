@@ -13,6 +13,21 @@ body {
   text-align: center;
 }
 
+#message {
+  position: sticky;
+  top: 0;
+
+  background: black;
+  border: 2px solid lime;
+
+  margin: 10px auto;
+  padding: 10px;
+
+  z-index: 100;
+
+  font-size: 20px;
+}
+
 #maze {
   display: grid;
   grid-template-columns: repeat(15, 64px);
@@ -60,6 +75,10 @@ body {
 
 <h1>Tile Game Test</h1>
 
+<div id="message">
+Explore the world...
+</div>
+
 <div id="maze"></div>
 
 <div id="mobileControls">
@@ -76,10 +95,6 @@ body {
 
   <button onclick="move(0,1)">⬇️</button>
 
-</div>
-
-<div id="message">
-Explore the world...
 </div>
 
 <script>
