@@ -62,8 +62,8 @@ const maze = [
 "#####        ####                  #",
 "#               #                  #",
 "#   I          K#                  #",
-"#               #                  #",
-"# CB           VD                  #",
+"#               ####         #######",
+"# CB           VD                 Q#",
 "####################################"
 ];
 
@@ -100,6 +100,11 @@ function drawMaze() {
   else if (cell === "I") display += "🪧";
 
   else if (cell === "P") display += " ";
+
+  else if (cell === "Q") {
+  if (hasCartridge) display += " ";
+  else display += "💾";
+  }
   
   else if (cell === "K") {
   if (hasKey) display += " ";
@@ -129,6 +134,8 @@ function drawMaze() {
 let hasKey = false
 let hasExtinguisher = false
 let fireOut = false
+let hasCartridge = false
+let cartridgeInserted = false
 
 function isNextToG() {
   const spots = [
@@ -178,6 +185,28 @@ return;
   return;
 }
 
+if (nextSpace === "G" && !hasCartridge) {
+  document.getElementById("message").textContent =
+    "🕹️ Insert game cartridge to play Skeleton Circus Game Console...";
+  return;
+}
+
+if (nextSpace === "G" && hasCartridge) {
+  cartridgeInserted = true;
+
+  let go = confirm("Boot up the Skeleton Circus Game Console and play The Skull Influencer cartridge?");
+
+  if (go) {
+    window.location.href = "../1-game-prototype/1-prototype-1-test.html";
+  } else {
+    document.getElementById("message").textContent =
+      "🕹️ The cartridge is inserted. The console hums quietly. Game not launched.";
+  }
+
+  return;
+}
+ 
+
 if (nextSpace === "W" && hasExtinguisher) {
     fireOut = true;
     playerX = newX;
@@ -202,16 +231,18 @@ if (nextSpace === "E") {
   return;
 }
 
+if (nextSpace === "Q") {
+  hasCartridge = true;
+  document.getElementById("message").textContent = "💾 You picked up The Skull Influencer game cartridge.";
+  playerX = newX;
+  playerY = newY;
+  drawMaze();
+  return;
+}
+
   playerX = newX;
   playerY = newY;
 
-if (isNextToG()) {
-  let go = confirm("Boot up the Skeleten Circus Game Console and play The Skull Influencer cartridge?");
-  if (go) {
-    window.location.href = "../1-game-prototype/1-prototype-1-test.html";
-  }
-  return;
-}
 
 if (nextSpace === "K") {
     hasKey = true;
@@ -250,7 +281,7 @@ if (nextSpace === "C") {
 }
 
 if (nextSpace === "I") {
-    document.getElementById("message").textContent = "check it out: there's a video game in here. a game within a game. Go to the joystick emoji to play the Skeleton Circus Game Console; the cartridge in the deck is currently: The Skull Influencer!";
+    document.getElementById("message").textContent = "check it out: there's a video game in here. a game within a game. Go to the joystick emoji to play the Skeleton Circus Game Console!";
     return;
 }
 
