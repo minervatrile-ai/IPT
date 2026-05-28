@@ -164,13 +164,15 @@ const TILE = {
 
 const maze = [
   "###########",
-  "#PC#     E#",
-  "# U# # ####",
-  "# ## # B a#",
+  "#PC#FFF AE#",
+  "# U#FRF####",
+  "# ## #    #",
   "#    # #  #",
-  "###### #rQ#",
-  "#X#    ####",
-  "#bO ## AFR#",
+  "###A## # R#",
+  "#OOO#  ####",
+  "#QRO#    X#",
+  "#####  #  #",
+  "#r    b# a#",
   "###########"
 ];
 
@@ -193,8 +195,8 @@ let doorBOpen = false;
 
 let hasExtinguisher = false;
 
-let fireAOut = false;
-let fireBOut = false;
+let fireAOut = true;
+let fireBOut = true;
 
 let hasLevel2Disk = false;
 let computerActivated = false;
@@ -346,12 +348,12 @@ function movePlayer(dx, dy) {
 
   /* ---- Dangerous fires ---- */
 
-  if (nextTile === TILE.FIRE_A && !hasExtinguisher) {
+  if (nextTile === TILE.FIRE_A && !fireAOut && !hasExtinguisher) {
     setMessage("Ouch! Fire is burning hot!");
     return;
-  }
+}
 
-  if (nextTile === TILE.FIRE_B && !hasExtinguisher) {
+  if (nextTile === TILE.FIRE_B && !fireBOut && !hasExtinguisher) {
     setMessage("Too hot! You need the fire extinguisher.");
     return;
   }
@@ -443,7 +445,13 @@ if (nextTile === TILE.RADIO) {
 
 if (nextTile === TILE.BREAKER) {
   radioState = 2;
-  setMessage("You flip the breaker. Somewhere nearby, a radio starts humming...");
+
+  fireAOut = false;
+
+  fireBOut = false;
+
+  setMessage("You flip the breaker. Somewhere nearby, a radio hums to life... and sparks erupt nearby!");
+
   drawMaze();
   return;
 }
