@@ -2,7 +2,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hellhound Prototype Test Runs</title>
 
 <style>
@@ -72,6 +71,13 @@ h1 {
   image-rendering: pixelated;
 }
 
+@media (max-width: 768px) {
+  .tile {
+    width: 96px;
+    height: 96px;
+  }
+}
+
 #overlay {
   position: fixed;
   top: 0;
@@ -94,11 +100,14 @@ h1 {
    MOBILE CONTROLS
 ========================== */
 
-@media (max-width: 768px) {
+.mobile-controls {
+  display: none;
+}
 
+@media (max-width: 768px) {
   .mobile-controls {
     display: grid;
-    grid-template-columns: 96px 96px 96px;
+    grid-template-columns: 80px 80px 80px;
     gap: 12px;
     justify-content: center;
     margin-top: 16px;
@@ -110,7 +119,6 @@ h1 {
     font-size: 2rem;
     border-radius: 14px;
   }
-
 }
 </style>
 </head>
@@ -195,7 +203,9 @@ const TILE = {
   COMPUTER: "C",
   DESK: "U",
 
-  BREAKER: "X"
+  BREAKER: "X",
+
+  PHONY_WALL: "Z"
 };
 
 /* ==========================
@@ -211,8 +221,8 @@ const maze = [
   "###A## # R#",
   "#OOO#  ####",
   "#QRO#    X#",
-  "#####  #  #",
-  "#r    b# a#",
+  "# ###  #  #",
+  "#EZ r b# a#",
   "###########"
 ];
 
@@ -245,6 +255,7 @@ let radioState = 1;
 let hasTapeR = false;
 
 let viewingRadio = false;
+let wallVanish = false;
 
 
 /* ==========================
@@ -254,6 +265,8 @@ let viewingRadio = false;
 const tileImages = {
   [TILE.WALL]: "../0-game-gallery/0-wall.png",
   [TILE.FLOOR]: "../0-game-gallery/0-floor.png",
+
+  [TILE.PHONY_WALL]: "../0-game-gallery/0-wall.png",
 
   [TILE.PLAYER_START]: "../0-game-gallery/0player.png",
 
@@ -313,6 +326,7 @@ function getVisibleTile(cell) {
   if (cell === TILE.LEVEL_2_DISK && hasLevel2Disk) return TILE.FLOOR;
 
   if (cell === TILE.CASSETTE_TAPE && hasTapeR) return TILE.FLOOR;
+  if (cell === TILE.PHONY_WALL && wallVanish) return TILE.FLOOR;
 
 if (cell === TILE.RADIO) {
   if (radioState === 1) return TILE.RADIO_OFF;
@@ -363,6 +377,11 @@ function movePlayer(dx, dy) {
   if (nextTile === TILE.WALL) {
     setMessage("A wall blocks your path.");
     return;
+  }
+
+  if (nextTile === TILE.PHONY_WALL && wallVanish) {
+    wallVanish = true
+    setMessage("The wall disappears...");
   }
 
   if (nextTile === TILE.DESK) {
@@ -526,7 +545,7 @@ function listenRadio() {
     setMessage("The radio has no power.");
   } else if (radioState === 2) {
     if (hasTapeR) {
-      setMessage("The cassette clicks in. It's your favorite mix.");
+      setMessage("The cassette clicks in, singing 'False wall, maybe.. False wall, baby...'");
     } else {
       setMessage("You don't have any tapes to play right now.");
     }
