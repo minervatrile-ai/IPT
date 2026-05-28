@@ -327,7 +327,7 @@ function movePlayer(dx, dy) {
   }
 
   if (nextTile === TILE.COMPUTER && !hasLevel2Disk) {
-    setMessage("DOS: disk read failure...");
+    setMessage("Computer won't power on...");
     return;
   }
 
@@ -430,7 +430,7 @@ if (nextTile === TILE.RADIO) {
 
   /* ---- Computer victory / level transition ---- */
 
-  if (nextTile === TILE.COMPUTER && hasLevel2Disk) {
+  if (nextTile === TILE.COMPUTER && hasLevel2Disk && radioState === 2) {
     computerActivated = true;
 
     if (confirm("DOS: Reading disk...\n\nStart game?")) {
