@@ -63,20 +63,24 @@ h1 {
    MOBILE CONTROLS
 ========================== */
 
-#mobileControls {
-  display: block;
-}
-
-#mobileControls button {
-  width: 80px;
-  height: 80px;
-  font-size: 30px;
-  margin: 5px;
+.mobile-controls {
+  display: none;
 }
 
 @media (max-width: 768px) {
-  #mobileControls {
-    display: block;
+  .mobile-controls {
+    display: grid;
+    grid-template-columns: 80px 80px 80px;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  .mobile-controls button {
+    width: 96px;
+    height: 96px;
+    font-size: 2rem;
+    border-radius: 14px;
   }
 }
 </style>
@@ -90,13 +94,18 @@ h1 {
 
 <div id="maze"></div>
 
-<div id="mobileControls">
-  <button onclick="movePlayer(0, -1)">⬆️</button>
-  <br>
-  <button onclick="movePlayer(-1, 0)">⬅️</button>
-  <button onclick="movePlayer(1, 0)">➡️</button>
-  <br>
-  <button onclick="movePlayer(0, 1)">⬇️</button>
+<div class="mobile-controls">
+  <div></div>
+  <button onclick="movePlayer(0, -1)">▲</button>
+  <div></div>
+
+  <button onclick="movePlayer(-1, 0)">◀</button>
+  <button onclick="interact()">●</button>
+  <button onclick="movePlayer(1, 0)">▶</button>
+
+  <div></div>
+  <button onclick="movePlayer(0, 1)">▼</button>
+  <div></div>
 </div>
 
 <script>
