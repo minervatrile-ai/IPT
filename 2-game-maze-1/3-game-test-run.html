@@ -47,8 +47,16 @@ h1 {
 .tile {
   width: 64px;
   height: 64px;
-  background-size: cover;
-  background-position: center;
+  background-size:cover;
+  background-position:center;
+  image-rendering: pixelated;
+}
+
+@media (max-width: 768px) {
+  .tile {
+    width: 96px;
+    height: 96px;
+  }
 }
 
 /* ==========================
