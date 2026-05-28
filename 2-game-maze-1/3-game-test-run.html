@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hellhound Prototype Test Runs</title>
 
 <style>
@@ -71,13 +72,6 @@ h1 {
   image-rendering: pixelated;
 }
 
-@media (max-width: 768px) {
-  .tile {
-    width: 96px;
-    height: 96px;
-  }
-}
-
 #overlay {
   position: fixed;
   top: 0;
@@ -100,14 +94,11 @@ h1 {
    MOBILE CONTROLS
 ========================== */
 
-.mobile-controls {
-  display: none;
-}
-
 @media (max-width: 768px) {
+
   .mobile-controls {
     display: grid;
-    grid-template-columns: 80px 80px 80px;
+    grid-template-columns: 96px 96px 96px;
     gap: 12px;
     justify-content: center;
     margin-top: 16px;
@@ -119,6 +110,7 @@ h1 {
     font-size: 2rem;
     border-radius: 14px;
   }
+
 }
 </style>
 </head>
