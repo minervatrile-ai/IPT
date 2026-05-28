@@ -2,9 +2,12 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>My Tile Game</title>
+<title>Hellhound 1 - Level Zero Introduction</title>
 
 <style>
+/* ==========================
+   PAGE / GAME AREA
+========================== */
 
 body {
   background: black;
@@ -13,17 +16,20 @@ body {
   text-align: center;
 }
 
+h1 {
+  margin-top: 20px;
+}
+
 #message {
   position: sticky;
   top: 0;
+  z-index: 100;
 
   background: black;
   border: 2px solid lime;
 
   margin: 10px auto;
   padding: 10px;
-
-  z-index: 100;
 
   font-size: 20px;
 }
@@ -33,8 +39,9 @@ body {
   grid-template-columns: repeat(15, 64px);
   grid-auto-rows: 64px;
   gap: 0;
-  margin: 20px auto;
+
   width: max-content;
+  margin: 20px auto;
 }
 
 .tile {
@@ -44,10 +51,9 @@ body {
   background-position: center;
 }
 
-#message {
-  margin-top: 20px;
-  font-size: 20px;
-}
+/* ==========================
+   MOBILE CONTROLS
+========================== */
 
 #mobileControls {
   display: block;
@@ -61,332 +67,395 @@ body {
 }
 
 @media (max-width: 768px) {
-
   #mobileControls {
     display: block;
   }
-
 }
-
 </style>
 </head>
 
 <body>
 
-<h1>Tile Game Test</h1>
+<h1>Hellhound 1: Level Zero Introduction</h1>
 
-<div id="message">
-Explore the world...
-</div>
+<div id="message">Explore the world...</div>
 
 <div id="maze"></div>
 
 <div id="mobileControls">
-
-  <button onclick="move(0,-1)">⬆️</button>
-
+  <button onclick="movePlayer(0, -1)">⬆️</button>
   <br>
-
-  <button onclick="move(-1,0)">⬅️</button>
-
-  <button onclick="move(1,0)">➡️</button>
-
+  <button onclick="movePlayer(-1, 0)">⬅️</button>
+  <button onclick="movePlayer(1, 0)">➡️</button>
   <br>
-
-  <button onclick="move(0,1)">⬇️</button>
-
+  <button onclick="movePlayer(0, 1)">⬇️</button>
 </div>
 
 <script>
+/* ==========================
+   TILE LEGEND
+
+   # = wall
+     = floor
+   P = player start
+
+   A = door A
+   a = key A
+
+   B = door B
+   b = key B
+
+   O = fire A
+   F = fire B
+
+   E = fire extinguisher
+   Q = Level 2 disk
+   C = computer
+   U = desk
+
+   R = radio object
+   radioState 1 = radio off
+   radioState 2 = radio good
+   radioState 3 = radio bad
+
+   r = radio cassette tape
+========================== */
+
+const TILE = {
+  WALL: "#",
+  FLOOR: " ",
+  PLAYER_START: "P",
+  VICTORY_DISPLAY: "v",
+
+  RADIO: "R",
+  RADIO_GOOD: "2",
+  RADIO_BAD: "3",
+  RADIO_OFF: "1",
+  CASSETTE_TAPE: "r",
+
+  DOOR_A: "A",
+  KEY_A: "a",
+
+  DOOR_B: "B",
+  KEY_B: "b",
+
+  FIRE_A: "O",
+  FIRE_B: "F",
+
+  EXTINGUISHER: "E",
+  LEVEL_2_DISK: "Q",
+  COMPUTER: "C",
+  DESK: "U",
+
+  BREAKER: "X"
+};
 
 /* ==========================
    GAME MAP
 ========================== */
 
 const maze = [
-"###############",
-"#P          #Q#",
-"# ##OC##F## #T#",
-"# #OOU#  ##   #",
-"# # ###K##### #",
-"# #   ###E  # #",
-"#   #  DZ##   #",
-"###############"
+  "###############",
+  "#P          #Q#",
+  "# ##OC##F#  #B#",
+  "# #OOU#ra#    #",
+  "# # ###X####  #",
+  "# #   ###E  # #",
+  "#R  #  Ab##   #",
+  "###############"
 ];
 
 /* ==========================
-   PLAYER LOCATION
+   PLAYER POSITION
 ========================== */
 
 let playerX = 1;
 let playerY = 1;
 
-let hasKey = false;
-let doorOpen = false;
-let hasKeyT = false;
-let doorOpenT = false;
+/* ==========================
+   GAME STATE
+========================== */
+
+let hasKeyA = false;
+let hasKeyB = false;
+
+let doorAOpen = false;
+let doorBOpen = false;
+
 let hasExtinguisher = false;
-let fireOut = false;
-let wOot = false;
-let hasGame = false;
-let GameComputer = false;
+
+let fireAOut = false;
+let fireBOut = false;
+
+let hasLevel2Disk = false;
+let computerActivated = false;
+
+let radioState = 1;
+let hasTapeR = false;
+
+
 
 /* ==========================
    TILE IMAGES
 ========================== */
 
 const tileImages = {
+  [TILE.WALL]: "../0-game-gallery/0-wall.png",
+  [TILE.FLOOR]: "../0-game-gallery/0-floor.png",
 
-"#": "../0-game-gallery/0-wall.png",
-" ": "../0-game-gallery/0-floor.png",
+  [TILE.PLAYER_START]: "../0-game-gallery/0player.png",
 
-"P": "../0-game-gallery/0player.png",
+  [TILE.DOOR_A]: "../0-game-gallery/1-door.png",
+  [TILE.DOOR_B]: "../0-game-gallery/1-door.png",
 
-"O": "../0-game-gallery/2-fire.png",
+  [TILE.KEY_A]: "../0-game-gallery/1-key.png",
+  [TILE.KEY_B]: "../0-game-gallery/1-key.png",
 
-"K": "../0-game-gallery/1-key.png",
+  [TILE.FIRE_A]: "../0-game-gallery/2-fire.png",
+  [TILE.FIRE_B]: "../0-game-gallery/2-fire.png",
 
-"D": "../0-game-gallery/1-door.png",
+  [TILE.EXTINGUISHER]: "../0-game-gallery/2-extinguisher.png",
+  [TILE.LEVEL_2_DISK]: "../0-game-gallery/2-floppy.png",
 
-"T": "../0-game-gallery/1-door.png",
+  [TILE.DESK]: "../0-game-gallery/3-desk.png",
+  [TILE.COMPUTER]: "../0-game-gallery/2-computer.png",
 
-"Z": "../0-game-gallery/1-key.png",
+  [TILE.RADIO_OFF]: "../0-game-gallery/2-radio-off.png",
+  [TILE.RADIO_GOOD]: "../0-game-gallery/2-radio-good.png",
+  [TILE.RADIO_BAD]: "../0-game-gallery/2-radio-bad.png",
+  [TILE.CASSETTE_TAPE]: "../0-game-gallery/2-cassette.png",
 
-"E": "../0-game-gallery/2-extinguisher.png",
-
-"F": "../0-game-gallery/2-fire.png",
-
-"U": "../0-game-gallery/3-desk.png",
-
-"C": "../0-game-gallery/2-computer.png",
-
-"Q": "../0-game-gallery/2-floppy.png",
+  [TILE.BREAKER]: "../0-game-gallery/4-breaker-box.png"
 
 };
+
+/* ==========================
+   SMALL HELPERS
+========================== */
+
+function setMessage(text) {
+  document.getElementById("message").innerText = text;
+}
+
+function getMapTile(x, y) {
+  return maze[y][x];
+}
+
+/*
+  This decides what each map cell should LOOK like
+  after the game state has changed.
+*/
+function getVisibleTile(cell) {
+  if (cell === TILE.PLAYER_START) return TILE.FLOOR;
+
+  if (cell === TILE.KEY_A && hasKeyA) return TILE.FLOOR;
+  if (cell === TILE.KEY_B && hasKeyB) return TILE.FLOOR;
+
+  if (cell === TILE.DOOR_A && doorAOpen) return TILE.FLOOR;
+  if (cell === TILE.DOOR_B && doorBOpen) return TILE.FLOOR;
+
+  if (cell === TILE.FIRE_A && fireAOut) return TILE.FLOOR;
+  if (cell === TILE.FIRE_B && fireBOut) return TILE.FLOOR;
+
+  if (cell === TILE.EXTINGUISHER && hasExtinguisher) return TILE.FLOOR;
+  if (cell === TILE.LEVEL_2_DISK && hasLevel2Disk) return TILE.FLOOR;
+
+  if (cell === TILE.CASSETTE_TAPE && hasTapeR) return TILE.FLOOR;
+
+if (cell === TILE.RADIO) {
+  if (radioState === 1) return TILE.RADIO_OFF;
+  if (radioState === 2) return TILE.RADIO_GOOD;
+  if (radioState === 3) return TILE.RADIO_BAD;
+}
+
+  return cell;
+
+}
 
 /* ==========================
    DRAW MAZE
 ========================== */
 
 function drawMaze() {
-
   const mazeDiv = document.getElementById("maze");
-
   mazeDiv.innerHTML = "";
 
   for (let y = 0; y < maze.length; y++) {
-
     for (let x = 0; x < maze[y].length; x++) {
+      let cell = getVisibleTile(getMapTile(x, y));
 
-     let cell = maze[y][x];
-
-if (cell === "Q" && hasGame) {
-    cell = " ";
-}
-
-if (cell === "E" && hasExtinguisher) {
-    cell = " ";
-}
-
-if (cell === "O" && wOot) {
-    cell = " ";
-}
-
-if (cell === "F" && fireOut) {
-    cell = " ";
-}
-
-if (cell === "Z" && hasKeyT) {
-    cell = " ";
-}
-
-if (cell === "T" && doorOpenT) {
-    cell = " ";
-}
-
-if (cell === "D" && doorOpen) {
-  cell = " ";
-}
-
-if (cell === "P") {
-  cell = " ";
-}
-
-if (cell === "K" && hasKey) {
-  cell = " ";
-}
-
-if (x === playerX && y === playerY) {
-  cell = "P";
-}
+      if (x === playerX && y === playerY) {
+        cell = TILE.PLAYER_START;
+      }
 
       const tile = document.createElement("div");
-
       tile.className = "tile";
-
-      tile.style.backgroundImage =
-        `url(${tileImages[cell]})`;
+      tile.style.backgroundImage = `url(${tileImages[cell]})`;
 
       mazeDiv.appendChild(tile);
-
     }
-
   }
-
 }
 
 /* ==========================
-   MOVE PLAYER
+   INTERACTION LOGIC
 ========================== */
 
-function move(dx, dy) {
+function movePlayer(dx, dy) {
+  const nextX = playerX + dx;
+  const nextY = playerY + dy;
+  const nextTile = getMapTile(nextX, nextY);
 
-  const newX = playerX + dx;
-  const newY = playerY + dy;
+  /* ---- Hard blockers ---- */
 
-  const nextSpace = maze[newY][newX];
-
-if (nextSpace === "C" && !hasGame) {
-    document.getElementById("message").innerText = 
-    "DOS: disk read failure..."
-
+  if (nextTile === TILE.WALL) {
+    setMessage("A wall blocks your path.");
     return;
+  }
+
+  if (nextTile === TILE.DESK) {
+    setMessage("Can't walk here. There's a desk in the way...");
+    return;
+  }
+
+  if (nextTile === TILE.COMPUTER && !hasLevel2Disk) {
+    setMessage("DOS: disk read failure...");
+    return;
+  }
+
+  /* ---- Locked doors ---- */
+
+  if (nextTile === TILE.DOOR_A && !hasKeyA) {
+    setMessage("Door A is locked.");
+    return;
+  }
+
+  if (nextTile === TILE.DOOR_B && !hasKeyB) {
+    setMessage("Door B is locked.");
+    return;
+  }
+
+  /* ---- Dangerous fires ---- */
+
+  if (nextTile === TILE.FIRE_A && !hasExtinguisher) {
+    setMessage("Ouch! Fire is burning hot!");
+    return;
+  }
+
+  if (nextTile === TILE.FIRE_B && !hasExtinguisher) {
+    setMessage("Too hot! You need the fire extinguisher.");
+    return;
+  }
+
+  /* ---- Door success states ---- */
+
+  if (nextTile === TILE.DOOR_A && hasKeyA) {
+    doorAOpen = true;
+    setMessage("Key A turns. Door A opens.");
+  }
+
+  if (nextTile === TILE.DOOR_B && hasKeyB) {
+    doorBOpen = true;
+    setMessage("Key B turns. Door B opens.");
+  }
+
+  /* ---- Fire success states ---- */
+
+  if (nextTile === TILE.FIRE_A && hasExtinguisher) {
+    fireAOut = true;
+    setMessage("You sweep the fire with blasts of foam... It went out!");
+  }
+
+  if (nextTile === TILE.FIRE_B && hasExtinguisher) {
+    fireBOut = true;
+    setMessage("Fffssssshhhh! You put out the fire.");
+  }
+
+  /* ---- Pickups ---- */
+
+  if (nextTile === TILE.KEY_A) {
+    hasKeyA = true;
+    setMessage("You picked up Key A.");
+  }
+
+  if (nextTile === TILE.KEY_B) {
+    hasKeyB = true;
+    setMessage("You picked up Key B.");
+  }
+
+  if (nextTile === TILE.EXTINGUISHER) {
+    hasExtinguisher = true;
+    setMessage("You picked up the fire extinguisher.");
+  }
+
+  if (nextTile === TILE.LEVEL_2_DISK) {
+    hasLevel2Disk = true;
+    setMessage("You picked up the Level 2 disk...");
+  }
+
+if (nextTile === TILE.CASSETTE_TAPE) {
+  hasTapeR = true;
+  setMessage("You picked up a cassette tape.");
 }
 
-if (nextSpace === "T" && !hasKeyT) {
-    document.getElementById("message").innerText =
-    "The door is locked.";
+  /* ---- Radio interaction ---- */
 
-    return;
+if (nextTile === TILE.RADIO) {
+  if (radioState === 1) {
+   setMessage("The radio has no power.");
 }
 
-if (nextSpace === "D" && !hasKey) {
-  document.getElementById("message").innerText =
-    "The door is locked.";
+  if (radioState === 2) {
+   if (hasTapeR) {   
+      setMessage("The cassette clicks in. A voice crackles through the speaker...");
+   } else {
+     setMessage("You don't have any tapes to play right now.");
+    }
+  }
+  if (radioState === 3) {
+    setMessage("The radio crackles with distorted static.");
+  }
+ 
+   return;
+}
 
+
+  /* ---- Computer victory / level transition ---- */
+
+  if (nextTile === TILE.COMPUTER && hasLevel2Disk) {
+    computerActivated = true;
+
+    if (confirm("DOS: Reading disk...\n\nStart game?")) {
+      window.location.href = "2-game-prototype-1.html";
+    }
+  }
+
+/* ---- Breaker interaction ---- */
+
+if (nextTile === TILE.BREAKER) {
+  radioState = 2;
+  setMessage("You flip the breaker. Somewhere nearby, a radio starts humming...");
+  drawMaze();
   return;
 }
 
-if (nextSpace === "F" && !hasExtinguisher) {
-    document.getElementById("message").innerText =
-    "Too hot! You need the fire extinguisher.";
+  /* ---- Move player after successful interaction ---- */
 
-    return;
-}
-
-if (nextSpace === "O" && !hasExtinguisher) {
-    document.getElementById("message").innerText = 
-    "Ouch! Fire is burning hot!";
-
-    return;
-}
-
-if (nextSpace === "T" && hasKeyT) {
-    doorOpenT = true;
-
-    document.getElementById("message").innerText =
-    "The right key turns. The door opens.";
-}
-
-if (nextSpace === "C" && hasGame) {
-    GameComputer = true;
-
-    if (confirm("DOS: Reading disk...\n\nStart game?")) {
-        window.location.href = "2-game-prototype-1.html";
-    }
-}
-
-if (nextSpace === "F" && hasExtinguisher) {
-    fireOut = true;
-
-    document.getElementById("message").innerText =
-    "Fffssssshhhh! You put out the fire.";
-}
-
-if (nextSpace === "O" && hasExtinguisher) {
-    wOot = true;
-
-    document.getElementById("message").innerText = 
-    "You sweep the fire with blasts of foam... It goes out!";
-}
-
-if (nextSpace === "D" && hasKey) {
-  doorOpen = true;
-
-  document.getElementById("message").innerText =
-    "The right key turns. The door opens.";
-}
-
-  if (nextSpace === "Z") {
-    hasKeyT = true;
-    document.getElementById("message").innerText = 
-    "You picked up a key.";
-  }
-
-  if (nextSpace === "E") {
-    hasExtinguisher = true;
-    document.getElementById("message").innerText = 
-    "You picked up the fire extinguisher.";
-  }
-
-  if (nextSpace === "Q") {
-    hasGame = true;
-    document.getElementById("message").innerText = 
-    "You picked up the Level 2 disk...";
-  }
-
-  if (nextSpace === "K") {
-  hasKey = true;
-  document.getElementById("message").innerText =
-    "You picked up a key.";
-}
-
-  if (nextSpace === "U") {
-
-    document.getElementById("message").innerText = 
-    "Can't walk here. There's a desk in the way...";
-
-    return;
-  }
-
-  if (nextSpace === "#") {
-
-    document.getElementById("message").innerText =
-      "A wall blocks your path.";
-
-    return;
-
-  }
-
-  playerX = newX;
-  playerY = newY;
+  playerX = nextX;
+  playerY = nextY;
 
   drawMaze();
-
 }
 
 /* ==========================
-   KEYBOARD
+   KEYBOARD CONTROLS
 ========================== */
 
 document.addEventListener("keydown", function(event) {
-
-  if (event.key === "ArrowUp") {
-    move(0, -1);
-  }
-
-  if (event.key === "ArrowDown") {
-    move(0, 1);
-  }
-
-  if (event.key === "ArrowLeft") {
-    move(-1, 0);
-  }
-
-  if (event.key === "ArrowRight") {
-    move(1, 0);
-  }
-
+  if (event.key === "ArrowUp") movePlayer(0, -1);
+  if (event.key === "ArrowDown") movePlayer(0, 1);
+  if (event.key === "ArrowLeft") movePlayer(-1, 0);
+  if (event.key === "ArrowRight") movePlayer(1, 0);
 });
 
 /* ==========================
@@ -394,7 +463,6 @@ document.addEventListener("keydown", function(event) {
 ========================== */
 
 drawMaze();
-
 </script>
 
 </body>
