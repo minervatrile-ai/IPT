@@ -408,8 +408,8 @@ function movePlayer(dx, dy) {
     return;
   }
 
-  if (nextTile === TILE.COMPUTER && !hasLevel2Disk) {
-    setMessage("Computer won't power on...");
+  if (nextTile === TILE.COMPUTER && radioState === 2 && !hasLevel2Disk) {
+    setMessage("Computer is operational...");
     return;
   }
 
@@ -459,54 +459,60 @@ if (nextTile === TILE.FIRE_B &&
 
   /* ---- Fire success states ---- */
 
-  if (nextTile === TILE.FIRE_A && hasExtinguisher) {
-    fireAOut = true;
+  if (nextTile === TILE.FIRE_A && hasExtinguisher && !fireAOut) {
     setMessage("You sweep the fire with blasts of foam... It went out!");
-  }
-
-  if (nextTile === TILE.FIRE_B && hasExtinguisher) {
-    fireBOut = true;
-    setMessage("Fffssssshhhh! You put out the fire.");
-  }
-
-  if (nextTile === TILE.FIRE_A && hasExtinguisher2) {
     fireAOut = true;
-    setMessage("You are a firefighting pro!");    
+    return;
   }
 
-  if (nextTile === TILE.FIRE_B && hasExtinguisher2) {
+  if (nextTile === TILE.FIRE_B && hasExtinguisher && !fireBOut) {
+    setMessage("Fffssssshhhh! You put out the fire.");
+    fireBOut = true;
+    return;
+  }
+
+  if (nextTile === TILE.FIRE_A && hasExtinguisher2 && !fireAOut) {
+    fireAOut = true;
+    setMessage("You are a firefighting pro!");
+    return;    
+  }
+
+  if (nextTile === TILE.FIRE_B && hasExtinguisher2 && !fireBOut) {
     fireBOut = true;
     setMessage("Should've been a fireman...");
+    return;
   }
 
   /* ---- Pickups ---- */
 
-  if (nextTile === TILE.KEY_A) {
+  if (nextTile === TILE.KEY_A && !hasKeyA) {
     hasKeyA = true;
     setMessage("You picked up Key A.");
   }
 
-  if (nextTile === TILE.KEY_B) {
+  if (nextTile === TILE.KEY_B && !hasKeyB) {
     hasKeyB = true;
     setMessage("You picked up Key B.");
   }
 
-  if (nextTile === TILE.EXTINGUISHER2) {
+  if (nextTile === TILE.EXTINGUISHER2 && !hasExtinguisher2) {
     hasExtinguisher2 = true;
     setMessage("You grab the fire extinguisher from the wall.");
+    return;
   }
 
-  if (nextTile === TILE.EXTINGUISHER) {
+  if (nextTile === TILE.EXTINGUISHER && !hasExtinguisher) {
     hasExtinguisher = true;
     setMessage("You picked up the fire extinguisher.");
+    return;
   }
 
-  if (nextTile === TILE.LEVEL_2_DISK) {
+  if (nextTile === TILE.LEVEL_2_DISK && !hasLevel2Disk) {
     hasLevel2Disk = true;
     setMessage("You picked up the Level 2 disk...");
   }
 
-if (nextTile === TILE.CASSETTE_TAPE) {
+if (nextTile === TILE.CASSETTE_TAPE && !hasTapeR) {
   hasTapeR = true;
   setMessage("You picked up a cassette tape.");
 }
@@ -528,6 +534,7 @@ if (nextTile === TILE.RADIO) {
     if (confirm("DOS: Reading disk...\n\nStart game?")) {
       window.location.href = "2-game-prototype-1.html";
     }
+    return;
   }
 
 /* ---- Breaker interaction ---- */
