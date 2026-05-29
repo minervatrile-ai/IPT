@@ -186,6 +186,7 @@ const TILE = {
   FIRE_A: "O",
   FIRE_B: "F",
 
+  EXTINGUISHER2: "e",
   EXTINGUISHER: "E",
   LEVEL_2_DISK: "Q",
   COMPUTER: "C",
@@ -202,11 +203,11 @@ const TILE = {
 
 const maze = [
   "###########",
-  "#PC#FFF AE#",
+  "#PC#FFF Ae#",
   "# U#FRF####",
   "# ## #    #",
   "#    # #  #",
-  "###A## # R#",
+  "###B## # R#",
   "#OOO#  ####",
   "#QRO#    X#",
   "# ###  #  #",
@@ -232,6 +233,7 @@ let doorAOpen = false;
 let doorBOpen = false;
 
 let hasExtinguisher = false;
+let hasExtinguisher2 = false;
 
 let fireAOut = true;
 let fireBOut = true;
@@ -267,6 +269,7 @@ const tileImages = {
   [TILE.FIRE_A]: "../0-game-gallery/2-fire.png",
   [TILE.FIRE_B]: "../0-game-gallery/2-fire.png",
 
+  [TILE.EXTINGUISHER2]: "../0-game-gallery/2-extinguisher.png",
   [TILE.EXTINGUISHER]: "../0-game-gallery/2-extinguisher.png",
   [TILE.LEVEL_2_DISK]: "../0-game-gallery/2-floppy.png",
 
@@ -310,6 +313,7 @@ function getVisibleTile(cell) {
   if (cell === TILE.FIRE_A && fireAOut) return TILE.FLOOR;
   if (cell === TILE.FIRE_B && fireBOut) return TILE.FLOOR;
 
+  if (cell === TILE.EXTINGUISHER2 && hasExtinguisher2) return TILE.FLOOR;
   if (cell === TILE.EXTINGUISHER && hasExtinguisher) return TILE.FLOOR;
   if (cell === TILE.LEVEL_2_DISK && hasLevel2Disk) return TILE.FLOOR;
 
@@ -396,15 +400,23 @@ function movePlayer(dx, dy) {
 
   /* ---- Dangerous fires ---- */
 
-  if (nextTile === TILE.FIRE_A && !fireAOut && !hasExtinguisher) {
+ if (nextTile === TILE.FIRE_A &&
+    !fireAOut &&
+    !hasExtinguisher &&
+    !hasExtinguisher2) {
+
     setMessage("Ouch! Fire is burning hot!");
     return;
 }
 
-  if (nextTile === TILE.FIRE_B && !fireBOut && !hasExtinguisher) {
-    setMessage("Too hot! You need the fire extinguisher.");
+if (nextTile === TILE.FIRE_B &&
+    !fireBOut &&
+    !hasExtinguisher &&
+    !hasExtinguisher2) {
+
+    setMessage("Too hot! You need a fire extinguisher.");
     return;
-  }
+}
 
   /* ---- Door success states ---- */
 
@@ -430,6 +442,16 @@ function movePlayer(dx, dy) {
     setMessage("Fffssssshhhh! You put out the fire.");
   }
 
+  if (nextTile === TILE.FIRE_A && hasExtinguisher2) {
+    fireAOut = true;
+    setMessage("You are a firefighting pro!");    
+  }
+
+  if (nextTile === TILE.FIRE_B && hasExtinguisher2) {
+    fireBOut = true;
+    setMessage("Should've been a fireman...");
+  }
+
   /* ---- Pickups ---- */
 
   if (nextTile === TILE.KEY_A) {
@@ -440,6 +462,11 @@ function movePlayer(dx, dy) {
   if (nextTile === TILE.KEY_B) {
     hasKeyB = true;
     setMessage("You picked up Key B.");
+  }
+
+  if (nextTile === TILE.EXTINGUISHER2) {
+    hasExtinguisher2 = true;
+    setMessage("You grab the fire extinguisher from the wall.");
   }
 
   if (nextTile === TILE.EXTINGUISHER) {
