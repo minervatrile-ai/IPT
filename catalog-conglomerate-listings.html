@@ -405,14 +405,19 @@
 
     <p class="footer-note">Catalog maintained as the library grows. I'll add new pages as I create them.</p>
   </div>
-  <div id="counter">📡 Since 5-29 11 am...</div>
+  <div id="counter">📡 Checking signal...</div>
 
 <script>
-fetch("https://api.countapi.xyz/hit/identitypanictoolkit/ZOUNDSofHELLHOUNDS")
+fetch("https://api.countapi.xyz/hit/identitypanictoolkit/ZOUNDSofHELLHOUNDS?ts=" + Date.now())
   .then(r => r.json())
   .then(data => {
     document.getElementById("counter").textContent =
       "📡 Zounds of Hellhounds Detected: " + data.value;
+  })
+  .catch(err => {
+    document.getElementById("counter").textContent =
+      "📡 Counter failed to load.";
+    console.error(err);
   });
 </script>
 </body>

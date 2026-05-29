@@ -144,14 +144,19 @@
 This counter began on 5-29-2026 and records visits to the main IPT gateways:<br>
 Home Page, Catalog Conglomerate, and Skeleton Circus Game Console.</p>
 
-<div id="counter">📡 Since 5-29 11 am...</div>
+<div id="counter">📡 Checking signal...</div>
 
 <script>
-fetch("https://api.countapi.xyz/hit/identitypanictoolkit/ZOUNDSofHELLHOUNDS")
+fetch("https://api.countapi.xyz/hit/identitypanictoolkit/ZOUNDSofHELLHOUNDS?ts=" + Date.now())
   .then(r => r.json())
   .then(data => {
     document.getElementById("counter").textContent =
       "📡 Zounds of Hellhounds Detected: " + data.value;
+  })
+  .catch(err => {
+    document.getElementById("counter").textContent =
+      "📡 Counter failed to load.";
+    console.error(err);
   });
 </script>
   <h1>Identity Panic Toolkit</h1>
