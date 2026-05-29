@@ -405,5 +405,15 @@
 
     <p class="footer-note">Catalog maintained as the library grows. I'll add new pages as I create them.</p>
   </div>
+  <div id="counter">📡 Since 5-29 11 am...</div>
+
+<script>
+fetch("https://api.countapi.xyz/hit/identitypanictoolkit/ZOUNDSofHELLHOUNDS")
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById("counter").textContent =
+      "📡 Zounds of Hellhounds Detected: " + data.value;
+  });
+</script>
 </body>
 </html>
