@@ -170,6 +170,9 @@ h1 {
 ========================== */
 
 const TILE = {
+
+  ROOM_EXIT_DOWN: "d",  
+
   WALL: "#",
   FLOOR: " ",
   PLAYER_START: "P",
@@ -205,7 +208,7 @@ const TILE = {
    GAME MAP
 ========================== */
 
-const maze = [
+const room1 = [
   "###########",
   "#PC#FFF Ae#",
   "# U#FRF####",
@@ -216,8 +219,24 @@ const maze = [
   "#QRO#    X#",
   "# ###  #  #",
   "#EZ r b# a#",
+  "#####d#####"
+];
+
+const room2 = [
+  "#####d#####",
+  "#         #",
+  "#         #",
+  "#         #",
+  "#     C   #",
+  "#     UEe #",
+  "#         #",
+  "#         #",
+  "#         #",
+  "#         #",
   "###########"
 ];
+
+let maze = room1;
 
 /* ==========================
    PLAYER POSITION
@@ -517,6 +536,24 @@ if (nextTile === TILE.BREAKER) {
   fireBOut = false;
 
   setMessage("You flip the breaker. Somewhere nearby, a radio hums to life... and sparks erupt nearby!");
+
+  drawMaze();
+  return;
+}
+
+if (nextTile === TILE.ROOM_EXIT_DOWN) {
+
+    if (maze === room1) {
+        maze = room2;
+        playerX = nextX;
+        playerY = 1;
+    }
+
+else if (maze === room2) {
+    maze = room1;
+    playerX = nextX;
+    playerY = room1.length - 2;
+}
 
   drawMaze();
   return;
