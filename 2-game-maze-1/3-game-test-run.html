@@ -94,8 +94,11 @@ h1 {
    MOBILE CONTROLS
 ========================== */
 
-@media (max-width: 768px) {
+.mobile-controls {
+  display: none;
+}
 
+@media (max-width: 768px) {
   .mobile-controls {
     display: grid;
     grid-template-columns: 96px 96px 96px;
@@ -103,15 +106,8 @@ h1 {
     justify-content: center;
     margin-top: 16px;
   }
-
-  .mobile-controls button {
-    width: 96px;
-    height: 96px;
-    font-size: 2rem;
-    border-radius: 14px;
-  }
-
 }
+
 </style>
 </head>
 
@@ -131,7 +127,7 @@ h1 {
   <div></div>
 
   <button onclick="movePlayer(-1, 0)">◀</button>
-  <button onclick="interact()">●</button>
+  
   <button onclick="movePlayer(1, 0)">▶</button>
 
   <div></div>
