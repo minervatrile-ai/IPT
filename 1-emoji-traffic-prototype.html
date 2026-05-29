@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Emoji Traffic Prototype</title>
+
+  <style>
+    /* =========================
+       1. PAGE STYLE ZONE
+       Put background, fonts, layout here
+    ========================= */
+
+    body {
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    #gameScreen {
+      margin: 30px auto;
+      width: 640px;
+      height: 320px;
+      background: #333;
+      border: 4px solid white;
+      position: relative;
+      overflow: hidden;
+      font-size: 48px;
+    }
+
+    .vehicle {
+      position: absolute;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       2. HTML SCREEN ZONE
+       Put visible page stuff here
+  ========================== -->
+
+  <h1>Emoji Traffic Prototype</h1>
+
+  <div id="gameScreen"></div>
+
+  <p id="message">Traffic system online.</p>
+
+
+  <script>
+    /* =========================
+       3. GAME SETUP ZONE
+       Put important starting variables here
+    ========================= */
+
+    const gameScreen = document.getElementById("gameScreen");
+    const message = document.getElementById("message");
+
+    const screenWidth = 640;
+
+    let traffic = [
+      { emoji: "🚚", x: 600, y: 40, speed: 1 },
+      { emoji: "🚗", x: 400, y: 120, speed: 2 },
+      { emoji: "🚕", x: 700, y: 200, speed: 1.5 },
+      { emoji: "🚓", x: 900, y: 120, speed: 3 },
+      { emoji: "🏍️", x: 800, y: 160, speed: 7 }
+    ];
+
+
+    /* =========================
+       4. DRAWING ZONE
+       This turns data into visible vehicles
+    ========================= */
+
+    function drawTraffic() {
+      gameScreen.innerHTML = "";
+
+      for (let car of traffic) {
+        const carDiv = document.createElement("div");
+        carDiv.className = "vehicle";
+        carDiv.textContent = car.emoji;
+
+        carDiv.style.left = car.x + "px";
+        carDiv.style.top = car.y + "px";
+
+        gameScreen.appendChild(carDiv);
+      }
+    }
+
+
+    /* =========================
+       5. UPDATE / MOVEMENT ZONE
+       This changes vehicle positions
+    ========================= */
+
+    function updateTraffic() {
+      for (let car of traffic) {
+        car.x -= car.speed;
+
+        // LEFT PORTAL → RIGHT SIDE
+        if (car.x < -60) {
+          car.x = screenWidth + 60;
+        }
+      }
+    }
+
+
+    /* =========================
+       6. GAME LOOP ZONE
+       This repeats the animation forever
+    ========================= */
+
+    function gameLoop() {
+      updateTraffic();
+      drawTraffic();
+
+      requestAnimationFrame(gameLoop);
+    }
+
+
+    /* =========================
+       7. START GAME ZONE
+       This begins the whole machine
+    ========================= */
+
+    gameLoop();
+  </script>
+
+</body>
+</html>
