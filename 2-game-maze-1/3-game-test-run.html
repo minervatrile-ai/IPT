@@ -396,9 +396,11 @@ function movePlayer(dx, dy) {
     return;
   }
 
-  if (nextTile === TILE.PHONY_WALL && wallVanish) {
-    wallVanish = true
-    setMessage("The wall disappears...");
+  if (nextTile === TILE.PHONY_WALL && !wallVanish) {
+    setMessage("The wall song's meaning... suddenly becomes clear.");
+    wallVanish = true;
+    return;
+    
   }
 
   if (nextTile === TILE.DESK) {
