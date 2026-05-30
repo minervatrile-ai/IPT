@@ -199,6 +199,8 @@ const TILE = {
   COMPUTER: "C",
   DESK: "U",
 
+  MEDICINE_DOG: "M",
+
   BREAKER: "X",
 
   PHONY_WALL: "Z"
@@ -210,7 +212,7 @@ const TILE = {
 
 const room1 = [
   "###########",
-  "#PC#FFF Ae#",
+  "#PC#FFF AM#",
   "# U#FRF####",
   "# ## #    #",
   "#    # #  #",
@@ -232,7 +234,7 @@ const room2 = [
   "#         #",
   "#         #",
   "#         #",
-  "#E        #",
+  "#         #",
   "###########"
 ];
 
@@ -270,6 +272,8 @@ let hasTapeR = false;
 let viewingRadio = false;
 let wallVanish = false;
 
+let hasMedicineDog = false;
+
 
 /* ==========================
    TILE IMAGES
@@ -297,7 +301,7 @@ const tileImages = {
   [TILE.EXTINGUISHER2]: "../0-game-gallery/2-extinguisher.png",
   [TILE.EXTINGUISHER]: "../0-game-gallery/2-extinguisher.png",
   [TILE.LEVEL_2_DISK]: "../0-game-gallery/2-floppy.png",
-
+  [TILE.MEDICINE_DOG]: "../0-game-gallery/2-floppy.png",
   [TILE.DESK]: "../0-game-gallery/3-desk.png",
   [TILE.COMPUTER]: "../0-game-gallery/2-computer.png",
 
@@ -341,7 +345,7 @@ function getVisibleTile(cell) {
   if (cell === TILE.EXTINGUISHER2 && hasExtinguisher2) return TILE.FLOOR;
   if (cell === TILE.EXTINGUISHER && hasExtinguisher) return TILE.FLOOR;
   if (cell === TILE.LEVEL_2_DISK && hasLevel2Disk) return TILE.FLOOR;
-
+  if (cell === TILE.MEDICINE_DOG && hasMedicineDog) return TILE.FLOOR;
   if (cell === TILE.CASSETTE_TAPE && hasTapeR) return TILE.FLOOR;
   if (cell === TILE.PHONY_WALL && wallVanish) return TILE.FLOOR;
 
@@ -408,10 +412,22 @@ function movePlayer(dx, dy) {
     return;
   }
 
-  if (nextTile === TILE.COMPUTER && radioState === 2 && !hasLevel2Disk) {
-    setMessage("Computer is operational...");
-    return;
-  }
+  if (
+  nextTile === TILE.COMPUTER &&
+  radioState !== 2
+) {
+  setMessage("Computer has no power...");
+  return;
+}
+
+if (
+  nextTile === TILE.COMPUTER &&
+  !hasLevel2Disk &&
+  !hasMedicineDog
+) {
+  setMessage("No disk to read...");
+  return;
+}
 
   /* ---- Locked doors ---- */
 
@@ -459,60 +475,58 @@ if (nextTile === TILE.FIRE_B &&
 
   /* ---- Fire success states ---- */
 
-  if (nextTile === TILE.FIRE_A && hasExtinguisher && !fireAOut) {
+  if (nextTile === TILE.FIRE_A && hasExtinguisher) {
+    fireAOut = true;
     setMessage("You sweep the fire with blasts of foam... It went out!");
-    fireAOut = true;
-    return;
   }
 
-  if (nextTile === TILE.FIRE_B && hasExtinguisher && !fireBOut) {
-    setMessage("Fffssssshhhh! You put out the fire.");
+  if (nextTile === TILE.FIRE_B && hasExtinguisher) {
     fireBOut = true;
-    return;
+    setMessage("Fffssssshhhh! You put out the fire.");
   }
 
-  if (nextTile === TILE.FIRE_A && hasExtinguisher2 && !fireAOut) {
+  if (nextTile === TILE.FIRE_A && hasExtinguisher2) {
     fireAOut = true;
-    setMessage("You are a firefighting pro!");
-    return;    
+    setMessage("You are a firefighting pro!");    
   }
 
-  if (nextTile === TILE.FIRE_B && hasExtinguisher2 && !fireBOut) {
+  if (nextTile === TILE.FIRE_B && hasExtinguisher2) {
     fireBOut = true;
     setMessage("Should've been a fireman...");
-    return;
   }
 
   /* ---- Pickups ---- */
 
-  if (nextTile === TILE.KEY_A && !hasKeyA) {
+  if (nextTile === TILE.KEY_A) {
     hasKeyA = true;
     setMessage("You picked up Key A.");
   }
 
-  if (nextTile === TILE.KEY_B && !hasKeyB) {
+  if (nextTile === TILE.KEY_B) {
     hasKeyB = true;
     setMessage("You picked up Key B.");
   }
 
-  if (nextTile === TILE.EXTINGUISHER2 && !hasExtinguisher2) {
+  if (nextTile === TILE.EXTINGUISHER2) {
     hasExtinguisher2 = true;
     setMessage("You grab the fire extinguisher from the wall.");
-    return;
   }
 
-  if (nextTile === TILE.EXTINGUISHER && !hasExtinguisher) {
+  if (nextTile === TILE.EXTINGUISHER) {
     hasExtinguisher = true;
     setMessage("You picked up the fire extinguisher.");
-    return;
   }
 
-  if (nextTile === TILE.LEVEL_2_DISK && !hasLevel2Disk) {
+  if (nextTile === TILE.LEVEL_2_DISK) {
     hasLevel2Disk = true;
-    setMessage("You picked up the Level 2 disk...");
+    setMessage("You picked up the 'Weird Wizard Apartment' disk...");
+  }
+  if (nextTile === TILE.MEDICINE_DOG) {
+    hasMedicineDog = true;
+    setMessage("You picked up 'Medicine Dog' disk...");
   }
 
-if (nextTile === TILE.CASSETTE_TAPE && !hasTapeR) {
+if (nextTile === TILE.CASSETTE_TAPE) {
   hasTapeR = true;
   setMessage("You picked up a cassette tape.");
 }
@@ -528,14 +542,35 @@ if (nextTile === TILE.RADIO) {
 
   /* ---- Computer victory / level transition ---- */
 
-  if (nextTile === TILE.COMPUTER && hasLevel2Disk && radioState === 2) {
-    computerActivated = true;
+/* ---- Computer disk menu ---- */
 
-    if (confirm("DOS: Reading disk...\n\nStart game?")) {
-      window.location.href = "2-game-prototype-1.html";
-    }
-    return;
+if (
+  nextTile === TILE.COMPUTER &&
+  (hasLevel2Disk || hasMedicineDog) &&
+  radioState === 2
+) {
+  computerActivated = true;
+
+  const choice = prompt(
+    "DOS MENU\n\n" +
+    "1 = Run 'Weird Wizard Apartment' disk...\n" +
+    "2 = Run 'Medicine Dog' disk...\n" +
+    "3 = Shutdown"
+  );
+
+  if (choice === "1" && hasLevel2Disk) {
+  window.location.href = "2-game-prototype-1.html";
+}
+
+if (choice === "2" && hasMedicineDog) {
+  window.location.href = "../2-emoji-traffic-prototype.html";
+}
+
+  if (choice === "3") {
+    alert("System shutting down.");
   }
+}
+/* ---- ^ gotta program in other game choice ---- */
 
 /* ---- Breaker interaction ---- */
 
