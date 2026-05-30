@@ -558,17 +558,28 @@ if (
     "3 = Shutdown"
   );
 
-  if (choice === "1" && hasLevel2Disk) {
-  window.location.href = "2-game-prototype-1.html";
-}
-
-if (choice === "2" && hasMedicineDog) {
-  window.location.href = "../2-emoji-traffic-prototype.html";
-}
-
-  if (choice === "3") {
-    alert("System shutting down.");
+if (choice === "1") {
+  if (hasLevel2Disk) {
+    window.location.href = "2-game-prototype-1.html";
+  } else {
+    setMessage("No Weird Wizard Apartment disk detected...");
+    return;
   }
+}
+
+if (choice === "2") {
+  if (hasMedicineDog) {
+    window.location.href = "../2-emoji-traffic-prototype.html";
+  } else {
+    setMessage("No Medicine Dog disk detected...");
+    return;
+  }
+}
+
+if (choice === "3") {
+  setMessage("System shutting down.");
+  return;
+}
 }
 /* ---- ^ gotta program in other game choice ---- */
 
