@@ -139,26 +139,6 @@
 <body>
   <img src="green-ipt-standard-logo.jpg" alt="Identity Panic Toolkit Logo" style="width: 300px; height: auto; display: block; margin: 0 auto 20px;">
 
-<p>Welcome to the archive. 📡 Zounds of Hellhounds Detected<br>
-
-This counter began on the evening of 5-29-2026 and records visits to the main IPT gateways:<br>
-Home Page, Catalog Conglomerate, and Skeleton Circus Game Console.</p>
-
-<div id="counter">📡 Checking signal...</div>
-
-<script>
-fetch("https://api.countapi.xyz/hit/identitypanictoolkit/ZOUNDSofHELLHOUNDS?ts=" + Date.now())
-  .then(r => r.json())
-  .then(data => {
-    document.getElementById("counter").textContent =
-      "📡 Zounds of Hellhounds Detected: " + data.value;
-  })
-  .catch(err => {
-    document.getElementById("counter").textContent =
-      "📡 Counter failed to load.";
-    console.error(err);
-  });
-</script>
   <h1>Identity Panic Toolkit</h1>
   <p>A field manual for noticing when identity, fear, and reaction speed are being pushed faster than thought.</p>
   <p>IMPORTANT TO NOTE: Identity Panic Toolkit (IPT) is an independent philosophical and observational framework exploring social behavior, identity dynamics, and modern media environments.
@@ -470,5 +450,25 @@ prevSlide.addEventListener("click", function() {
 </script>
 <script data-goatcounter="https://identitypanictoolkit.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
+<div id="hellhound-counter">📡 Scanning for Hellhounds...</div>
+
+<script>
+  var goatCheck = setInterval(function() {
+    if (window.goatcounter && window.goatcounter.visit_count) {
+      clearInterval(goatCheck);
+      window.goatcounter.visit_count({
+        append: '#hellhound-counter',
+        path: 'TOTAL',
+        no_branding: true,
+        attr: {
+          id: 'zounds-display'
+        }
+      });
+    }
+  }, 100);
+</script>
+
+<script data-goatcounter="https://identitypanictoolkit.goatcounter.com/count"
+        async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
