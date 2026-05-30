@@ -405,21 +405,6 @@
 
     <p class="footer-note">Catalog maintained as the library grows. I'll add new pages as I create them.</p>
   </div>
-  <div id="counter">📡 Checking signal...</div>
-
-<script>
-fetch("https://api.countapi.xyz/hit/identitypanictoolkit/ZOUNDSofHELLHOUNDS?ts=" + Date.now())
-  .then(r => r.json())
-  .then(data => {
-    document.getElementById("counter").textContent =
-      "📡 Zounds of Hellhounds Detected: " + data.value;
-  })
-  .catch(err => {
-    document.getElementById("counter").textContent =
-      "📡 Counter failed to load.";
-    console.error(err);
-  });
-</script>
 <script data-goatcounter="https://identitypanictoolkit.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 </body>
