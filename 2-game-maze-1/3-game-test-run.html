@@ -172,7 +172,8 @@ h1 {
 const TILE = {
 
   ROOM_EXIT_DOWN: "d",  
-
+  TELEPORTER_1: "p",
+  TELEPORTER_2: "q",
   WALL: "#",
   FLOOR: " ",
   PLAYER_START: "P",
@@ -231,7 +232,7 @@ const room2 = [
   "#   #     #",
   "### # ### #",
   "#   #e  # #",
-  "# ##### # #",
+  "# ##### # p",
   "#      L# #",
   "# ### ### #",
   "# #     # #",
@@ -251,6 +252,20 @@ const room3 = [
   "#     #   #",
   "# ### ### #",
   "#         #",
+  "######q####"
+];
+
+const room4 = [
+  "######q####",
+  "#   #     #",
+  "# # # ### #",
+  "# #   #   #",
+  "p ### # ###",
+  "#     #   #",
+  "### # ### #",
+  "#   #     #",
+  "# ##### # #",
+  "#       # #",
   "###########"
 ];
 
@@ -301,6 +316,8 @@ const tileImages = {
   [TILE.FLOOR]: "../0-game-gallery/0-floor.png",
 
   [TILE.ROOM_EXIT_DOWN]: "../0-game-gallery/0-floor.png",
+  [TILE.TELEPORTER_1]: "../0-game-gallery/0-floor.png",
+  [TILE.TELEPORTER_2]: "../0-game-gallery/0-floor.png",
 
   [TILE.PHONY_WALL]: "../0-game-gallery/0-wall.png",
 
@@ -636,6 +653,45 @@ else if (maze === room2) {
     playerX = nextX;
     playerY = room1.length - 2;
 }
+
+  drawMaze();
+  return;
+}
+if (nextTile === TILE.TELEPORTER_1) {
+  if (maze === room2) {
+    maze = room4;
+
+    playerX = 1;
+    playerY = 4;
+    
+  }
+
+  else if (maze === room4) {
+    maze = room2;
+
+    playerX = 9;
+    playerY = 4;   // one tile below vent
+  }
+
+  drawMaze();
+  return;
+}
+
+if (nextTile === TILE.TELEPORTER_2) {
+  if (maze === room3) {
+    maze = room4;
+
+    playerX = 6;
+    playerY = 1;
+    
+  }
+
+  else if (maze === room4) {
+    maze = room3;
+
+    playerX = 6;
+    playerY = 9;   // one tile below vent
+  }
 
   drawMaze();
   return;
