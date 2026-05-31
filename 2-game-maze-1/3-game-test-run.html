@@ -90,6 +90,32 @@ h1 {
   z-index: 999;
 }
 
+#inventoryPanel {
+  position: fixed;
+  right: 20px;
+  top: 150px;
+
+  background: black;
+  color: lime;
+
+  border: 2px solid lime;
+  padding: 12px;
+
+  z-index: 1000;
+}
+
+#inventoryButton {
+  position: fixed;
+  right: 20px;
+  top: 100px;
+
+  z-index: 1001;
+}
+
+#inventoryItems div {
+  margin: 6px 0;
+}
+
 /* ==========================
    MOBILE CONTROLS
 ========================== */
@@ -141,6 +167,19 @@ You're Hellhound, Maintenance Technician, and this is where you woke up... Hellh
   <div></div>
   <button onclick="movePlayer(0, 1)">▼</button>
   <div></div>
+</div>
+
+<button id="inventoryButton"
+        onclick="toggleInventory()">
+🎒 Inventory
+</button>
+
+<div id="inventoryPanel" style="display:none;">
+  <h3>HELLHOUND EQUIPMENT</h3>
+
+  <div id="inventoryItems"></div>
+
+  <button onclick="toggleInventory()">Close</button>
 </div>
 
 <script>
@@ -291,6 +330,7 @@ let playerY = 1;
 /* ==========================
    GAME STATE
 ========================== */
+let inventoryOpen = false;
 
 let hasKeyA = false;
 let hasKeyB = false;
@@ -376,6 +416,38 @@ const tileImages = {
 /* ==========================
    SMALL HELPERS
 ========================== */
+function toggleInventory() {
+
+  inventoryOpen = !inventoryOpen;
+
+  const panel = document.getElementById("inventoryPanel");
+
+  if (inventoryOpen) {
+    panel.style.display = "block";
+    drawInventory();
+  } else {
+    panel.style.display = "none";
+  }
+}
+
+function drawInventory() {
+  let items = "";
+
+  if (hasExtinguisher) items += "<div>🧯 Extinguisher</div>";
+  if (hasExtinguisher2)
+  items += "<div>🧯 Backup Extinguisher</div>";
+  if (hasPager) items += "<div>📟 Pager</div>";
+  if (hasLadder) items += "<div>🪜 Ladder</div>";
+  if (hasLevel2Disk) items += "<div>💾 Weird Wizard Apartment Disk</div>";
+  if (hasMedicineDog) items += "<div>💾 Medicine Dog Disk</div>";
+  if (hasKeyA) items += "<div>🗝️ Key A</div>";
+  if (hasKeyB) items += "<div>🗝️ Key B</div>";
+  if (hasTapeR) items += "<div>📼 Cassette Tape</div>";
+
+  if (items === "") items = "No equipment yet.";
+
+  document.getElementById("inventoryItems").innerHTML = items;
+}
 
 function setMessage(text) {
   document.getElementById("message").innerText = text;
