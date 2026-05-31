@@ -336,6 +336,7 @@ let playerY = 1;
 ========================== */
 let inventoryOpen = false;
 
+let foundCouch = false;
 let searchedCouch = false;
 let hasDollar = false;
 let hasPagerBattery = false;
@@ -999,6 +1000,22 @@ if (
   (nextTile === TILE.COUCH_LEFT ||
    nextTile === TILE.COUCH_MIDDLE ||
    nextTile === TILE.COUCH_RIGHT) &&
+   !foundCouch
+)
+{
+  foundCouch = true;
+
+  setMessage(
+    "You stumbled upon a couch in the darkness..."
+  );
+
+  return;
+}
+
+if (
+  (nextTile === TILE.COUCH_LEFT ||
+   nextTile === TILE.COUCH_MIDDLE ||
+   nextTile === TILE.COUCH_RIGHT) &&
    !searchedCouch
 )
 {
@@ -1019,7 +1036,6 @@ if (
 )
 {
   setMessage("Nothing else in the couch.");
-  return;
 }
 
 /* ---- Move player after successful interaction ---- */
