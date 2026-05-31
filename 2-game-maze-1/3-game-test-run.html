@@ -98,18 +98,20 @@ h1 {
   display: none;
 }
 
+.mobile-controls button {
+  width: 120px;
+  height: 120px;
+  font-size: 48px;
+}
+
 @media (max-width: 768px) {
   .mobile-controls {
     display: grid;
-    grid-template-columns: 96px 96px 96px;
-    gap: 12px;
+    grid-template-columns: 120px 120px 120px;
+    gap: 16px;
     justify-content: center;
     margin-top: 16px;
   }
-}
-
-.center-button {
-  visibility: hidden;
 }
 
 </style>
@@ -225,9 +227,9 @@ const room1 = [
   "###B## # Q#",
   "#   #  ####",
   "#L  #    X#",
-  "#####  #  #",
-  "#E  r b# a#",
-  "###########"
+  "## ##  #  #",
+  "#E #r b# a#",
+  "#####d#####"
 ];
 
 const room2 = [
