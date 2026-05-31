@@ -253,6 +253,7 @@ const TILE = {
   PAGER: "@",
   PAGE_TRIGGER: "!",
   PAGE_TRIGGER_2: "&",
+  PAGE_TRIGGER_3: "$",
 
   SKULL_INFLUENCER: "I",
   FLASHLIGHT: "f"
@@ -306,15 +307,15 @@ const room3 = [
 
 const room4 = [
   "######q####",
-  "#   #     #",
+  "# $ #     #",
   "# # # ### #",
   "# #   #   #",
   "p ### # ###",
-  "#     #   #",
+  "#$    #$  #",
   "### # ### #",
   "#   #     #",
   "# ##### # #",
-  "#       # #",
+  "#    $  # #",
   "###########"
 ];
 
@@ -365,6 +366,7 @@ let viewingPager = false;
 
 let gotPage1 = false;
 let gotPage2 = false;
+let gotPage3 = false;
 
 let skullX = 8;
 let skullY = 9;
@@ -380,6 +382,7 @@ const tileImages = {
   [TILE.PAGER]: "../0-game-gallery/pager.png",
   [TILE.PAGE_TRIGGER]: "../0-game-gallery/0-floor.png",
   [TILE.PAGE_TRIGGER_2]: "../0-game-gallery/0-floor.png",
+  [TILE.PAGE_TRIGGER_3]: "../0-game-gallery/0-floor.png",
   [TILE.SKULL_INFLUENCER]: "../0-game-gallery/skull-influencer.png",
   [TILE.ROOM_EXIT_DOWN]: "../0-game-gallery/0-floor.png",
   [TILE.TELEPORTER_1]: "../0-game-gallery/0-floor.png",
@@ -956,6 +959,23 @@ if (
   playerY = nextY;
 
   setMessage("The command for the Exit Door is 'Exit Door//open'.");
+
+  drawMaze();
+  drawPagerCloseup();
+  return;
+}
+
+if (
+  nextTile === TILE.PAGE_TRIGGER_3 &&
+  hasPager
+) {
+  gotPage3 = true;
+  viewingPager = true;
+
+  playerX = nextX;
+  playerY = nextY;
+
+  setMessage("Hellhound, just GIVE UP already! YOU can't troubleshoot THIS!");
 
   drawMaze();
   drawPagerCloseup();
