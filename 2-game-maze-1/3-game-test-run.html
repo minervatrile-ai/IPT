@@ -208,7 +208,8 @@ const TILE = {
   VENT_ENTRANCE: "V",
   LADDER: "L",
   PAGER: "@",
-  PAGE_TRIGGER: "1"
+  PAGE_TRIGGER: "!",
+  PAGE_TRIGGER_2: "&"
 };
 
 /* ==========================
@@ -217,16 +218,16 @@ const TILE = {
 
 const room1 = [
   "###########",
-  "#PC#FFF1AMV",
+  "ZPC#FFF!AMV",
   "# U#FRF####",
-  "# ## #    #",
+  "# ##&#    #",
   "#    # #  #",
-  "###B## # R#",
-  "#OOO#  ####",
-  "#QRO#    X#",
-  "# ###  #  #",
-  "#EZ r b# a#",
-  "#####d#####"
+  "###B## # Q#",
+  "#   #  ####",
+  "#L  #    X#",
+  "#####  #  #",
+  "#E  r b# a#",
+  "###########"
 ];
 
 const room2 = [
@@ -235,7 +236,7 @@ const room2 = [
   "### # ### #",
   "#   #e  # #",
   "# ##### # p",
-  "#      L# #",
+  "#       # #",
   "# ### ### #",
   "# #     # #",
   "# # ### # #",
@@ -312,6 +313,7 @@ let hasPager = false;
 let viewingPager = false;
 
 let gotPage1 = false;
+let gotPage2 = false;
 
 
 /* ==========================
@@ -323,12 +325,13 @@ const tileImages = {
   [TILE.FLOOR]: "../0-game-gallery/0-floor.png",
   [TILE.PAGER]: "../0-game-gallery/pager.png",
   [TILE.PAGE_TRIGGER]: "../0-game-gallery/0-floor.png",
+  [TILE.PAGE_TRIGGER_2]: "../0-game-gallery/0-floor.png",
 
   [TILE.ROOM_EXIT_DOWN]: "../0-game-gallery/0-floor.png",
   [TILE.TELEPORTER_1]: "../0-game-gallery/0-floor.png",
   [TILE.TELEPORTER_2]: "../0-game-gallery/0-floor.png",
 
-  [TILE.PHONY_WALL]: "../0-game-gallery/0-wall.png",
+  [TILE.PHONY_WALL]: "../0-game-gallery/exit.png",
 
   [TILE.VENT_ENTRANCE]: "../0-game-gallery/1-vent-entrance.png",
   [TILE.LADDER]: "../0-game-gallery/1-ladder.png",
@@ -449,11 +452,19 @@ function movePlayer(dx, dy) {
   }
 
   if (nextTile === TILE.PHONY_WALL && !wallVanish) {
-    setMessage("The wall song's meaning... suddenly becomes clear.");
-    wallVanish = true;
+    setMessage("This must be the way out. But it's LOCKED.");
     return;
     
   }
+  if (nextTile === TILE.PHONY_WALL && wallVanish) {
+  setMessage("The EXIT DOOR unlocks. Hellhound escapes the testing grounds.");
+
+  setTimeout(function() {
+    window.location.href = "https://identitypanictoolkit.com";
+  }, 2500);
+
+  return;
+}
 
   if (nextTile === TILE.DESK) {
     setMessage("Can't walk here. There's a desk in the way...");
@@ -604,40 +615,61 @@ if (nextTile === TILE.RADIO) {
 
 if (
   nextTile === TILE.COMPUTER &&
-  (hasLevel2Disk || hasMedicineDog) &&
   radioState === 2
 ) {
   computerActivated = true;
 
   const choice = prompt(
-    "DOS MENU\n\n" +
-    "1 = Run 'Weird Wizard Apartment' game disk...\n" +
-    "2 = Run 'Medicine Dog' Ambulance game disk...\n" +
-    "3 = Shutdown"
+    "RETRO-TECH TERMINAL\n\n" +
+    "1 = Run 'Weird Wizard Apartment'\n" +
+    "2 = Run 'Medicine Dog'\n" +
+    "3 = Enter Command\n" +
+    "4 = Shutdown"
   );
 
-if (choice === "1") {
-  if (hasLevel2Disk) {
-    window.location.href = "2-game-prototype-1.html";
-  } else {
-    setMessage("No Weird Wizard Apartment disk detected...");
+  if (choice === "1") {
+    if (hasLevel2Disk) {
+      window.location.href = "2-game-prototype-1.html";
+    } else {
+      setMessage("No Weird Wizard Apartment disk detected...");
+    }
     return;
   }
-}
 
-if (choice === "2") {
-  if (hasMedicineDog) {
-    window.location.href = "../2-emoji-traffic-prototype.html";
-  } else {
-    setMessage("No Medicine Dog disk detected...");
+  else if (choice === "2") {
+    if (hasMedicineDog) {
+      window.location.href = "../2-emoji-traffic-prototype.html";
+    } else {
+      setMessage("No Medicine Dog disk detected...");
+    }
     return;
   }
-}
 
-if (choice === "3") {
-  setMessage("System shutting down.");
-  return;
-}
+  else if (choice === "3") {
+    const command = prompt(
+      "RETRO-TECH TERMINAL\n\n" +
+      "Enter Command:"
+    );
+
+    if (command === "Exit Door//open") {
+      wallVanish = true;
+      setMessage("EXIT DOOR OPENED.");
+      drawMaze();
+    } else {
+      setMessage("UNKNOWN COMMAND.");
+    }
+    return;
+  }
+
+  else if (choice === "4") {
+    setMessage("System shutting down.");
+    return;
+  }
+
+  else {
+    setMessage("Invalid terminal selection.");
+    return;
+  }
 }
 /* ---- ^ gotta program in other game choice ---- */
 
@@ -752,6 +784,24 @@ if (nextTile === TILE.VENT_ENTRANCE) {
   return;
 }
 
+if (
+  nextTile === TILE.PAGE_TRIGGER_2 &&
+  hasPager
+) {
+  gotPage2 = true;
+  viewingPager = true;
+
+  playerX = nextX;
+  playerY = nextY;
+
+  setMessage("The command for the Exit Door is 'Exit Door//open'.");
+
+  drawMaze();
+  drawPagerCloseup();
+  return;
+}
+ 
+
 /* ---- Move player after successful interaction ---- */
 
 
@@ -772,7 +822,6 @@ function drawPagerCloseup() {
       <img src="${getPagerCloseupImage()}">
       <br>
       <button onclick="checkPager()">Check Messages</button>
-      <button onclick="closePager()">Back</button>
     </div>
   `;
 }
@@ -826,7 +875,9 @@ function listenRadio() {
     setMessage("The radio has no power.");
   } else if (radioState === 2) {
     if (hasTapeR) {
-      setMessage("The cassette clicks in, singing 'I'd walk thru walls 4 u, baby...'");
+    setMessage(
+  "The cassette clicks in. 'Hellhound: you have been selected to troubleshoot this RETRO-TECH facility due to your maximum capabilities as a troubleshooter and three-headed dog-man. Once you escape, you will be compensated financially for all trauma incurred during testing. Further instructions may be available through facility communications devices.'");
+
     } else {
       setMessage("You don't have any tapes to play right now.");
     }
