@@ -246,7 +246,9 @@ const TILE = {
   MEDICINE_DOG: "M",
 
   BREAKER: "X",
-
+  COUCH_LEFT: "7",
+  COUCH_MIDDLE: "8",
+  COUCH_RIGHT: "9",
   PHONY_WALL: "Z",
   VENT_ENTRANCE: "V",
   LADDER: "L",
@@ -284,9 +286,9 @@ const room2 = [
   "#   #e  # #",
   "# ##### #&p",
   "#       # #",
-  "# ### ### #",
+  "# #### ## #",
   "# #     # #",
-  "# # ### # #",
+  "# #     # #",
   "#         #",
   "###########"
 ];
@@ -313,9 +315,9 @@ const room4 = [
   "p ### # ###",
   "#$    #$  #",
   "### # ### #",
-  "#   #     #",
-  "# ##### # #",
-  "#    $  # #",
+  "#   # 789 #",
+  "# ###     #",
+  "#    $    #",
   "###########"
 ];
 
@@ -387,6 +389,10 @@ const tileImages = {
   [TILE.ROOM_EXIT_DOWN]: "../0-game-gallery/0-floor.png",
   [TILE.TELEPORTER_1]: "../0-game-gallery/0-floor.png",
   [TILE.TELEPORTER_2]: "../0-game-gallery/0-floor.png",
+  
+  [TILE.COUCH_LEFT]: "../0-game-gallery/couch-left.png",
+  [TILE.COUCH_MIDDLE]: "../0-game-gallery/couch-middle.png",
+  [TILE.COUCH_RIGHT]: "../0-game-gallery/couch-right.png",
 
   [TILE.PHONY_WALL]: "../0-game-gallery/exit.png",
 
