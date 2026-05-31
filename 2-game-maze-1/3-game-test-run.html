@@ -206,7 +206,9 @@ const TILE = {
 
   PHONY_WALL: "Z",
   VENT_ENTRANCE: "V",
-  LADDER: "L"
+  LADDER: "L",
+  PAGER: "@",
+  PAGE_TRIGGER: "1"
 };
 
 /* ==========================
@@ -215,7 +217,7 @@ const TILE = {
 
 const room1 = [
   "###########",
-  "#PC#FFF AMV",
+  "#PC#FFF1AMV",
   "# U#FRF####",
   "# ## #    #",
   "#    # #  #",
@@ -243,8 +245,8 @@ const room2 = [
 
 const room3 = [
   "###########",
-  "V    #    #",
-  "# ## # ## #",
+  "V  @ #    #",
+  "###### ## #",
   "# #     # #",
   "# # ### # #",
   "#   # #   #",
@@ -306,6 +308,11 @@ let wallVanish = false;
 let hasMedicineDog = false;
 let hasLadder = false;
 
+let hasPager = false;
+let viewingPager = false;
+
+let gotPage1 = false;
+
 
 /* ==========================
    TILE IMAGES
@@ -314,6 +321,8 @@ let hasLadder = false;
 const tileImages = {
   [TILE.WALL]: "../0-game-gallery/0-wall.png",
   [TILE.FLOOR]: "../0-game-gallery/0-floor.png",
+  [TILE.PAGER]: "../0-game-gallery/pager.png",
+  [TILE.PAGE_TRIGGER]: "../0-game-gallery/0-floor.png",
 
   [TILE.ROOM_EXIT_DOWN]: "../0-game-gallery/0-floor.png",
   [TILE.TELEPORTER_1]: "../0-game-gallery/0-floor.png",
@@ -378,6 +387,8 @@ function getVisibleTile(cell) {
 
   if (cell === TILE.FIRE_A && fireAOut) return TILE.FLOOR;
   if (cell === TILE.FIRE_B && fireBOut) return TILE.FLOOR;
+
+  if (cell === TILE.PAGER && hasPager) return TILE.FLOOR;
 
   if (cell === TILE.EXTINGUISHER2 && hasExtinguisher2) return TILE.FLOOR;
   if (cell === TILE.EXTINGUISHER && hasExtinguisher) return TILE.FLOOR;
@@ -533,6 +544,11 @@ if (nextTile === TILE.FIRE_B &&
   }
 
   /* ---- Pickups ---- */
+
+  if (nextTile === TILE.PAGER) {
+  hasPager = true;
+  setMessage("You found your lost pager...");
+}
 
   if (nextTile === TILE.LADDER) {
     hasLadder = true;
@@ -722,12 +738,58 @@ if (nextTile === TILE.VENT_ENTRANCE) {
   return;
 }
 
-  /* ---- Move player after successful interaction ---- */
+ if (
+  nextTile === TILE.PAGE_TRIGGER &&
+  hasPager &&
+  !gotPage1
+) {
+  gotPage1 = true;
+  viewingPager = true;
+
+  setMessage("BEEP BEEP... Pager Battery: Full.");
+
+  drawPagerCloseup();
+  return;
+}
+
+/* ---- Move player after successful interaction ---- */
+
+
 
   playerX = nextX;
   playerY = nextY;
 
   drawMaze();
+}
+
+function drawPagerCloseup() {
+  const overlay = document.getElementById("overlay");
+
+  overlay.style.display = "flex";
+
+  overlay.innerHTML = `
+    <div class="popup">
+      <img src="${getPagerCloseupImage()}">
+      <br>
+      <button onclick="checkPager()">Check Messages</button>
+      <button onclick="closePager()">Back</button>
+    </div>
+  `;
+}
+
+function getPagerCloseupImage() {
+  if (gotPage1 === true) {
+    return "../0-game-gallery/pager-active.png";
+  }
+}
+
+function checkPager() {
+  viewingPager = false;
+
+  const overlay = document.getElementById("overlay");
+
+  overlay.style.display = "none";
+  overlay.innerHTML = "";
 }
 
 function drawRadioCloseup() {
