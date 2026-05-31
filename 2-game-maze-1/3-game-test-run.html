@@ -121,7 +121,9 @@ h1 {
 
 <h1>Hellhound Prototype Test Run</h1>
 
-<div id="message">You're Hellhound, Maintenance Technician, and this is where you woke up... Hellhound: 'Awww, maaaan... Where the heck am I? This isn't where I went to sleep at!'</div>
+<div id="message">
+You're Hellhound, Maintenance Technician, and this is where you woke up... Hellhound: 'Awww, maaaan... Where the heck am I? This isn't where I went to sleep at!'
+</div>
 
 <div id="maze"></div>
 
@@ -211,7 +213,9 @@ const TILE = {
   LADDER: "L",
   PAGER: "@",
   PAGE_TRIGGER: "!",
-  PAGE_TRIGGER_2: "&"
+  PAGE_TRIGGER_2: "&",
+
+  SKULL_INFLUENCER: "I"
 };
 
 /* ==========================
@@ -283,6 +287,7 @@ let maze = room1;
 let playerX = 1;
 let playerY = 1;
 
+
 /* ==========================
    GAME STATE
 ========================== */
@@ -317,6 +322,9 @@ let viewingPager = false;
 let gotPage1 = false;
 let gotPage2 = false;
 
+let skullX = 8;
+let skullY = 9;
+
 
 /* ==========================
    TILE IMAGES
@@ -328,7 +336,7 @@ const tileImages = {
   [TILE.PAGER]: "../0-game-gallery/pager.png",
   [TILE.PAGE_TRIGGER]: "../0-game-gallery/0-floor.png",
   [TILE.PAGE_TRIGGER_2]: "../0-game-gallery/0-floor.png",
-
+  [TILE.SKULL_INFLUENCER]: "../0-game-gallery/skull-influencer.png",
   [TILE.ROOM_EXIT_DOWN]: "../0-game-gallery/0-floor.png",
   [TILE.TELEPORTER_1]: "../0-game-gallery/0-floor.png",
   [TILE.TELEPORTER_2]: "../0-game-gallery/0-floor.png",
@@ -428,6 +436,10 @@ function drawMaze() {
         cell = TILE.PLAYER_START;
       }
 
+      if (x === skullX && y === skullY) {
+        cell = TILE.SKULL_INFLUENCER;
+      }
+
       const tile = document.createElement("div");
       tile.className = "tile";
       tile.style.backgroundImage = `url(${tileImages[cell]})`;
@@ -435,6 +447,27 @@ function drawMaze() {
       mazeDiv.appendChild(tile);
     }
   }
+}
+
+function moveSkullInfluencer() {
+  const directions = [
+    { x: 0, y: -1 },
+    { x: 0, y: 1 },
+    { x: -1, y: 0 },
+    { x: 1, y: 0 }
+  ];
+
+  const choice = directions[Math.floor(Math.random() * directions.length)];
+
+  const nextX = skullX + choice.x;
+  const nextY = skullY + choice.y;
+
+  if (maze[nextY][nextX] !== "#") {
+    skullX = nextX;
+    skullY = nextY;
+  }
+
+  drawMaze();
 }
 
 /* ==========================
@@ -802,16 +835,17 @@ if (
   drawPagerCloseup();
   return;
 }
- 
 
 /* ---- Move player after successful interaction ---- */
 
+playerX = nextX;
+playerY = nextY;
 
+if (playerX === skullX && playerY === skullY) {
+  setMessage("The Skull Influencer corners you!");
+}
 
-  playerX = nextX;
-  playerY = nextY;
-
-  drawMaze();
+drawMaze();
 }
 
 function drawPagerCloseup() {
@@ -912,7 +946,13 @@ document.addEventListener("keydown", function(event) {
    START GAME
 ========================== */
 
+/* ==========================
+   START GAME
+========================== */
+
 drawMaze();
+setInterval(moveSkullInfluencer, 700);
+
 </script>
 
 </body>
