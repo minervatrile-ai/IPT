@@ -309,14 +309,14 @@ const room3 = [
 
 const room4 = [
   "######q####",
-  "# $ #     #",
-  "# # # ### #",
-  "# #   #   #",
-  "p ### # ###",
+  "# $       #",
+  "#     #   #",
+  "#     #   #",
+  "p     #   #",
   "#$    #$  #",
-  "### # ### #",
-  "#   # 789 #",
-  "# ###     #",
+  "#     ### #",
+  "#     789 #",
+  "#         #",
   "#    $    #",
   "###########"
 ];
@@ -335,6 +335,10 @@ let playerY = 1;
    GAME STATE
 ========================== */
 let inventoryOpen = false;
+
+let searchedCouch = false;
+let hasDollar = false;
+let hasPagerBattery = false;
 
 let hasFlashlight = false;
 let facingDirection = "down";
@@ -467,6 +471,9 @@ function toggleInventory() {
 function drawInventory() {
   let items = "";
 
+  if (hasPagerBattery)
+  items += "<div>🔋 Pager Battery</div>";
+  if (hasDollar) items += "<div>💵 A Few Dollars</div>";
   if (hasExtinguisher) items += "<div>🧯 Extinguisher</div>";
   if (hasExtinguisher2)
   items += "<div>🧯 Backup Extinguisher</div>";
@@ -988,8 +995,32 @@ if (
   return;
 }
 
+if (
+  (nextTile === TILE.COUCH_LEFT ||
+   nextTile === TILE.COUCH_MIDDLE ||
+   nextTile === TILE.COUCH_RIGHT) &&
+   !searchedCouch
+)
+{
+  hasDollar = true;
+  hasPagerBattery = true;
+  
+  searchedCouch = true;
+  setMessage(
+  "You search between the cushions and find a few dollars and a pager battery."
+);
+  return;
+}
 
-
+if (
+  nextTile === TILE.COUCH_LEFT ||
+  nextTile === TILE.COUCH_MIDDLE ||
+  nextTile === TILE.COUCH_RIGHT
+)
+{
+  setMessage("Nothing else in the couch.");
+  return;
+}
 
 /* ---- Move player after successful interaction ---- */
 
