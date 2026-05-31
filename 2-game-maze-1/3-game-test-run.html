@@ -254,7 +254,8 @@ const TILE = {
   PAGE_TRIGGER: "!",
   PAGE_TRIGGER_2: "&",
 
-  SKULL_INFLUENCER: "I"
+  SKULL_INFLUENCER: "I",
+  FLASHLIGHT: "f"
 };
 
 /* ==========================
@@ -263,7 +264,7 @@ const TILE = {
 
 const room1 = [
   "###########",
-  "ZPC#FFF!AMV",
+  "#PC#FFF!AMV",
   "# U#FRF####",
   "# ##&#    #",
   "#    # #  #",
@@ -291,15 +292,15 @@ const room2 = [
 
 const room3 = [
   "###########",
-  "V  @ #    #",
+  "V  @      #",
   "###### ## #",
   "# #     # #",
   "# # ### # #",
-  "#   # #   #",
+  "#   #f#   #",
   "### # # ###",
   "#     #   #",
-  "# ### ### #",
-  "#         #",
+  "###########",
+  "#         Z",
   "######q####"
 ];
 
@@ -331,6 +332,9 @@ let playerY = 1;
    GAME STATE
 ========================== */
 let inventoryOpen = false;
+
+let hasFlashlight = false;
+let facingDirection = "down";
 
 let hasKeyA = false;
 let hasKeyB = false;
@@ -409,13 +413,34 @@ const tileImages = {
   [TILE.RADIO_BAD]: "../0-game-gallery/2-radio-bad.png",
   [TILE.CASSETTE_TAPE]: "../0-game-gallery/2-cassette.png",
 
-  [TILE.BREAKER]: "../0-game-gallery/4-breaker-box.png"
-
+  [TILE.BREAKER]: "../0-game-gallery/4-breaker-box.png",
+  [TILE.FLASHLIGHT]: "../0-game-gallery/flashlight.png"
 };
 
 /* ==========================
    SMALL HELPERS
 ========================== */
+
+function isDarkRoom() {
+  return maze === room4; // change to your dark room
+}
+
+function isLitByFlashlight(x, y) {
+  if (facingDirection === "right") return y === playerY && x > playerX && x <= playerX + 2;
+  if (facingDirection === "left") return y === playerY && x < playerX && x >= playerX - 2;
+  if (facingDirection === "down") return x === playerX && y > playerY && y <= playerY + 2;
+  if (facingDirection === "up") return x === playerX && y < playerY && y >= playerY - 2;
+
+  return false;
+}
+
+function isVisible(x, y) {
+  if (!isDarkRoom()) return true;
+  if (!hasFlashlight) return false;
+
+  return isLitByFlashlight(x, y);
+}
+
 function toggleInventory() {
 
   inventoryOpen = !inventoryOpen;
@@ -514,7 +539,13 @@ function drawMaze() {
 
       const tile = document.createElement("div");
       tile.className = "tile";
-      tile.style.backgroundImage = `url(${tileImages[cell]})`;
+      if (!isVisible(x, y)) {
+  tile.style.backgroundColor = "black";
+  tile.style.backgroundImage = "none";
+} else {
+  tile.style.backgroundColor = "";
+  tile.style.backgroundImage = `url(${tileImages[cell]})`;
+}
 
       mazeDiv.appendChild(tile);
     }
@@ -547,8 +578,15 @@ function moveSkullInfluencer() {
 ========================== */
 
 function movePlayer(dx, dy) {
+
+if (dx === 1) facingDirection = "right";
+if (dx === -1) facingDirection = "left";
+if (dy === 1) facingDirection = "down";
+if (dy === -1) facingDirection = "up";
+
   const nextX = playerX + dx;
   const nextY = playerY + dy;
+
   const nextTile = getMapTile(nextX, nextY);
 
   /* ---- Hard blockers ---- */
@@ -662,6 +700,22 @@ if (nextTile === TILE.FIRE_B &&
   }
 
   /* ---- Pickups ---- */
+
+if (nextTile === TILE.FLASHLIGHT) {
+  hasFlashlight = true;
+  setMessage("The flashlight still works.");
+
+  maze[nextY] =
+    maze[nextY].substring(0, nextX) +
+    " " +
+    maze[nextY].substring(nextX + 1);
+
+  playerX = nextX;
+  playerY = nextY;
+
+  drawMaze();
+  return;
+}
 
   if (nextTile === TILE.PAGER) {
   hasPager = true;
@@ -908,6 +962,9 @@ if (
   return;
 }
 
+
+
+
 /* ---- Move player after successful interaction ---- */
 
 playerX = nextX;
@@ -1002,6 +1059,8 @@ function closeRadio() {
   overlay.style.display = "none";
   overlay.innerHTML = "";
 }
+
+
 
 /* ==========================
    KEYBOARD CONTROLS
