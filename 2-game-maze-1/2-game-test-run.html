@@ -90,6 +90,32 @@ h1 {
   z-index: 999;
 }
 
+#inventoryPanel {
+  position: fixed;
+  right: 20px;
+  top: 150px;
+
+  background: black;
+  color: lime;
+
+  border: 2px solid lime;
+  padding: 12px;
+
+  z-index: 1000;
+}
+
+#inventoryButton {
+  position: fixed;
+  right: 20px;
+  top: 100px;
+
+  z-index: 1001;
+}
+
+#inventoryItems div {
+  margin: 6px 0;
+}
+
 /* ==========================
    MOBILE CONTROLS
 ========================== */
@@ -121,7 +147,9 @@ h1 {
 
 <h1>Hellhound Prototype Test Run</h1>
 
-<div id="message">Explore the world...</div>
+<div id="message">
+You're Hellhound, Maintenance Technician, and this is where you woke up... Hellhound: 'Awww, maaaan... Where the heck am I? This isn't where I went to sleep at!'
+</div>
 
 <div id="maze"></div>
 
@@ -139,6 +167,19 @@ h1 {
   <div></div>
   <button onclick="movePlayer(0, 1)">▼</button>
   <div></div>
+</div>
+
+<button id="inventoryButton"
+        onclick="toggleInventory()">
+🎒 Inventory
+</button>
+
+<div id="inventoryPanel" style="display:none;">
+  <h3>HELLHOUND EQUIPMENT</h3>
+
+  <div id="inventoryItems"></div>
+
+  <button onclick="toggleInventory()">Close</button>
 </div>
 
 <script>
@@ -205,13 +246,20 @@ const TILE = {
   MEDICINE_DOG: "M",
 
   BREAKER: "X",
-
+  COUCH_LEFT: "7",
+  COUCH_MIDDLE: "8",
+  COUCH_RIGHT: "9",
   PHONY_WALL: "Z",
   VENT_ENTRANCE: "V",
   LADDER: "L",
   PAGER: "@",
   PAGE_TRIGGER: "!",
-  PAGE_TRIGGER_2: "&"
+  PAGE_TRIGGER_2: "&",
+  PAGE_TRIGGER_3: "$",
+  PAGER_DEPLETED: "0",
+
+  SKULL_INFLUENCER: "I",
+  FLASHLIGHT: "f"
 };
 
 /* ==========================
@@ -220,7 +268,7 @@ const TILE = {
 
 const room1 = [
   "###########",
-  "ZPC#FFF!AMV",
+  "#PC#FFF!AMV",
   "# U#FRF####",
   "# ##&#    #",
   "#    # #  #",
@@ -237,40 +285,40 @@ const room2 = [
   "#   #     #",
   "### # ### #",
   "#   #e  # #",
-  "# ##### # p",
+  "# ##### #&p",
   "#       # #",
-  "# ### ### #",
+  "# #### ## #",
   "# #     # #",
-  "# # ### # #",
+  "# #     # #",
   "#         #",
   "###########"
 ];
 
 const room3 = [
   "###########",
-  "V  @ #    #",
+  "V  @      #",
   "###### ## #",
   "# #     # #",
   "# # ### # #",
-  "#   # #   #",
+  "#   #f#   #",
   "### # # ###",
   "#     #   #",
-  "# ### ### #",
-  "#         #",
+  "###########",
+  "# &     & Z",
   "######q####"
 ];
 
 const room4 = [
   "######q####",
-  "#   #     #",
-  "# # # ### #",
-  "# #   #   #",
-  "p ### # ###",
+  "# $       #",
   "#     #   #",
-  "### # ### #",
-  "#   #     #",
-  "# ##### # #",
-  "#       # #",
+  "#     #   #",
+  "p    0#   #",
+  "#$   0#$  #",
+  "#    0### #",
+  "#     789 #",
+  "#         #",
+  "#    $    #",
   "###########"
 ];
 
@@ -283,9 +331,19 @@ let maze = room1;
 let playerX = 1;
 let playerY = 1;
 
+
 /* ==========================
    GAME STATE
 ========================== */
+let inventoryOpen = false;
+
+let foundCouch = false;
+let searchedCouch = false;
+let hasDollar = false;
+let hasPagerBattery = false;
+
+let hasFlashlight = false;
+let facingDirection = "down";
 
 let hasKeyA = false;
 let hasKeyB = false;
@@ -313,9 +371,15 @@ let hasLadder = false;
 
 let hasPager = false;
 let viewingPager = false;
+let pagerBatteryTrapUsed = false;
+let pagerPickedUp = false;
 
 let gotPage1 = false;
 let gotPage2 = false;
+let gotPage3 = false;
+
+let skullX = 8;
+let skullY = 9;
 
 
 /* ==========================
@@ -328,10 +392,15 @@ const tileImages = {
   [TILE.PAGER]: "../0-game-gallery/pager.png",
   [TILE.PAGE_TRIGGER]: "../0-game-gallery/0-floor.png",
   [TILE.PAGE_TRIGGER_2]: "../0-game-gallery/0-floor.png",
-
+  [TILE.PAGE_TRIGGER_3]: "../0-game-gallery/0-floor.png",
+  [TILE.SKULL_INFLUENCER]: "../0-game-gallery/skull-influencer.png",
   [TILE.ROOM_EXIT_DOWN]: "../0-game-gallery/0-floor.png",
   [TILE.TELEPORTER_1]: "../0-game-gallery/0-floor.png",
   [TILE.TELEPORTER_2]: "../0-game-gallery/0-floor.png",
+  [TILE.PAGER_DEPLETED]: "../0-game-gallery/0-floor.png",
+  [TILE.COUCH_LEFT]: "../0-game-gallery/couch-left.png",
+  [TILE.COUCH_MIDDLE]: "../0-game-gallery/couch-middle.png",
+  [TILE.COUCH_RIGHT]: "../0-game-gallery/couch-right.png",
 
   [TILE.PHONY_WALL]: "../0-game-gallery/exit.png",
 
@@ -361,13 +430,69 @@ const tileImages = {
   [TILE.RADIO_BAD]: "../0-game-gallery/2-radio-bad.png",
   [TILE.CASSETTE_TAPE]: "../0-game-gallery/2-cassette.png",
 
-  [TILE.BREAKER]: "../0-game-gallery/4-breaker-box.png"
-
+  [TILE.BREAKER]: "../0-game-gallery/4-breaker-box.png",
+  [TILE.FLASHLIGHT]: "../0-game-gallery/flashlight.png"
 };
 
 /* ==========================
    SMALL HELPERS
 ========================== */
+
+function isDarkRoom() {
+  return maze === room4; // change to your dark room
+}
+
+function isLitByFlashlight(x, y) {
+  if (facingDirection === "right") return y === playerY && x > playerX && x <= playerX + 2;
+  if (facingDirection === "left") return y === playerY && x < playerX && x >= playerX - 2;
+  if (facingDirection === "down") return x === playerX && y > playerY && y <= playerY + 2;
+  if (facingDirection === "up") return x === playerX && y < playerY && y >= playerY - 2;
+
+  return false;
+}
+
+function isVisible(x, y) {
+  if (!isDarkRoom()) return true;
+  if (!hasFlashlight) return false;
+
+  return isLitByFlashlight(x, y);
+}
+
+function toggleInventory() {
+
+  inventoryOpen = !inventoryOpen;
+
+  const panel = document.getElementById("inventoryPanel");
+
+  if (inventoryOpen) {
+    panel.style.display = "block";
+    drawInventory();
+  } else {
+    panel.style.display = "none";
+  }
+}
+
+function drawInventory() {
+  let items = "";
+
+  if (hasPagerBattery)
+  items += "<div>🔋 Pager Battery</div>";
+  if (hasDollar) items += "<div>💵 A Few Dollars</div>";
+  if (hasExtinguisher) items += "<div>🧯 Extinguisher</div>";
+  if (hasExtinguisher2)
+  items += "<div>🧯 Backup Extinguisher</div>";
+  if (hasPager) items += "<div>📟 Pager</div>";
+  if (hasLadder) items += "<div>🪜 Ladder</div>";
+  if (hasLevel2Disk) items += "<div>💾 Weird Wizard Apartment Disk</div>";
+  if (hasMedicineDog) items += "<div>💾 Medicine Dog Disk</div>";
+  if (hasKeyA) items += "<div>🗝️ Key A</div>";
+  if (hasKeyB) items += "<div>🗝️ Key B</div>";
+  if (hasTapeR) items += "<div>📼 Cassette Tape</div>";
+
+  if (items === "") items = "No equipment yet.";
+
+  document.getElementById("inventoryItems").innerHTML = items;
+}
 
 function setMessage(text) {
   document.getElementById("message").innerText = text;
@@ -393,7 +518,7 @@ function getVisibleTile(cell) {
   if (cell === TILE.FIRE_A && fireAOut) return TILE.FLOOR;
   if (cell === TILE.FIRE_B && fireBOut) return TILE.FLOOR;
 
-  if (cell === TILE.PAGER && hasPager) return TILE.FLOOR;
+  if (cell === TILE.PAGER && pagerPickedUp) return TILE.FLOOR;
 
   if (cell === TILE.EXTINGUISHER2 && hasExtinguisher2) return TILE.FLOOR;
   if (cell === TILE.EXTINGUISHER && hasExtinguisher) return TILE.FLOOR;
@@ -428,13 +553,44 @@ function drawMaze() {
         cell = TILE.PLAYER_START;
       }
 
+      if (x === skullX && y === skullY) {
+        cell = TILE.SKULL_INFLUENCER;
+      }
+
       const tile = document.createElement("div");
       tile.className = "tile";
-      tile.style.backgroundImage = `url(${tileImages[cell]})`;
+      if (!isVisible(x, y)) {
+  tile.style.backgroundColor = "black";
+  tile.style.backgroundImage = "none";
+} else {
+  tile.style.backgroundColor = "";
+  tile.style.backgroundImage = `url(${tileImages[cell]})`;
+}
 
       mazeDiv.appendChild(tile);
     }
   }
+}
+
+function moveSkullInfluencer() {
+  const directions = [
+    { x: 0, y: -1 },
+    { x: 0, y: 1 },
+    { x: -1, y: 0 },
+    { x: 1, y: 0 }
+  ];
+
+  const choice = directions[Math.floor(Math.random() * directions.length)];
+
+  const nextX = skullX + choice.x;
+  const nextY = skullY + choice.y;
+
+  if (maze[nextY][nextX] !== "#") {
+    skullX = nextX;
+    skullY = nextY;
+  }
+
+  drawMaze();
 }
 
 /* ==========================
@@ -442,8 +598,15 @@ function drawMaze() {
 ========================== */
 
 function movePlayer(dx, dy) {
+
+if (dx === 1) facingDirection = "right";
+if (dx === -1) facingDirection = "left";
+if (dy === 1) facingDirection = "down";
+if (dy === -1) facingDirection = "up";
+
   const nextX = playerX + dx;
   const nextY = playerY + dy;
+
   const nextTile = getMapTile(nextX, nextY);
 
   /* ---- Hard blockers ---- */
@@ -558,9 +721,26 @@ if (nextTile === TILE.FIRE_B &&
 
   /* ---- Pickups ---- */
 
+if (nextTile === TILE.FLASHLIGHT) {
+  hasFlashlight = true;
+  setMessage("The flashlight still works.");
+
+  maze[nextY] =
+    maze[nextY].substring(0, nextX) +
+    " " +
+    maze[nextY].substring(nextX + 1);
+
+  playerX = nextX;
+  playerY = nextY;
+
+  drawMaze();
+  return;
+}
+
   if (nextTile === TILE.PAGER) {
   hasPager = true;
-  setMessage("You found your lost pager...");
+  pagerPickedUp = true;
+  setMessage("You found a RETRO-TECH pager...");
 }
 
   if (nextTile === TILE.LADDER) {
@@ -720,7 +900,7 @@ if (nextTile === TILE.TELEPORTER_1) {
     maze = room2;
 
     playerX = 9;
-    playerY = 4;   // one tile below vent
+    playerY = 4;   
   }
 
   drawMaze();
@@ -740,7 +920,7 @@ if (nextTile === TILE.TELEPORTER_2) {
     maze = room3;
 
     playerX = 6;
-    playerY = 9;   // one tile below vent
+    playerY = 9;  
   }
 
   drawMaze();
@@ -769,6 +949,27 @@ if (nextTile === TILE.VENT_ENTRANCE) {
   }
 
   drawMaze();
+  return;
+}
+
+if (
+  nextTile === TILE.PAGER_DEPLETED &&
+  hasPager &&
+  !pagerBatteryTrapUsed
+) {
+  hasPager = false;
+  pagerBatteryTrapUsed = true;
+
+  setMessage(
+    "The pager screen flickers and goes dark. Battery depleted."
+  );
+}
+
+if (hasPagerBattery && !hasPager && pagerPickedUp) {
+  hasPager = true;
+  hasPagerBattery = false;
+
+  setMessage("You replace the pager battery.");
   return;
 }
 
@@ -802,16 +1003,76 @@ if (
   drawPagerCloseup();
   return;
 }
- 
 
-/* ---- Move player after successful interaction ---- */
-
-
+if (
+  nextTile === TILE.PAGE_TRIGGER_3 &&
+  hasPager
+) {
+  gotPage3 = true;
+  viewingPager = true;
 
   playerX = nextX;
   playerY = nextY;
 
+  setMessage("Hellhound, just GIVE UP already! YOU can't troubleshoot THIS!");
+
   drawMaze();
+  drawPagerCloseup();
+  return;
+}
+
+if (
+  (nextTile === TILE.COUCH_LEFT ||
+   nextTile === TILE.COUCH_MIDDLE ||
+   nextTile === TILE.COUCH_RIGHT) &&
+   !foundCouch
+)
+{
+  foundCouch = true;
+
+  setMessage(
+    "You stumbled upon a couch in the darkness..."
+  );
+
+  return;
+}
+
+if (
+  (nextTile === TILE.COUCH_LEFT ||
+   nextTile === TILE.COUCH_MIDDLE ||
+   nextTile === TILE.COUCH_RIGHT) &&
+   !searchedCouch
+)
+{
+  hasDollar = true;
+  hasPagerBattery = true;
+  
+  searchedCouch = true;
+  setMessage(
+  "You search between the cushions and find a few dollars and a pager battery."
+);
+  return;
+}
+
+if (
+  nextTile === TILE.COUCH_LEFT ||
+  nextTile === TILE.COUCH_MIDDLE ||
+  nextTile === TILE.COUCH_RIGHT
+)
+{
+  setMessage("Nothing else in the couch.");
+}
+
+/* ---- Move player after successful interaction ---- */
+
+playerX = nextX;
+playerY = nextY;
+
+if (playerX === skullX && playerY === skullY) {
+  setMessage("The Skull Influencer corners you!");
+}
+
+drawMaze();
 }
 
 function drawPagerCloseup() {
@@ -897,6 +1158,8 @@ function closeRadio() {
   overlay.innerHTML = "";
 }
 
+
+
 /* ==========================
    KEYBOARD CONTROLS
 ========================== */
@@ -912,7 +1175,13 @@ document.addEventListener("keydown", function(event) {
    START GAME
 ========================== */
 
+/* ==========================
+   START GAME
+========================== */
+
 drawMaze();
+setInterval(moveSkullInfluencer, 700);
+
 </script>
 
 </body>

@@ -256,6 +256,7 @@ const TILE = {
   PAGE_TRIGGER: "!",
   PAGE_TRIGGER_2: "&",
   PAGE_TRIGGER_3: "$",
+  PAGER_DEPLETED: "0",
 
   SKULL_INFLUENCER: "I",
   FLASHLIGHT: "f"
@@ -312,9 +313,9 @@ const room4 = [
   "# $       #",
   "#     #   #",
   "#     #   #",
-  "p     #   #",
-  "#$    #$  #",
-  "#     ### #",
+  "p    0#   #",
+  "#$   0#$  #",
+  "#    0### #",
   "#     789 #",
   "#         #",
   "#    $    #",
@@ -370,6 +371,8 @@ let hasLadder = false;
 
 let hasPager = false;
 let viewingPager = false;
+let pagerBatteryTrapUsed = false;
+let pagerPickedUp = false;
 
 let gotPage1 = false;
 let gotPage2 = false;
@@ -394,7 +397,7 @@ const tileImages = {
   [TILE.ROOM_EXIT_DOWN]: "../0-game-gallery/0-floor.png",
   [TILE.TELEPORTER_1]: "../0-game-gallery/0-floor.png",
   [TILE.TELEPORTER_2]: "../0-game-gallery/0-floor.png",
-  
+  [TILE.PAGER_DEPLETED]: "../0-game-gallery/0-floor.png",
   [TILE.COUCH_LEFT]: "../0-game-gallery/couch-left.png",
   [TILE.COUCH_MIDDLE]: "../0-game-gallery/couch-middle.png",
   [TILE.COUCH_RIGHT]: "../0-game-gallery/couch-right.png",
@@ -515,7 +518,7 @@ function getVisibleTile(cell) {
   if (cell === TILE.FIRE_A && fireAOut) return TILE.FLOOR;
   if (cell === TILE.FIRE_B && fireBOut) return TILE.FLOOR;
 
-  if (cell === TILE.PAGER && hasPager) return TILE.FLOOR;
+  if (cell === TILE.PAGER && pagerPickedUp) return TILE.FLOOR;
 
   if (cell === TILE.EXTINGUISHER2 && hasExtinguisher2) return TILE.FLOOR;
   if (cell === TILE.EXTINGUISHER && hasExtinguisher) return TILE.FLOOR;
@@ -736,6 +739,7 @@ if (nextTile === TILE.FLASHLIGHT) {
 
   if (nextTile === TILE.PAGER) {
   hasPager = true;
+  pagerPickedUp = true;
   setMessage("You found a RETRO-TECH pager...");
 }
 
@@ -896,7 +900,7 @@ if (nextTile === TILE.TELEPORTER_1) {
     maze = room2;
 
     playerX = 9;
-    playerY = 4;   // one tile below vent
+    playerY = 4;   
   }
 
   drawMaze();
@@ -916,7 +920,7 @@ if (nextTile === TILE.TELEPORTER_2) {
     maze = room3;
 
     playerX = 6;
-    playerY = 9;   // one tile below vent
+    playerY = 9;  
   }
 
   drawMaze();
@@ -945,6 +949,27 @@ if (nextTile === TILE.VENT_ENTRANCE) {
   }
 
   drawMaze();
+  return;
+}
+
+if (
+  nextTile === TILE.PAGER_DEPLETED &&
+  hasPager &&
+  !pagerBatteryTrapUsed
+) {
+  hasPager = false;
+  pagerBatteryTrapUsed = true;
+
+  setMessage(
+    "The pager screen flickers and goes dark. Battery depleted."
+  );
+}
+
+if (hasPagerBattery && !hasPager && pagerPickedUp) {
+  hasPager = true;
+  hasPagerBattery = false;
+
+  setMessage("You replace the pager battery.");
   return;
 }
 
