@@ -239,6 +239,8 @@ You're Hellhound, Maintenance Technician, and this is where you woke up... Hellh
 
 const TILE = {
 
+  SQUIRT_GUN: "^",
+  WATER_STREAM: "~",
   ROOM_EXIT_DOWN: "d",  
   TELEPORTER_1: "p",
   TELEPORTER_2: "q",
@@ -314,7 +316,7 @@ const room1 = [
 
 const room2 = [
   "#####d#####",
-  "#   #     #",
+  "#^  #     #",
   "### # ### #",
   "#   #e  ###",
   "# ##### #&p",
@@ -370,6 +372,8 @@ let playerY = 1;
 let hellhoundMorale = 100;
 let inventoryOpen = false;
 
+let hasSquirtGun = false;
+
 let foundCouch = false;
 let searchedCouch = false;
 let hasDollar = false;
@@ -377,6 +381,12 @@ let hasPagerBattery = false;
 
 let hasFlashlight = false;
 let facingDirection = "down";
+
+let streamActive = false;
+let streamX = 0;
+let streamY = 0;
+let streamDX = 0;
+let streamDY = 0;
 
 let hasKeyA = false;
 let hasKeyB = false;
@@ -425,6 +435,9 @@ let skullY = 9;
 ========================== */
 
 const tileImages = {
+  [TILE.SQUIRT_GUN]: "../0-game-gallery/squirt-gun.png",
+  [TILE.WATER_STREAM]: "../0-game-gallery/water-stream.png",
+
   [TILE.WALL]: "../0-game-gallery/0-wall2.png",
   [TILE.FLOOR]: "../0-game-gallery/0-floor2.png",
   [TILE.PAGER]: "../0-game-gallery/pager.png",
@@ -439,7 +452,6 @@ const tileImages = {
   [TILE.COUCH_LEFT]: "../0-game-gallery/couch-left.png",
   [TILE.COUCH_MIDDLE]: "../0-game-gallery/couch-middle.png",
   [TILE.COUCH_RIGHT]: "../0-game-gallery/couch-right.png",
-  
   [TILE.PHONY_WALL]: "../0-game-gallery/exit.png",
 
   [TILE.VENT_ENTRANCE]: "../0-game-gallery/1-vent-entrance.png",
@@ -518,6 +530,7 @@ function toggleInventory() {
 function drawInventory() {
   let items = "";
 
+  if (hasSquirtGun) items += "<div>🔫 Squirt Gun</div>";
   if (hasPagerBattery)
   items += "<div>🔋 Pager Battery</div>";
   if (hasDollar) items += "<div>💵 A Few Dollars</div>";
@@ -559,6 +572,8 @@ function getVisibleTile(cell) {
   if (cell === TILE.KEY_B && hasKeyB) return TILE.FLOOR;
   if (cell === TILE.KEY_C && hasKeyC) return TILE.FLOOR;
   if (cell === TILE.KEY_D && hasKeyD) return TILE.FLOOR;
+
+  if (cell === TILE.SQUIRT_GUN && hasSquirtGun) return TILE.FLOOR;
 
   if (cell === TILE.DOOR_D && doorDOpen) return TILE.FLOOR;
   if (cell === TILE.DOOR_A && doorAOpen) return TILE.FLOOR;
@@ -605,6 +620,10 @@ function drawMaze() {
       if (x === skullX && y === skullY) {
         cell = TILE.SKULL_INFLUENCER;
       }
+
+if (streamActive && x === streamX && y === streamY) {
+  cell = TILE.WATER_STREAM;
+}
 
       const tile = document.createElement("div");
       tile.className = "tile";
@@ -670,6 +689,77 @@ function damageMorale() {
     // teleport to start
   }
 }
+
+function squirtStream() {
+
+  if (!hasSquirtGun) {
+    setMessage("Hellhound has nothing to fire.");
+    return;
+}
+
+  if (streamActive) return;
+
+  streamX = playerX;
+  streamY = playerY;
+
+  if (facingDirection === "right") {
+    streamDX = 1;
+    streamDY = 0;
+  }
+
+  if (facingDirection === "left") {
+    streamDX = -1;
+    streamDY = 0;
+  }
+
+  if (facingDirection === "down") {
+    streamDX = 0;
+    streamDY = 1;
+  }
+
+  if (facingDirection === "up") {
+    streamDX = 0;
+    streamDY = -1;
+  }
+
+  streamActive = true;
+}
+
+function moveStream() {
+  if (!streamActive) return;
+
+  const nextX = streamX + streamDX;
+  const nextY = streamY + streamDY;
+
+  const nextTile = getMapTile(nextX, nextY);
+
+  if (nextTile === TILE.WALL) {
+    streamActive = false;
+    drawMaze();
+    return;
+  }
+
+  streamX = nextX;
+  streamY = nextY;
+
+  if (streamX === skullX && streamY === skullY) {
+    streamActive = false;
+    setMessage("Hellhound blasts the Skull Influencer!");
+    
+    // simple version: move skull away
+    skullX = 8;
+    skullY = 9;
+
+    drawMaze();
+    return;
+  }
+
+  drawMaze();
+}
+
+setInterval(moveStream, 120);
+
+
 
 /* ==========================
    INTERACTION LOGIC
@@ -835,6 +925,22 @@ if (nextTile === TILE.FIRE_B &&
   }
 
   /* ---- Pickups ---- */
+
+if (nextTile === TILE.SQUIRT_GUN) {
+  hasSquirtGun = true;
+  setMessage("You found a water gun.");
+
+  maze[nextY] =
+    maze[nextY].substring(0, nextX) +
+    " " +
+    maze[nextY].substring(nextX + 1);
+
+  playerX = nextX;
+  playerY = nextY;
+
+  drawMaze();
+  return;
+}
 
 if (nextTile === TILE.FLASHLIGHT) {
   hasFlashlight = true;
@@ -1307,6 +1413,10 @@ document.addEventListener("keydown", function(event) {
   if (event.key === "ArrowDown") movePlayer(0, 1);
   if (event.key === "ArrowLeft") movePlayer(-1, 0);
   if (event.key === "ArrowRight") movePlayer(1, 0);
+
+  if (event.code === "Space") {
+    squirtStream();
+  }
 });
 
 /* ==========================

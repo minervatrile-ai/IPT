@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hellhound Prototype Test Runs</title>
+<title>Hellhound: Maintenance Technician [Level 0]</title>
 
 <style>
 /* ==========================
@@ -116,6 +116,24 @@ h1 {
   margin: 6px 0;
 }
 
+#moraleBox {
+  width: 300px;
+  margin: 10px auto;
+  font-size: 18px;
+}
+
+#moraleBar {
+  width: 100%;
+  height: 24px;
+  border: 2px solid lime;
+  background: black;
+}
+
+#moraleFill {
+  width: 100%;
+  height: 100%;
+  background: lime;
+}
 /* ==========================
    MOBILE CONTROLS
 ========================== */
@@ -145,7 +163,7 @@ h1 {
 
 <body>
 
-<h1>Hellhound Prototype Test Run</h1>
+<h1>Hellhound: Maintenance Technician [Level 0, in development]</h1>
 
 <div id="message">
 You're Hellhound, Maintenance Technician, and this is where you woke up... Hellhound: 'Awww, maaaan... Where the heck am I? This isn't where I went to sleep at!'
@@ -182,6 +200,13 @@ You're Hellhound, Maintenance Technician, and this is where you woke up... Hellh
   <button onclick="toggleInventory()">Close</button>
 </div>
 
+<div id="moraleBox">
+  Hellhound Morale:
+  <div id="moraleBar">
+    <div id="moraleFill"></div>
+  </div>
+</div>
+
 <script>
 /* ==========================
    TILE LEGEND
@@ -214,6 +239,8 @@ You're Hellhound, Maintenance Technician, and this is where you woke up... Hellh
 
 const TILE = {
 
+  SQUIRT_GUN: "^",
+  WATER_STREAM: "~",
   ROOM_EXIT_DOWN: "d",  
   TELEPORTER_1: "p",
   TELEPORTER_2: "q",
@@ -233,6 +260,12 @@ const TILE = {
 
   DOOR_B: "B",
   KEY_B: "b",
+
+  DOOR_C: "H",
+  KEY_C: "h",
+
+  DOOR_D: "5",
+  KEY_D: "4",
 
   FIRE_A: "O",
   FIRE_B: "F",
@@ -259,7 +292,8 @@ const TILE = {
   PAGER_DEPLETED: "0",
 
   SKULL_INFLUENCER: "I",
-  FLASHLIGHT: "f"
+  FLASHLIGHT: "f",
+  VENDING_MACHINE: "*"
 };
 
 /* ==========================
@@ -270,7 +304,7 @@ const room1 = [
   "###########",
   "#PC#FFF!AMV",
   "# U#FRF####",
-  "# ##&#    #",
+  "# ## #    #",
   "#    # #  #",
   "###B## # Q#",
   "#   #  ####",
@@ -282,27 +316,27 @@ const room1 = [
 
 const room2 = [
   "#####d#####",
-  "#   #     #",
+  "#^  #     #",
   "### # ### #",
-  "#   #e  # #",
+  "#   #e  ###",
   "# ##### #&p",
-  "#       # #",
-  "# #### ## #",
-  "# #     # #",
-  "# #     # #",
-  "#         #",
+  "#       #5#",
+  "# ### ### #",
+  "# #h#   # #",
+  "# # ### # #",
+  "# # 0     #",
   "###########"
 ];
 
 const room3 = [
   "###########",
-  "V  @      #",
+  "V  @     $#",
   "###### ## #",
-  "# #     # #",
-  "# # ### # #",
+  "#4#     # #",
+  "#H# ### # #",
   "#   #f#   #",
   "### # # ###",
-  "#     #   #",
+  "#     #  &#",
   "###########",
   "# &     & Z",
   "######q####"
@@ -310,15 +344,15 @@ const room3 = [
 
 const room4 = [
   "######q####",
-  "# $       #",
+  "#*$  $   $#",
   "#     #   #",
   "#     #   #",
   "p    0#   #",
-  "#$   0#$  #",
-  "#    0### #",
+  "#    0#$  #",
+  "#00000###*#",
   "#     789 #",
   "#         #",
-  "#    $    #",
+  "#*d   $   #",
   "###########"
 ];
 
@@ -335,7 +369,10 @@ let playerY = 1;
 /* ==========================
    GAME STATE
 ========================== */
+let hellhoundMorale = 100;
 let inventoryOpen = false;
+
+let hasSquirtGun = false;
 
 let foundCouch = false;
 let searchedCouch = false;
@@ -345,9 +382,20 @@ let hasPagerBattery = false;
 let hasFlashlight = false;
 let facingDirection = "down";
 
+let streamActive = false;
+let streamX = 0;
+let streamY = 0;
+let streamDX = 0;
+let streamDY = 0;
+
 let hasKeyA = false;
 let hasKeyB = false;
 
+let hasKeyC = false;
+let hasKeyD = false;
+
+let doorDOpen = false;
+let doorCOpen = false;
 let doorAOpen = false;
 let doorBOpen = false;
 
@@ -387,8 +435,11 @@ let skullY = 9;
 ========================== */
 
 const tileImages = {
-  [TILE.WALL]: "../0-game-gallery/0-wall.png",
-  [TILE.FLOOR]: "../0-game-gallery/0-floor.png",
+  [TILE.SQUIRT_GUN]: "../0-game-gallery/squirt-gun.png",
+  [TILE.WATER_STREAM]: "../0-game-gallery/water-stream.png",
+
+  [TILE.WALL]: "../0-game-gallery/0-wall2.png",
+  [TILE.FLOOR]: "../0-game-gallery/0-floor2.png",
   [TILE.PAGER]: "../0-game-gallery/pager.png",
   [TILE.PAGE_TRIGGER]: "../0-game-gallery/0-floor.png",
   [TILE.PAGE_TRIGGER_2]: "../0-game-gallery/0-floor.png",
@@ -397,11 +448,10 @@ const tileImages = {
   [TILE.ROOM_EXIT_DOWN]: "../0-game-gallery/0-floor.png",
   [TILE.TELEPORTER_1]: "../0-game-gallery/0-floor.png",
   [TILE.TELEPORTER_2]: "../0-game-gallery/0-floor.png",
-  [TILE.PAGER_DEPLETED]: "../0-game-gallery/0-floor.png",
+  [TILE.PAGER_DEPLETED]: "../0-game-gallery/0-floor2.png",
   [TILE.COUCH_LEFT]: "../0-game-gallery/couch-left.png",
   [TILE.COUCH_MIDDLE]: "../0-game-gallery/couch-middle.png",
   [TILE.COUCH_RIGHT]: "../0-game-gallery/couch-right.png",
-
   [TILE.PHONY_WALL]: "../0-game-gallery/exit.png",
 
   [TILE.VENT_ENTRANCE]: "../0-game-gallery/1-vent-entrance.png",
@@ -411,7 +461,11 @@ const tileImages = {
 
   [TILE.DOOR_A]: "../0-game-gallery/1-door.png",
   [TILE.DOOR_B]: "../0-game-gallery/1-door.png",
+  [TILE.DOOR_C]: "../0-game-gallery/1-door.png",
+  [TILE.DOOR_D]: "../0-game-gallery/1-door.png",
 
+  [TILE.KEY_D]: "../0-game-gallery/1-key.png",
+  [TILE.KEY_C]: "../0-game-gallery/1-key.png",
   [TILE.KEY_A]: "../0-game-gallery/1-key.png",
   [TILE.KEY_B]: "../0-game-gallery/1-key.png",
 
@@ -431,7 +485,8 @@ const tileImages = {
   [TILE.CASSETTE_TAPE]: "../0-game-gallery/2-cassette.png",
 
   [TILE.BREAKER]: "../0-game-gallery/4-breaker-box.png",
-  [TILE.FLASHLIGHT]: "../0-game-gallery/flashlight.png"
+  [TILE.FLASHLIGHT]: "../0-game-gallery/flashlight.png",
+  [TILE.VENDING_MACHINE]: "../0-game-gallery/vending-machine.png"
 };
 
 /* ==========================
@@ -475,6 +530,7 @@ function toggleInventory() {
 function drawInventory() {
   let items = "";
 
+  if (hasSquirtGun) items += "<div>🔫 Squirt Gun</div>";
   if (hasPagerBattery)
   items += "<div>🔋 Pager Battery</div>";
   if (hasDollar) items += "<div>💵 A Few Dollars</div>";
@@ -487,6 +543,9 @@ function drawInventory() {
   if (hasMedicineDog) items += "<div>💾 Medicine Dog Disk</div>";
   if (hasKeyA) items += "<div>🗝️ Key A</div>";
   if (hasKeyB) items += "<div>🗝️ Key B</div>";
+  if (hasKeyC) items += "<div>🗝️ Key C</div>";
+  if (hasKeyD) items += "<div>🗝️ Key D</div>";
+  
   if (hasTapeR) items += "<div>📼 Cassette Tape</div>";
 
   if (items === "") items = "No equipment yet.";
@@ -511,10 +570,15 @@ function getVisibleTile(cell) {
   if (cell === TILE.LADDER && hasLadder) return TILE.FLOOR;
   if (cell === TILE.KEY_A && hasKeyA) return TILE.FLOOR;
   if (cell === TILE.KEY_B && hasKeyB) return TILE.FLOOR;
+  if (cell === TILE.KEY_C && hasKeyC) return TILE.FLOOR;
+  if (cell === TILE.KEY_D && hasKeyD) return TILE.FLOOR;
 
+  if (cell === TILE.SQUIRT_GUN && hasSquirtGun) return TILE.FLOOR;
+
+  if (cell === TILE.DOOR_D && doorDOpen) return TILE.FLOOR;
   if (cell === TILE.DOOR_A && doorAOpen) return TILE.FLOOR;
   if (cell === TILE.DOOR_B && doorBOpen) return TILE.FLOOR;
-
+  if (cell === TILE.DOOR_C && doorCOpen) return TILE.FLOOR;
   if (cell === TILE.FIRE_A && fireAOut) return TILE.FLOOR;
   if (cell === TILE.FIRE_B && fireBOut) return TILE.FLOOR;
 
@@ -557,6 +621,10 @@ function drawMaze() {
         cell = TILE.SKULL_INFLUENCER;
       }
 
+if (streamActive && x === streamX && y === streamY) {
+  cell = TILE.WATER_STREAM;
+}
+
       const tile = document.createElement("div");
       tile.className = "tile";
       if (!isVisible(x, y)) {
@@ -590,8 +658,108 @@ function moveSkullInfluencer() {
     skullY = nextY;
   }
 
+  if (playerX === skullX && playerY === skullY) {
+  damageMorale();
+  return;
+}
+
   drawMaze();
 }
+
+function damageMorale() {
+  hellhoundMorale -= 25;
+
+  if (hellhoundMorale < 0) {
+    hellhoundMorale = 0;
+  }
+
+  document.getElementById("moraleFill").style.width =
+    hellhoundMorale + "%";
+
+  setMessage("The Skull Influencer corners you!");
+
+  if (hellhoundMorale === 0) {
+    setMessage(
+      "Hellhound loses morale and is now more focused on just being thirsty."
+    );
+
+    // optional later:
+    // restart level
+    // game over screen
+    // teleport to start
+  }
+}
+
+function squirtStream() {
+
+  if (!hasSquirtGun) {
+    setMessage("Hellhound has nothing to fire.");
+    return;
+}
+
+  if (streamActive) return;
+
+  streamX = playerX;
+  streamY = playerY;
+
+  if (facingDirection === "right") {
+    streamDX = 1;
+    streamDY = 0;
+  }
+
+  if (facingDirection === "left") {
+    streamDX = -1;
+    streamDY = 0;
+  }
+
+  if (facingDirection === "down") {
+    streamDX = 0;
+    streamDY = 1;
+  }
+
+  if (facingDirection === "up") {
+    streamDX = 0;
+    streamDY = -1;
+  }
+
+  streamActive = true;
+}
+
+function moveStream() {
+  if (!streamActive) return;
+
+  const nextX = streamX + streamDX;
+  const nextY = streamY + streamDY;
+
+  const nextTile = getMapTile(nextX, nextY);
+
+  if (nextTile === TILE.WALL) {
+    streamActive = false;
+    drawMaze();
+    return;
+  }
+
+  streamX = nextX;
+  streamY = nextY;
+
+  if (streamX === skullX && streamY === skullY) {
+    streamActive = false;
+    setMessage("Hellhound blasts the Skull Influencer!");
+    
+    // simple version: move skull away
+    skullX = 8;
+    skullY = 9;
+
+    drawMaze();
+    return;
+  }
+
+  drawMaze();
+}
+
+setInterval(moveStream, 120);
+
+
 
 /* ==========================
    INTERACTION LOGIC
@@ -665,6 +833,16 @@ if (
     return;
   }
 
+  if (nextTile === TILE.DOOR_C && !hasKeyC) {
+    setMessage("Door C is locked.");
+    return;
+  }
+
+  if (nextTile === TILE.DOOR_D && !hasKeyD) {
+    setMessage("Door D is locked.");
+    return;
+  }
+
   /* ---- Dangerous fires ---- */
 
  if (nextTile === TILE.FIRE_A &&
@@ -687,6 +865,28 @@ if (nextTile === TILE.FIRE_B &&
 
   /* ---- Door success states ---- */
 
+  if (nextTile === TILE.DOOR_C && hasKeyC) {
+    doorCOpen = true;
+    setMessage("Key C turns. Door C opens.");
+  }
+
+  if (nextTile === TILE.VENDING_MACHINE && hasDollar) {
+    hellhoundMorale = 100;
+
+      document.getElementById("moraleFill").style.width =
+      hellhoundMorale + "%";
+
+    setMessage(
+  "A RETRO-COLA clunks into the tray. Hellhound's morale is restored."
+);
+  return;
+  }
+
+  if (nextTile === TILE.VENDING_MACHINE && !hasDollar) {
+    setMessage("RETRO-COLA VENDING UNIT\n\nSoda: $1.00");
+    return;
+  }
+
   if (nextTile === TILE.DOOR_A && hasKeyA) {
     doorAOpen = true;
     setMessage("Key A turns. Door A opens.");
@@ -695,6 +895,11 @@ if (nextTile === TILE.FIRE_B &&
   if (nextTile === TILE.DOOR_B && hasKeyB) {
     doorBOpen = true;
     setMessage("Key B turns. Door B opens.");
+  }
+
+  if (nextTile === TILE.DOOR_D && hasKeyD) {
+    doorDOpen = true;
+    setMessage("Key D turns. Door D opens.");
   }
 
   /* ---- Fire success states ---- */
@@ -721,6 +926,22 @@ if (nextTile === TILE.FIRE_B &&
 
   /* ---- Pickups ---- */
 
+if (nextTile === TILE.SQUIRT_GUN) {
+  hasSquirtGun = true;
+  setMessage("You found a water gun.");
+
+  maze[nextY] =
+    maze[nextY].substring(0, nextX) +
+    " " +
+    maze[nextY].substring(nextX + 1);
+
+  playerX = nextX;
+  playerY = nextY;
+
+  drawMaze();
+  return;
+}
+
 if (nextTile === TILE.FLASHLIGHT) {
   hasFlashlight = true;
   setMessage("The flashlight still works.");
@@ -746,6 +967,16 @@ if (nextTile === TILE.FLASHLIGHT) {
   if (nextTile === TILE.LADDER) {
     hasLadder = true;
     setMessage("You picked up the ladder.");
+  }
+
+    if (nextTile === TILE.KEY_C) {
+    hasKeyC = true;
+    setMessage("You picked up Key C.");
+  }
+
+  if (nextTile === TILE.KEY_D) {
+    hasKeyD = true;
+    setMessage("You picked up Key D.");
   }
 
   if (nextTile === TILE.KEY_A) {
@@ -970,6 +1201,7 @@ if (hasPagerBattery && !hasPager && pagerPickedUp) {
   hasPagerBattery = false;
 
   setMessage("You replace the pager battery.");
+  drawInventory ();
   return;
 }
 
@@ -981,7 +1213,7 @@ if (hasPagerBattery && !hasPager && pagerPickedUp) {
   gotPage1 = true;
   viewingPager = true;
 
-  setMessage("BEEP BEEP... Pager Battery: Full.");
+  setMessage("BEEP BEEP... Pager Battery: Low.");
 
   drawPagerCloseup();
   return;
@@ -997,7 +1229,7 @@ if (
   playerX = nextX;
   playerY = nextY;
 
-  setMessage("The command for the Exit Door is 'Exit Door//open'.");
+  setMessage("The RETRO-TECH Terminal Command for the Exit Door is 'Exit Door//open'.");
 
   drawMaze();
   drawPagerCloseup();
@@ -1008,13 +1240,27 @@ if (
   nextTile === TILE.PAGE_TRIGGER_3 &&
   hasPager
 ) {
-  gotPage3 = true;
+
+  const taunts = [
+    "Hellhound, just GIVE UP already! YOU can't troubleshoot THIS!",
+    "Hellhound, why don't you call it quits?",
+    "Hellhound, are you lost again? RETRO-TECH maze difficulty: IMPOSSIBLE!",
+    "Don't you KNOW?? RETRO-TECH puzzles CANNOT ever be SOLVED!",
+    "No TECHNICIAN has ever escaped this RETRO-TECH facility.",
+    "There is only ONE way out! Troubleshoot the RETRO-TECH facility!",
+    "Hellhound, you'll NEVER get OUT of here! Troubleshooting status: doomed. Ha!",
+    "Breaker FLIPPED or NOT, it'll be TRICKY BUSINESS without any LIGHT BULBS! Ha ha ha!"
+  ];
+
+  const randomTaunt =
+    taunts[Math.floor(Math.random() * taunts.length)];
+
+  setMessage(randomTaunt);
+
   viewingPager = true;
 
   playerX = nextX;
   playerY = nextY;
-
-  setMessage("Hellhound, just GIVE UP already! YOU can't troubleshoot THIS!");
 
   drawMaze();
   drawPagerCloseup();
@@ -1069,7 +1315,7 @@ playerX = nextX;
 playerY = nextY;
 
 if (playerX === skullX && playerY === skullY) {
-  setMessage("The Skull Influencer corners you!");
+  damageMorale();
 }
 
 drawMaze();
@@ -1090,10 +1336,8 @@ function drawPagerCloseup() {
 }
 
 function getPagerCloseupImage() {
-  if (gotPage1 === true) {
     return "../0-game-gallery/pager-active.png";
   }
-}
 
 function checkPager() {
   viewingPager = false;
@@ -1169,6 +1413,10 @@ document.addEventListener("keydown", function(event) {
   if (event.key === "ArrowDown") movePlayer(0, 1);
   if (event.key === "ArrowLeft") movePlayer(-1, 0);
   if (event.key === "ArrowRight") movePlayer(1, 0);
+
+  if (event.code === "Space") {
+    squirtStream();
+  }
 });
 
 /* ==========================
