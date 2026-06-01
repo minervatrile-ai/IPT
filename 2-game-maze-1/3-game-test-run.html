@@ -179,7 +179,7 @@ You're Hellhound, Maintenance Technician, and this is where you woke up... Hellh
   <div></div>
 
   <button onclick="movePlayer(-1, 0)">◀</button>
-  <button class="center-button" disabled>•</button>
+  <button onclick="squirtStream()">💦</button>
   <button onclick="movePlayer(1, 0)">▶</button>
 
   <div></div>
@@ -928,7 +928,7 @@ if (nextTile === TILE.FIRE_B &&
 
 if (nextTile === TILE.SQUIRT_GUN) {
   hasSquirtGun = true;
-  setMessage("You found a water gun.");
+  setMessage("You found a water gun. Space bar pulls the trigger. [on Mobile: Center Button]");
 
   maze[nextY] =
     maze[nextY].substring(0, nextX) +
