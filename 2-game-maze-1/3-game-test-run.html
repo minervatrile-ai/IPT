@@ -234,6 +234,12 @@ const TILE = {
   DOOR_B: "B",
   KEY_B: "b",
 
+  DOOR_C: "H",
+  KEY_C: "h",
+
+  DOOR_D: "5",
+  KEY_D: "4",
+
   FIRE_A: "O",
   FIRE_B: "F",
 
@@ -284,25 +290,25 @@ const room2 = [
   "#####d#####",
   "#   #     #",
   "### # ### #",
-  "#   #e  # #",
+  "#   #e  ###",
   "# ##### #&p",
-  "#       # #",
-  "# #### ## #",
-  "# #     # #",
-  "# #     # #",
-  "#         #",
+  "#       #5#",
+  "# ### ### #",
+  "# #h#   # #",
+  "# # ### # #",
+  "# # 0     #",
   "###########"
 ];
 
 const room3 = [
   "###########",
-  "V  @      #",
+  "V  @     $#",
   "###### ## #",
-  "# #     # #",
-  "# # ### # #",
+  "#4#     # #",
+  "#H# ### # #",
   "#   #f#   #",
   "### # # ###",
-  "#     #   #",
+  "#     #  &#",
   "###########",
   "# &     & Z",
   "######q####"
@@ -310,12 +316,12 @@ const room3 = [
 
 const room4 = [
   "######q####",
-  "# $       #",
+  "# $  $   $#",
   "#     #   #",
   "#     #   #",
   "p    0#   #",
-  "#$   0#$  #",
-  "#    0### #",
+  "#    0#$  #",
+  "#00000### #",
   "#     789 #",
   "#         #",
   "#    $    #",
@@ -348,6 +354,11 @@ let facingDirection = "down";
 let hasKeyA = false;
 let hasKeyB = false;
 
+let hasKeyC = false;
+let hasKeyD = false;
+
+let doorDOpen = false;
+let doorCOpen = false;
 let doorAOpen = false;
 let doorBOpen = false;
 
@@ -397,11 +408,11 @@ const tileImages = {
   [TILE.ROOM_EXIT_DOWN]: "../0-game-gallery/0-floor.png",
   [TILE.TELEPORTER_1]: "../0-game-gallery/0-floor.png",
   [TILE.TELEPORTER_2]: "../0-game-gallery/0-floor.png",
-  [TILE.PAGER_DEPLETED]: "../0-game-gallery/0-floor.png",
+  [TILE.PAGER_DEPLETED]: "../0-game-gallery/0-floor2.png",
   [TILE.COUCH_LEFT]: "../0-game-gallery/couch-left.png",
   [TILE.COUCH_MIDDLE]: "../0-game-gallery/couch-middle.png",
   [TILE.COUCH_RIGHT]: "../0-game-gallery/couch-right.png",
-
+  
   [TILE.PHONY_WALL]: "../0-game-gallery/exit.png",
 
   [TILE.VENT_ENTRANCE]: "../0-game-gallery/1-vent-entrance.png",
@@ -411,7 +422,11 @@ const tileImages = {
 
   [TILE.DOOR_A]: "../0-game-gallery/1-door.png",
   [TILE.DOOR_B]: "../0-game-gallery/1-door.png",
+  [TILE.DOOR_C]: "../0-game-gallery/1-door.png",
+  [TILE.DOOR_D]: "../0-game-gallery/1-door.png",
 
+  [TILE.KEY_D]: "../0-game-gallery/1-key.png",
+  [TILE.KEY_C]: "../0-game-gallery/1-key.png",
   [TILE.KEY_A]: "../0-game-gallery/1-key.png",
   [TILE.KEY_B]: "../0-game-gallery/1-key.png",
 
@@ -487,6 +502,9 @@ function drawInventory() {
   if (hasMedicineDog) items += "<div>💾 Medicine Dog Disk</div>";
   if (hasKeyA) items += "<div>🗝️ Key A</div>";
   if (hasKeyB) items += "<div>🗝️ Key B</div>";
+  if (hasKeyC) items += "<div>🗝️ Key C</div>";
+  if (hasKeyD) items += "<div>🗝️ Key D</div>";
+  
   if (hasTapeR) items += "<div>📼 Cassette Tape</div>";
 
   if (items === "") items = "No equipment yet.";
@@ -511,10 +529,13 @@ function getVisibleTile(cell) {
   if (cell === TILE.LADDER && hasLadder) return TILE.FLOOR;
   if (cell === TILE.KEY_A && hasKeyA) return TILE.FLOOR;
   if (cell === TILE.KEY_B && hasKeyB) return TILE.FLOOR;
+  if (cell === TILE.KEY_C && hasKeyC) return TILE.FLOOR;
+  if (cell === TILE.KEY_D && hasKeyD) return TILE.FLOOR;
 
+  if (cell === TILE.DOOR_D && doorDOpen) return TILE.FLOOR;
   if (cell === TILE.DOOR_A && doorAOpen) return TILE.FLOOR;
   if (cell === TILE.DOOR_B && doorBOpen) return TILE.FLOOR;
-
+  if (cell === TILE.DOOR_C && doorCOpen) return TILE.FLOOR;
   if (cell === TILE.FIRE_A && fireAOut) return TILE.FLOOR;
   if (cell === TILE.FIRE_B && fireBOut) return TILE.FLOOR;
 
@@ -665,6 +686,16 @@ if (
     return;
   }
 
+  if (nextTile === TILE.DOOR_C && !hasKeyC) {
+    setMessage("Door C is locked.");
+    return;
+  }
+
+  if (nextTile === TILE.DOOR_D && !hasKeyD) {
+    setMessage("Door D is locked.");
+    return;
+  }
+
   /* ---- Dangerous fires ---- */
 
  if (nextTile === TILE.FIRE_A &&
@@ -687,6 +718,11 @@ if (nextTile === TILE.FIRE_B &&
 
   /* ---- Door success states ---- */
 
+  if (nextTile === TILE.DOOR_C && hasKeyC) {
+    doorCOpen = true;
+    setMessage("Key C turns. DOor C opens.");
+  }
+
   if (nextTile === TILE.DOOR_A && hasKeyA) {
     doorAOpen = true;
     setMessage("Key A turns. Door A opens.");
@@ -695,6 +731,11 @@ if (nextTile === TILE.FIRE_B &&
   if (nextTile === TILE.DOOR_B && hasKeyB) {
     doorBOpen = true;
     setMessage("Key B turns. Door B opens.");
+  }
+
+  if (nextTile === TILE.DOOR_D && hasKeyD) {
+    doorDOpen = true;
+    setMessage("Key D turns. Door D opens.");
   }
 
   /* ---- Fire success states ---- */
@@ -746,6 +787,16 @@ if (nextTile === TILE.FLASHLIGHT) {
   if (nextTile === TILE.LADDER) {
     hasLadder = true;
     setMessage("You picked up the ladder.");
+  }
+
+    if (nextTile === TILE.KEY_C) {
+    hasKeyC = true;
+    setMessage("You picked up Key C.");
+  }
+
+  if (nextTile === TILE.KEY_D) {
+    hasKeyD = true;
+    setMessage("You picked up Key D.");
   }
 
   if (nextTile === TILE.KEY_A) {
