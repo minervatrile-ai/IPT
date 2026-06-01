@@ -731,9 +731,26 @@ function moveStream() {
   const nextX = streamX + streamDX;
   const nextY = streamY + streamDY;
 
+  if (
+    nextY < 0 ||
+    nextY >= maze.length ||
+    nextX < 0 ||
+    nextX >= maze[nextY].length
+  ) {
+    streamActive = false;
+    drawMaze();
+    return;
+  }
+
   const nextTile = getMapTile(nextX, nextY);
 
-  if (nextTile === TILE.WALL) {
+  if (
+    nextTile === TILE.WALL ||
+    nextTile === TILE.ROOM_EXIT_DOWN ||
+    nextTile === TILE.TELEPORTER_1 ||
+    nextTile === TILE.TELEPORTER_2 ||
+    nextTile === TILE.VENT_ENTRANCE
+  ) {
     streamActive = false;
     drawMaze();
     return;
@@ -744,16 +761,13 @@ function moveStream() {
 
   if (streamX === skullX && streamY === skullY) {
     streamActive = false;
-    setMessage("Hellhound blasts the Skull Influencer!");
-    
-    // simple version: move skull away
+    setMessage("Hellhound sprays the Skull Influencer!");
     skullX = 8;
     skullY = 9;
-
     drawMaze();
     return;
   }
-
+  
   drawMaze();
 }
 
