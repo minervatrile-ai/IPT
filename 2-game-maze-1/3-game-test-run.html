@@ -1060,13 +1060,26 @@ if (
   nextTile === TILE.PAGE_TRIGGER_3 &&
   hasPager
 ) {
-  gotPage3 = true;
+
+  const taunts = [
+    "Hellhound, just GIVE UP already! YOU can't troubleshoot THIS!",
+    "Hellhound, why don't you call it quits?",
+    "Hellhound, are you lost again? RETRO-TECH maze difficulty: IMPOSSIBLE!",
+    "Don't you KNOW?? RETRO-TECH puzzles CANNOT ever be SOLVED!",
+    "Nobody has ever escaped this RETRO-TECH facility.",
+    "There is only ONE way out! Troubleshoot the RETRO-TECH facility!",
+    "Hellhound, you'll NEVER get OUT of here! Troubleshooting status: doomed. Ha!"
+  ];
+
+  const randomTaunt =
+    taunts[Math.floor(Math.random() * taunts.length)];
+
+  setMessage(randomTaunt);
+
   viewingPager = true;
 
   playerX = nextX;
   playerY = nextY;
-
-  setMessage("Hellhound, just GIVE UP already! YOU can't troubleshoot THIS!");
 
   drawMaze();
   drawPagerCloseup();
