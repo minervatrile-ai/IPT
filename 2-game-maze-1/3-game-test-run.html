@@ -116,6 +116,24 @@ h1 {
   margin: 6px 0;
 }
 
+#moraleBox {
+  width: 300px;
+  margin: 10px auto;
+  font-size: 18px;
+}
+
+#moraleBar {
+  width: 100%;
+  height: 24px;
+  border: 2px solid lime;
+  background: black;
+}
+
+#moraleFill {
+  width: 100%;
+  height: 100%;
+  background: lime;
+}
 /* ==========================
    MOBILE CONTROLS
 ========================== */
@@ -180,6 +198,13 @@ You're Hellhound, Maintenance Technician, and this is where you woke up... Hellh
   <div id="inventoryItems"></div>
 
   <button onclick="toggleInventory()">Close</button>
+</div>
+
+<div id="moraleBox">
+  Hellhound Morale:
+  <div id="moraleBar">
+    <div id="moraleFill"></div>
+  </div>
 </div>
 
 <script>
@@ -265,7 +290,8 @@ const TILE = {
   PAGER_DEPLETED: "0",
 
   SKULL_INFLUENCER: "I",
-  FLASHLIGHT: "f"
+  FLASHLIGHT: "f",
+  VENDING_MACHINE: "*"
 };
 
 /* ==========================
@@ -316,15 +342,15 @@ const room3 = [
 
 const room4 = [
   "######q####",
-  "# $  $   $#",
+  "#*$  $   $#",
   "#     #   #",
   "#     #   #",
   "p    0#   #",
   "#    0#$  #",
-  "#00000### #",
+  "#00000###*#",
   "#     789 #",
   "#         #",
-  "#    $    #",
+  "#*d   $    #",
   "###########"
 ];
 
@@ -341,6 +367,7 @@ let playerY = 1;
 /* ==========================
    GAME STATE
 ========================== */
+let hellhoundMorale = 100;
 let inventoryOpen = false;
 
 let foundCouch = false;
@@ -446,7 +473,8 @@ const tileImages = {
   [TILE.CASSETTE_TAPE]: "../0-game-gallery/2-cassette.png",
 
   [TILE.BREAKER]: "../0-game-gallery/4-breaker-box.png",
-  [TILE.FLASHLIGHT]: "../0-game-gallery/flashlight.png"
+  [TILE.FLASHLIGHT]: "../0-game-gallery/flashlight.png",
+  [TILE.VENDING_MACHINE]: "../0-game-gallery/vending-machine.png"
 };
 
 /* ==========================
@@ -611,7 +639,36 @@ function moveSkullInfluencer() {
     skullY = nextY;
   }
 
+  if (playerX === skullX && playerY === skullY) {
+  damageMorale();
+  return;
+}
+
   drawMaze();
+}
+
+function damageMorale() {
+  hellhoundMorale -= 25;
+
+  if (hellhoundMorale < 0) {
+    hellhoundMorale = 0;
+  }
+
+  document.getElementById("moraleFill").style.width =
+    hellhoundMorale + "%";
+
+  setMessage("The Skull Influencer corners you!");
+
+  if (hellhoundMorale === 0) {
+    setMessage(
+      "Hellhound loses morale and is now more focused on just being thirsty."
+    );
+
+    // optional later:
+    // restart level
+    // game over screen
+    // teleport to start
+  }
 }
 
 /* ==========================
@@ -721,6 +778,23 @@ if (nextTile === TILE.FIRE_B &&
   if (nextTile === TILE.DOOR_C && hasKeyC) {
     doorCOpen = true;
     setMessage("Key C turns. DOor C opens.");
+  }
+
+  if (nextTile === TILE.VENDING_MACHINE && hasDollar) {
+    hellhoundMorale = 100;
+
+      document.getElementById("moraleFill").style.width =
+      hellhoundMorale + "%";
+
+    setMessage(
+  "A RETRO-COLA clunks into the tray. Hellhound's morale is restored."
+);
+  return;
+  }
+
+  if (nextTile === TILE.VENDING_MACHINE && !hasDollar) {
+    setMessage("RETRO-COLA VENDING UNIT\n\nSoda: $1.00");
+    return;
   }
 
   if (nextTile === TILE.DOOR_A && hasKeyA) {
@@ -1068,7 +1142,8 @@ if (
     "Don't you KNOW?? RETRO-TECH puzzles CANNOT ever be SOLVED!",
     "No TECHNICIAN has ever escaped this RETRO-TECH facility.",
     "There is only ONE way out! Troubleshoot the RETRO-TECH facility!",
-    "Hellhound, you'll NEVER get OUT of here! Troubleshooting status: doomed. Ha!"
+    "Hellhound, you'll NEVER get OUT of here! Troubleshooting status: doomed. Ha!",
+    "Breaker FLIPPED or NOT, it'll be TRICKY BUSINESS without any LIGHT BULBS! Ha ha ha!"
   ];
 
   const randomTaunt =
