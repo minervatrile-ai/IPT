@@ -239,6 +239,7 @@ You're Hellhound, Maintenance Technician, and this is where you woke up... Hellh
 
 const TILE = {
 
+  REVOLVER: "x",
   SQUIRT_GUN: "^",
   WATER_STREAM: "~",
   ROOM_EXIT_DOWN: "d",  
@@ -248,7 +249,7 @@ const TILE = {
   FLOOR: " ",
   PLAYER_START: "P",
   VICTORY_DISPLAY: "v",
-
+  BLUE_WALL: "!",
   RADIO: "R",
   RADIO_GOOD: "2",
   RADIO_BAD: "3",
@@ -290,7 +291,8 @@ const TILE = {
   PAGE_TRIGGER_2: "&",
   PAGE_TRIGGER_3: "$",
   PAGER_DEPLETED: "0",
-
+  SPECIAL_VENT: "S",
+  SPECIAL_VENT_2: "s",
   SKULL_INFLUENCER: "I",
   FLASHLIGHT: "f",
   VENDING_MACHINE: "*"
@@ -333,12 +335,12 @@ const room3 = [
   "V  @     $#",
   "###### ## #",
   "#4#     # #",
-  "#H# ### # #",
-  "#   #f#   #",
-  "### # # ###",
-  "#     #  &#",
-  "###########",
-  "# &     & Z",
+  "#H### #####",
+  "#    f#   #",
+  "####### ###",
+  "#        &#",
+  "#C  #######",
+  "#U&     & Z",
   "######q####"
 ];
 
@@ -353,6 +355,20 @@ const room4 = [
   "#     789 #",
   "#  %      #",
   "#*d   $   #",
+  "#####S#####"
+];
+
+const room5 = [
+  "#####S#####",
+  "##### #####",
+  "##### #####",
+  "##### #####",
+  "##### #####",
+  "##### #####",
+  "#####x#####",
+  "##### #####",
+  "###########",
+  "###########",
   "###########"
 ];
 
@@ -372,6 +388,7 @@ let playerY = 1;
 let hellhoundMorale = 100;
 let inventoryOpen = false;
 
+let hasRevolver = false;
 let hasSquirtGun = false;
 let skullFrozen = false;
 let foundCouch = false;
@@ -435,9 +452,12 @@ let skullY = 9;
 ========================== */
 
 const tileImages = {
+
+  [TILE.REVOLVER]: "../0-game-gallery/revolver.png",
   [TILE.SQUIRT_GUN]: "../0-game-gallery/squirt-gun.png",
   [TILE.WATER_STREAM]: "../0-game-gallery/water-stream.png",
   [TILE.ROUTER]: "../0-game-gallery/router.png",
+  [TILE.BLUE_WALL]: "../0-game-gallery/0-wall.png",
   [TILE.WALL]: "../0-game-gallery/0-wall2.png",
   [TILE.FLOOR]: "../0-game-gallery/0-floor2.png",
   [TILE.PAGER]: "../0-game-gallery/pager.png",
@@ -453,7 +473,8 @@ const tileImages = {
   [TILE.COUCH_MIDDLE]: "../0-game-gallery/couch-middle.png",
   [TILE.COUCH_RIGHT]: "../0-game-gallery/couch-right.png",
   [TILE.PHONY_WALL]: "../0-game-gallery/exit.png",
-
+  [TILE.SPECIAL_VENT]: "../0-game-gallery/1-vent-entrance.png",
+  [TILE.SPECIAL_VENT_2]: "../0-game-gallery/1-vent-entrance.png",
   [TILE.VENT_ENTRANCE]: "../0-game-gallery/1-vent-entrance.png",
   [TILE.LADDER]: "../0-game-gallery/1-ladder.png",
 
@@ -540,6 +561,7 @@ function toggleInventory() {
 function drawInventory() {
   let items = "";
 
+  if (hasRevolver) items += "<div> Revolver</div>";
   if (hasSquirtGun) items += "<div>🔫 Squirt Gun</div>";
   if (hasPagerBattery)
   items += "<div>🔋 Pager Battery</div>";
@@ -584,7 +606,7 @@ function getVisibleTile(cell) {
   if (cell === TILE.KEY_D && hasKeyD) return TILE.FLOOR;
 
   if (cell === TILE.SQUIRT_GUN && hasSquirtGun) return TILE.FLOOR;
-
+  if (cell === TILE.REVOLVER && hasRevolver) return TILE.FLOOR;
   if (cell === TILE.DOOR_D && doorDOpen) return TILE.FLOOR;
   if (cell === TILE.DOOR_A && doorAOpen) return TILE.FLOOR;
   if (cell === TILE.DOOR_B && doorBOpen) return TILE.FLOOR;
@@ -834,7 +856,7 @@ if (dy === -1) facingDirection = "up";
     
   }
   if (nextTile === TILE.PHONY_WALL && wallVanish) {
-  setMessage("The EXIT DOOR unlocks. Hellhound escapes the testing grounds.");
+  setMessage("The EXIT DOOR unlocks. Hellhound escapes Level 0. Stay tuned!");
 
   setTimeout(function() {
     window.location.href = "https://identitypanictoolkit.com";
@@ -976,6 +998,12 @@ if (nextTile === TILE.FIRE_B &&
   }
 
   /* ---- Pickups ---- */
+
+if (nextTile === TILE.REVOLVER) {
+  hasRevolver = true;
+  setMessage("A revolver? In this vent??! Hmm... No bullets.")
+}
+
 
 if (nextTile === TILE.SQUIRT_GUN) {
   hasSquirtGun = true;
@@ -1152,6 +1180,23 @@ if (nextTile === TILE.BREAKER) {
   return;
 }
 
+if (nextTile === TILE.SPECIAL_VENT) {
+    if (maze === room4) {
+      maze = room5;
+      playerX = nextX;
+      playerY = 1;
+    }
+
+else if (maze === room5) {
+    maze = room4;
+    playerX = nextX;
+    playerY = room1.length -2;
+}
+  drawMaze();
+  return;
+}
+
+
 if (nextTile === TILE.ROOM_EXIT_DOWN) {
 
     if (maze === room1) {
@@ -1169,6 +1214,8 @@ else if (maze === room2) {
   drawMaze();
   return;
 }
+
+
 if (nextTile === TILE.TELEPORTER_1) {
   if (maze === room2) {
     maze = room4;
