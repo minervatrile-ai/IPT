@@ -508,6 +508,16 @@ function isLitByFlashlight(x, y) {
 
 function isVisible(x, y) {
   if (!isDarkRoom()) return true;
+
+  const tile = getMapTile(x, y);
+
+  if (
+    tile === TILE.ROUTER ||
+    tile === TILE.VENDING_MACHINE
+  ) {
+    return true;
+  }
+
   if (!hasFlashlight) return false;
 
   return isLitByFlashlight(x, y);
