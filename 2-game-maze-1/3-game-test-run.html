@@ -336,11 +336,11 @@ const room3 = [
   "###### ## #",
   "#4#     # #",
   "#H### #####",
-  "#    f#  M#",
-  "#######A###",
-  "#       Q&#",
+  "#    f#   #",
+  "####### ###",
+  "#    A  M&#",
   "#C  #######",
-  "#U&     & Z",
+  "#U&Q    & Z",
   "######q####"
 ];
 
@@ -888,7 +888,7 @@ if (dy === -1) facingDirection = "up";
 if (
   nextTile === TILE.COMPUTER &&
   !hasLevel2Disk &&
-  !hasMedicineDog
+  !hasMedicineDog 
 ) {
   setMessage("No disk to read...");
   return;
