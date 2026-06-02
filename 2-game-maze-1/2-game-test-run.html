@@ -179,7 +179,7 @@ You're Hellhound, Maintenance Technician, and this is where you woke up... Hellh
   <div></div>
 
   <button onclick="movePlayer(-1, 0)">◀</button>
-  <button class="center-button" disabled>•</button>
+  <button onclick="squirtStream()">💦</button>
   <button onclick="movePlayer(1, 0)">▶</button>
 
   <div></div>
@@ -239,21 +239,24 @@ You're Hellhound, Maintenance Technician, and this is where you woke up... Hellh
 
 const TILE = {
 
+  REVOLVER: "x",
   SQUIRT_GUN: "^",
   WATER_STREAM: "~",
   ROOM_EXIT_DOWN: "d",  
   TELEPORTER_1: "p",
   TELEPORTER_2: "q",
+  
   WALL: "#",
   FLOOR: " ",
   PLAYER_START: "P",
   VICTORY_DISPLAY: "v",
-
+  BLUE_WALL: ".",
   RADIO: "R",
   RADIO_GOOD: "2",
   RADIO_BAD: "3",
   RADIO_OFF: "1",
   CASSETTE_TAPE: "r",
+  RAT_1_RIGHT: "(",
 
   DOOR_A: "A",
   KEY_A: "a",
@@ -277,7 +280,7 @@ const TILE = {
   DESK: "U",
 
   MEDICINE_DOG: "M",
-
+  ROUTER: "%",
   BREAKER: "X",
   COUCH_LEFT: "7",
   COUCH_MIDDLE: "8",
@@ -290,10 +293,12 @@ const TILE = {
   PAGE_TRIGGER_2: "&",
   PAGE_TRIGGER_3: "$",
   PAGER_DEPLETED: "0",
-
+  SPECIAL_VENT: "S",
+  SPECIAL_VENT_2: "s",
   SKULL_INFLUENCER: "I",
   FLASHLIGHT: "f",
-  VENDING_MACHINE: "*"
+  VENDING_MACHINE: "*",
+  RAT_ONLY_VENT: "-"
 };
 
 /* ==========================
@@ -302,15 +307,15 @@ const TILE = {
 
 const room1 = [
   "###########",
-  "#PC#FFF!AMV",
-  "# U#FRF####",
+  "#PCOFFF!  V",
+  "#OU#FRF####",
   "# ## #    #",
   "#    # #  #",
-  "###B## # Q#",
+  "###B## #  #",
   "#   #  ####",
   "#L  #    X#",
   "## ##  #  #",
-  "#E #r b# a#",
+  "#E #r  # b#",
   "#####d#####"
 ];
 
@@ -322,38 +327,52 @@ const room2 = [
   "# ##### #&p",
   "#       #5#",
   "# ### ### #",
-  "# #h#   # #",
-  "# # ### # #",
-  "# # 0     #",
+  "#  h#    0#",
+  "# # ###   #",
+  "# #       #",
   "###########"
 ];
 
 const room3 = [
   "###########",
   "V  @     $#",
-  "###### ## #",
+  "# #### ## #",
   "#4#     # #",
-  "#H# ### # #",
-  "#   #f#   #",
-  "### # # ###",
-  "#     #  &#",
-  "###########",
-  "# &     & Z",
+  "#####H#####",
+  "#    f#   #",
+  "####### ###",
+  "#    A  M&#",
+  "#C  #######",
+  "#U&Q    & Z",
   "######q####"
 ];
 
 const room4 = [
   "######q####",
-  "#*$  $   $#",
+  "#* *  $#  #",
   "#     #   #",
   "#     #   #",
-  "p    0#   #",
-  "#    0#$  #",
-  "#00000###*#",
-  "#     789 #",
-  "#         #",
+  "p     #   #",
+  "#     #   #",
+  "#     ###*#",
+  "#     789a#",
+  "#  %      #",
   "#*d   $   #",
-  "###########"
+  "#####S#####"
+];
+
+const room5 = [
+  ".....S.....",
+  "..... .....",
+  "..... .....",
+  "-         -",
+  "..... .....",
+  "-         -",
+  ".....x.....",
+  "..... .....",
+  ".....-.....",
+  "...........",
+  "..........."
 ];
 
 let maze = room1;
@@ -372,8 +391,9 @@ let playerY = 1;
 let hellhoundMorale = 100;
 let inventoryOpen = false;
 
+let hasRevolver = false;
 let hasSquirtGun = false;
-
+let skullFrozen = false;
 let foundCouch = false;
 let searchedCouch = false;
 let hasDollar = false;
@@ -429,15 +449,51 @@ let gotPage3 = false;
 let skullX = 8;
 let skullY = 9;
 
+let ratSeen = false;
+let ratScurrying = false;
+let ratX = -1;
+let ratY = -1;
+let ratStep = 0;
+
+const ratPath = [
+  { x: 1, y: 3 },
+  { x: 2, y: 3 },
+  { x: 3, y: 3 },
+  { x: 4, y: 3 },
+  { x: 5, y: 3 },
+  { x: 6, y: 3 },
+  { x: 7, y: 3 },
+  { x: 8, y: 3 },
+  { x: 9, y: 3 },
+  { x: 10, y: 3 },
+
+  { x: 1, y: 5 },
+  { x: 2, y: 5 },
+  { x: 3, y: 5 },
+  { x: 4, y: 5 },
+  { x: 5, y: 5 },
+  { x: 6, y: 5 },
+  { x: 7, y: 5 },
+  { x: 8, y: 5 },
+  { x: 9, y: 5 },
+  { x: 10, y: 5 }
+
+
+];
 
 /* ==========================
    TILE IMAGES
 ========================== */
 
 const tileImages = {
+
+  [TILE.RAT_ONLY_VENT]: "../0-game-gallery/1-vent-entrance.png",
+  [TILE.RAT_1_RIGHT]: "../0-game-gallery/rat-1-right.png",
+  [TILE.REVOLVER]: "../0-game-gallery/revolver.png",
   [TILE.SQUIRT_GUN]: "../0-game-gallery/squirt-gun.png",
   [TILE.WATER_STREAM]: "../0-game-gallery/water-stream.png",
-
+  [TILE.ROUTER]: "../0-game-gallery/router.png",
+  [TILE.BLUE_WALL]: "../0-game-gallery/0-wall.png",
   [TILE.WALL]: "../0-game-gallery/0-wall2.png",
   [TILE.FLOOR]: "../0-game-gallery/0-floor2.png",
   [TILE.PAGER]: "../0-game-gallery/pager.png",
@@ -453,7 +509,8 @@ const tileImages = {
   [TILE.COUCH_MIDDLE]: "../0-game-gallery/couch-middle.png",
   [TILE.COUCH_RIGHT]: "../0-game-gallery/couch-right.png",
   [TILE.PHONY_WALL]: "../0-game-gallery/exit.png",
-
+  [TILE.SPECIAL_VENT]: "../0-game-gallery/1-vent-entrance.png",
+  [TILE.SPECIAL_VENT_2]: "../0-game-gallery/1-vent-entrance.png",
   [TILE.VENT_ENTRANCE]: "../0-game-gallery/1-vent-entrance.png",
   [TILE.LADDER]: "../0-game-gallery/1-ladder.png",
 
@@ -492,6 +549,35 @@ const tileImages = {
 /* ==========================
    SMALL HELPERS
 ========================== */
+function startRatScurry() {
+  if (ratSeen) return;
+
+  ratSeen = true;
+  ratScurrying = true;
+  ratStep = 0;
+
+  function moveRat() {
+    if (ratStep >= ratPath.length) {
+      ratScurrying = false;
+      ratX = -1;
+      ratY = -1;
+      drawMaze();
+      return;
+    }
+
+    ratX = ratPath[ratStep].x;
+    ratY = ratPath[ratStep].y;
+    ratStep++;
+
+    drawMaze();
+
+    setTimeout(moveRat, 170);
+  }
+
+  moveRat();
+}
+
+
 
 function isDarkRoom() {
   return maze === room4; // change to your dark room
@@ -508,6 +594,16 @@ function isLitByFlashlight(x, y) {
 
 function isVisible(x, y) {
   if (!isDarkRoom()) return true;
+
+  const tile = getMapTile(x, y);
+
+  if (
+    tile === TILE.ROUTER ||
+    tile === TILE.VENDING_MACHINE
+  ) {
+    return true;
+  }
+
   if (!hasFlashlight) return false;
 
   return isLitByFlashlight(x, y);
@@ -530,6 +626,7 @@ function toggleInventory() {
 function drawInventory() {
   let items = "";
 
+  if (hasRevolver) items += "<div> Revolver</div>";
   if (hasSquirtGun) items += "<div>🔫 Squirt Gun</div>";
   if (hasPagerBattery)
   items += "<div>🔋 Pager Battery</div>";
@@ -574,7 +671,7 @@ function getVisibleTile(cell) {
   if (cell === TILE.KEY_D && hasKeyD) return TILE.FLOOR;
 
   if (cell === TILE.SQUIRT_GUN && hasSquirtGun) return TILE.FLOOR;
-
+  if (cell === TILE.REVOLVER && hasRevolver) return TILE.FLOOR;
   if (cell === TILE.DOOR_D && doorDOpen) return TILE.FLOOR;
   if (cell === TILE.DOOR_A && doorAOpen) return TILE.FLOOR;
   if (cell === TILE.DOOR_B && doorBOpen) return TILE.FLOOR;
@@ -621,6 +718,10 @@ function drawMaze() {
         cell = TILE.SKULL_INFLUENCER;
       }
 
+if (ratScurrying && x === ratX && y === ratY) {
+  cell = TILE.RAT_1_RIGHT;
+}
+
 if (streamActive && x === streamX && y === streamY) {
   cell = TILE.WATER_STREAM;
 }
@@ -641,6 +742,10 @@ if (streamActive && x === streamX && y === streamY) {
 }
 
 function moveSkullInfluencer() {
+  if (skullFrozen) {
+    return;
+  }
+
   const directions = [
     { x: 0, y: -1 },
     { x: 0, y: 1 },
@@ -731,25 +836,45 @@ function moveStream() {
   const nextX = streamX + streamDX;
   const nextY = streamY + streamDY;
 
-  const nextTile = getMapTile(nextX, nextY);
-
-  if (nextTile === TILE.WALL) {
+  if (
+    nextY < 0 ||
+    nextY >= maze.length ||
+    nextX < 0 ||
+    nextX >= maze[nextY].length
+  ) {
     streamActive = false;
     drawMaze();
     return;
   }
+
+
+
+  const nextTile = getMapTile(nextX, nextY);
+
+    if (nextTile === TILE.ROUTER) {
+
+  streamActive = false;
+
+  skullFrozen = true;
+
+  setMessage(
+    "The RETRO-TECH LAN ROUTER sparks and crackles. The Skull Influencer freezes."
+  );
+
+  drawMaze();
+  return;
+}
+
+
 
   streamX = nextX;
   streamY = nextY;
 
   if (streamX === skullX && streamY === skullY) {
     streamActive = false;
-    setMessage("Hellhound blasts the Skull Influencer!");
-    
-    // simple version: move skull away
+    setMessage("Hellhound sprays the Skull Influencer!");
     skullX = 8;
     skullY = 9;
-
     drawMaze();
     return;
   }
@@ -758,6 +883,7 @@ function moveStream() {
 }
 
 setInterval(moveStream, 120);
+
 
 
 
@@ -779,10 +905,13 @@ if (dy === -1) facingDirection = "up";
 
   /* ---- Hard blockers ---- */
 
-  if (nextTile === TILE.WALL) {
-    setMessage("A wall blocks your path.");
-    return;
-  }
+if (
+  nextTile === TILE.WALL ||
+  nextTile === TILE.BLUE_WALL
+) {
+  setMessage("A wall blocks your path.");
+  return;
+}
 
   if (nextTile === TILE.PHONY_WALL && !wallVanish) {
     setMessage("This must be the way out. But it's LOCKED.");
@@ -790,12 +919,19 @@ if (dy === -1) facingDirection = "up";
     
   }
   if (nextTile === TILE.PHONY_WALL && wallVanish) {
-  setMessage("The EXIT DOOR unlocks. Hellhound escapes the testing grounds.");
+  setMessage("The EXIT DOOR unlocks. Hellhound escapes Level 0. Stay tuned!");
 
   setTimeout(function() {
     window.location.href = "https://identitypanictoolkit.com";
   }, 2500);
 
+  return;
+}
+
+  if (nextTile === TILE.ROUTER) {
+  setMessage(
+    "RETRO-TECH LAN ROUTER\n\nStatus: Operational"
+  );
   return;
 }
 
@@ -815,7 +951,7 @@ if (dy === -1) facingDirection = "up";
 if (
   nextTile === TILE.COMPUTER &&
   !hasLevel2Disk &&
-  !hasMedicineDog
+  !hasMedicineDog 
 ) {
   setMessage("No disk to read...");
   return;
@@ -926,9 +1062,15 @@ if (nextTile === TILE.FIRE_B &&
 
   /* ---- Pickups ---- */
 
+if (nextTile === TILE.REVOLVER) {
+  hasRevolver = true;
+  setMessage("A revolver? In this vent??! Hmm... No bullets.")
+}
+
+
 if (nextTile === TILE.SQUIRT_GUN) {
   hasSquirtGun = true;
-  setMessage("You found a water gun.");
+  setMessage("You found a water gun. Space bar pulls the trigger. [on Mobile: Center Button]");
 
   maze[nextY] =
     maze[nextY].substring(0, nextX) +
@@ -1101,6 +1243,29 @@ if (nextTile === TILE.BREAKER) {
   return;
 }
 
+if (nextTile === TILE.SPECIAL_VENT) {
+    if (maze === room4) {
+  maze = room5;
+  playerX = nextX;
+  playerY = 1;
+
+  drawMaze();
+  startRatScurry();
+  return;
+}
+
+
+
+else if (maze === room5) {
+    maze = room4;
+    playerX = nextX;
+    playerY = room1.length -2;
+}
+  drawMaze();
+  return;
+}
+
+
 if (nextTile === TILE.ROOM_EXIT_DOWN) {
 
     if (maze === room1) {
@@ -1118,6 +1283,8 @@ else if (maze === room2) {
   drawMaze();
   return;
 }
+
+
 if (nextTile === TILE.TELEPORTER_1) {
   if (maze === room2) {
     maze = room4;

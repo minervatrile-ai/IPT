@@ -245,16 +245,18 @@ const TILE = {
   ROOM_EXIT_DOWN: "d",  
   TELEPORTER_1: "p",
   TELEPORTER_2: "q",
+  
   WALL: "#",
   FLOOR: " ",
   PLAYER_START: "P",
   VICTORY_DISPLAY: "v",
-  BLUE_WALL: "!",
+  BLUE_WALL: ".",
   RADIO: "R",
   RADIO_GOOD: "2",
   RADIO_BAD: "3",
   RADIO_OFF: "1",
   CASSETTE_TAPE: "r",
+  RAT_1_RIGHT: "(",
 
   DOOR_A: "A",
   KEY_A: "a",
@@ -295,7 +297,8 @@ const TILE = {
   SPECIAL_VENT_2: "s",
   SKULL_INFLUENCER: "I",
   FLASHLIGHT: "f",
-  VENDING_MACHINE: "*"
+  VENDING_MACHINE: "*",
+  RAT_ONLY_VENT: "-"
 };
 
 /* ==========================
@@ -359,17 +362,17 @@ const room4 = [
 ];
 
 const room5 = [
-  "#####S#####",
-  "##### #####",
-  "##### #####",
-  "##### #####",
-  "##### #####",
-  "##### #####",
-  "#####x#####",
-  "##### #####",
-  "###########",
-  "###########",
-  "###########"
+  ".....S.....",
+  "..... .....",
+  "..... .....",
+  "-         -",
+  "..... .....",
+  "-         -",
+  ".....x.....",
+  "..... .....",
+  ".....-.....",
+  "...........",
+  "..........."
 ];
 
 let maze = room1;
@@ -446,6 +449,37 @@ let gotPage3 = false;
 let skullX = 8;
 let skullY = 9;
 
+let ratSeen = false;
+let ratScurrying = false;
+let ratX = -1;
+let ratY = -1;
+let ratStep = 0;
+
+const ratPath = [
+  { x: 1, y: 3 },
+  { x: 2, y: 3 },
+  { x: 3, y: 3 },
+  { x: 4, y: 3 },
+  { x: 5, y: 3 },
+  { x: 6, y: 3 },
+  { x: 7, y: 3 },
+  { x: 8, y: 3 },
+  { x: 9, y: 3 },
+  { x: 10, y: 3 },
+
+  { x: 1, y: 5 },
+  { x: 2, y: 5 },
+  { x: 3, y: 5 },
+  { x: 4, y: 5 },
+  { x: 5, y: 5 },
+  { x: 6, y: 5 },
+  { x: 7, y: 5 },
+  { x: 8, y: 5 },
+  { x: 9, y: 5 },
+  { x: 10, y: 5 }
+
+
+];
 
 /* ==========================
    TILE IMAGES
@@ -453,6 +487,8 @@ let skullY = 9;
 
 const tileImages = {
 
+  [TILE.RAT_ONLY_VENT]: "../0-game-gallery/1-vent-entrance.png",
+  [TILE.RAT_1_RIGHT]: "../0-game-gallery/rat-1-right.png",
   [TILE.REVOLVER]: "../0-game-gallery/revolver.png",
   [TILE.SQUIRT_GUN]: "../0-game-gallery/squirt-gun.png",
   [TILE.WATER_STREAM]: "../0-game-gallery/water-stream.png",
@@ -513,6 +549,35 @@ const tileImages = {
 /* ==========================
    SMALL HELPERS
 ========================== */
+function startRatScurry() {
+  if (ratSeen) return;
+
+  ratSeen = true;
+  ratScurrying = true;
+  ratStep = 0;
+
+  function moveRat() {
+    if (ratStep >= ratPath.length) {
+      ratScurrying = false;
+      ratX = -1;
+      ratY = -1;
+      drawMaze();
+      return;
+    }
+
+    ratX = ratPath[ratStep].x;
+    ratY = ratPath[ratStep].y;
+    ratStep++;
+
+    drawMaze();
+
+    setTimeout(moveRat, 170);
+  }
+
+  moveRat();
+}
+
+
 
 function isDarkRoom() {
   return maze === room4; // change to your dark room
@@ -652,6 +717,10 @@ function drawMaze() {
       if (x === skullX && y === skullY) {
         cell = TILE.SKULL_INFLUENCER;
       }
+
+if (ratScurrying && x === ratX && y === ratY) {
+  cell = TILE.RAT_1_RIGHT;
+}
 
 if (streamActive && x === streamX && y === streamY) {
   cell = TILE.WATER_STREAM;
@@ -796,17 +865,7 @@ function moveStream() {
   return;
 }
 
-  if (
-    nextTile === TILE.WALL ||
-    nextTile === TILE.ROOM_EXIT_DOWN ||
-    nextTile === TILE.TELEPORTER_1 ||
-    nextTile === TILE.TELEPORTER_2 ||
-    nextTile === TILE.VENT_ENTRANCE
-  ) {
-    streamActive = false;
-    drawMaze();
-    return;
-  }
+
 
   streamX = nextX;
   streamY = nextY;
@@ -824,6 +883,7 @@ function moveStream() {
 }
 
 setInterval(moveStream, 120);
+
 
 
 
@@ -845,10 +905,13 @@ if (dy === -1) facingDirection = "up";
 
   /* ---- Hard blockers ---- */
 
-  if (nextTile === TILE.WALL) {
-    setMessage("A wall blocks your path.");
-    return;
-  }
+if (
+  nextTile === TILE.WALL ||
+  nextTile === TILE.BLUE_WALL
+) {
+  setMessage("A wall blocks your path.");
+  return;
+}
 
   if (nextTile === TILE.PHONY_WALL && !wallVanish) {
     setMessage("This must be the way out. But it's LOCKED.");
@@ -1182,10 +1245,16 @@ if (nextTile === TILE.BREAKER) {
 
 if (nextTile === TILE.SPECIAL_VENT) {
     if (maze === room4) {
-      maze = room5;
-      playerX = nextX;
-      playerY = 1;
-    }
+  maze = room5;
+  playerX = nextX;
+  playerY = 1;
+
+  drawMaze();
+  startRatScurry();
+  return;
+}
+
+
 
 else if (maze === room5) {
     maze = room4;
