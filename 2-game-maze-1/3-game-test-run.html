@@ -179,7 +179,7 @@ You're Hellhound, Maintenance Technician, and this is where you woke up... Hellh
   <div></div>
 
   <button onclick="movePlayer(-1, 0)">◀</button>
-  <button onclick="squirtStream()">💦</button>
+  <button onclick="fireCurrentWeapon()">💥/🔫</button>
   <button onclick="movePlayer(1, 0)">▶</button>
 
   <div></div>
@@ -238,7 +238,11 @@ You're Hellhound, Maintenance Technician, and this is where you woke up... Hellh
 ========================== */
 
 const TILE = {
-
+  
+  SKULL_INFLUENCER_BULLET: "?",
+  PLAYER_REVOLVER: ";",
+  PLAYER_WATERGUN: "=",
+  BULLET: ":",
   REVOLVER: "x",
   SQUIRT_GUN: "^",
   WATER_STREAM: "~",
@@ -368,7 +372,7 @@ const room5 = [
   "-         -",
   "..... .....",
   "-         -",
-  "..... .....",
+  ".....x.....",
   "..... .....",
   ".....-.....",
   "...........",
@@ -393,6 +397,8 @@ let inventoryOpen = false;
 
 let hasRevolver = false;
 let hasSquirtGun = false;
+let currentWeapon = "";
+let skullShot = false;
 let skullFrozen = false;
 let foundCouch = false;
 let searchedCouch = false;
@@ -407,6 +413,12 @@ let streamX = 0;
 let streamY = 0;
 let streamDX = 0;
 let streamDY = 0;
+
+let bulletActive = false;
+let bulletX = 0;
+let bulletY = 0;
+let bulletDX = 0;
+let bulletDY = 0;
 
 let hasKeyA = false;
 let hasKeyB = false;
@@ -486,6 +498,9 @@ const ratPath = [
 ========================== */
 
 const tileImages = {
+
+  [TILE.BULLET]: "../0-game-gallery/bullet.png",
+  [TILE.PLAYER_REVOLVER]: "../0-game-gallery/0player-revolver.png",
   [TILE.PLAYER_WATERGUN]: "../0-game-gallery/0player-watergun.png",
   [TILE.RAT_ONLY_VENT]: "../0-game-gallery/1-vent-entrance.png",
   [TILE.RAT_1_RIGHT]: "../0-game-gallery/rat-1-right.png",
@@ -513,7 +528,7 @@ const tileImages = {
   [TILE.SPECIAL_VENT_2]: "../0-game-gallery/1-vent-entrance.png",
   [TILE.VENT_ENTRANCE]: "../0-game-gallery/1-vent-entrance.png",
   [TILE.LADDER]: "../0-game-gallery/1-ladder.png",
-
+  [TILE.SKULL_INFLUENCER_BULLET]: "../0-game-gallery/skull-influencer-bullet.png",
   [TILE.PLAYER_START]: "../0-game-gallery/0player.png",
 
   [TILE.DOOR_A]: "../0-game-gallery/1-door.png",
@@ -577,7 +592,50 @@ function startRatScurry() {
   moveRat();
 }
 
+function getOwnedWeapons() {
+  let ownedWeapons = [];
 
+  if (hasRevolver) {
+    ownedWeapons.push("revolver");
+  }
+
+  if (hasSquirtGun) {
+    ownedWeapons.push("squirtgun");
+  }
+
+  return ownedWeapons;
+}
+
+function switchWeapon() {
+  let ownedWeapons = getOwnedWeapons();
+
+  if (ownedWeapons.length === 0) {
+    message.textContent = "No weapons equipped.";
+    currentWeapon = "";
+    return;
+  }
+
+  let currentIndex = ownedWeapons.indexOf(currentWeapon);
+
+  currentIndex++;
+
+  if (currentIndex >= ownedWeapons.length) {
+    currentIndex = 0;
+  }
+
+  currentWeapon = ownedWeapons[currentIndex];
+
+  if (currentWeapon === "revolver") {
+    message.textContent = "Equipped: Revolver.";
+  }
+
+  if (currentWeapon === "squirtgun") {
+    message.textContent = "Equipped: Squirt Gun.";
+  }
+
+drawInventory();
+  drawMaze();
+}
 
 function isDarkRoom() {
   return maze === room4; // change to your dark room
@@ -626,7 +684,7 @@ function toggleInventory() {
 function drawInventory() {
   let items = "";
 
-  if (hasRevolver) items += "<div> Revolver</div>";
+  if (hasRevolver) items += "<div>💥 Revolver</div>";
   if (hasSquirtGun) items += "<div>🔫 Squirt Gun</div>";
   if (hasPagerBattery)
   items += "<div>🔋 Pager Battery</div>";
@@ -647,8 +705,109 @@ function drawInventory() {
 
   if (items === "") items = "No equipment yet.";
 
-  document.getElementById("inventoryItems").innerHTML = items;
+
+if (hasRevolver || hasSquirtGun) {
+  items += `
+    <hr>
+    <div>Current Weapon: ${currentWeapon || "None"}</div>
+    <button onclick="switchWeapon()">Switch Weapon</button>
+  `;
 }
+
+document.getElementById("inventoryItems").innerHTML = items;
+}
+
+function fireRevolver() {
+
+  if (!hasRevolver) {
+  setMessage ("Hellhound has no weapons to fire.");
+  return; 
+}
+
+  if (bulletActive) return;
+
+  bulletX = playerX;
+  bulletY = playerY;
+
+  if (facingDirection === "right") {
+    bulletDX = 1;
+    bulletDY = 0;
+  }
+
+  if (facingDirection === "left") {
+    bulletDX = -1;
+    bulletDY = 0;
+  }
+
+  if (facingDirection === "down") {
+    bulletDX = 0;
+    bulletDY = 1;
+  }
+
+  if (facingDirection === "up") {
+    bulletDX = 0;
+    bulletDY = -1;
+  }
+
+  bulletActive = true;
+}
+
+function moveBullet() {
+  if (!bulletActive) return;
+
+  const nextX = bulletX + bulletDX;
+  const nextY = bulletY + bulletDY;
+
+  if (
+    nextY < 0 ||
+    nextY >= maze.length ||
+    nextX < 0 ||
+    nextX >= maze[nextY].length
+  ) {
+    bulletActive = false;
+    drawMaze();
+    return;
+  }
+
+  const nextTile = getMapTile(nextX, nextY);
+
+  if (nextTile === TILE.WALL || nextTile === TILE.BLUE_WALL) {
+    bulletActive = false;
+    drawMaze();
+    return;
+  }
+
+  bulletX = nextX;
+  bulletY = nextY;
+
+  if (bulletX === skullX && bulletY === skullY) {
+  bulletActive = false;
+  skullFrozen = true;
+  skullShot = true;
+  setMessage("Hellhound blasts the Skull Influencer! It freezes. Must be a quantum-particle hologram...");
+  drawMaze();
+  return;
+}
+
+  drawMaze();
+}
+
+setInterval(moveBullet, 120);
+
+function fireCurrentWeapon() {
+  if (currentWeapon === "revolver") {
+    fireRevolver();
+    return;
+  }
+
+  if (currentWeapon === "squirtgun") {
+    fireSquirtGun();
+    return;
+  }
+
+  setMessage("No weapon equipped.");
+}
+
 
 function setMessage(text) {
   document.getElementById("message").innerText = text;
@@ -680,7 +839,7 @@ function getVisibleTile(cell) {
   if (cell === TILE.FIRE_B && fireBOut) return TILE.FLOOR;
 
   if (cell === TILE.PAGER && pagerPickedUp) return TILE.FLOOR;
-
+  
   if (cell === TILE.EXTINGUISHER2 && hasExtinguisher2) return TILE.FLOOR;
   if (cell === TILE.EXTINGUISHER && hasExtinguisher) return TILE.FLOOR;
   if (cell === TILE.LEVEL_2_DISK && hasLevel2Disk) return TILE.FLOOR;
@@ -710,17 +869,28 @@ function drawMaze() {
     for (let x = 0; x < maze[y].length; x++) {
       let cell = getVisibleTile(getMapTile(x, y));
 
-     if (x === playerX && y === playerY) {
-  if (hasSquirtGun) {
+if (x === playerX && y === playerY) {
+
+  if (currentWeapon === "revolver") {
+    cell = TILE.PLAYER_REVOLVER;
+  }
+
+  else if (currentWeapon === "squirtgun") {
     cell = TILE.PLAYER_WATERGUN;
-  } else {
+  }
+
+  else {
     cell = TILE.PLAYER_START;
   }
 }
 
-      if (x === skullX && y === skullY) {
-        cell = TILE.SKULL_INFLUENCER;
-      }
+if (x === skullX && y === skullY) {
+  if (skullShot) {
+    cell = TILE.SKULL_INFLUENCER_BULLET;
+  } else {
+    cell = TILE.SKULL_INFLUENCER;
+  }
+}
 
 if (ratScurrying && x === ratX && y === ratY) {
   cell = TILE.RAT_1_RIGHT;
@@ -728,6 +898,10 @@ if (ratScurrying && x === ratX && y === ratY) {
 
 if (streamActive && x === streamX && y === streamY) {
   cell = TILE.WATER_STREAM;
+}
+
+if (bulletActive && x === bulletX && y === bulletY) {
+  cell = TILE.BULLET;
 }
 
       const tile = document.createElement("div");
@@ -767,6 +941,14 @@ function moveSkullInfluencer() {
     skullY = nextY;
   }
 
+  if (skullShot) {
+  cell = TILE.SKULL_INFLUENCER_BULLET;
+} else if (skullFrozen) {
+  cell = TILE.SKULL_INFLUENCER_FROZEN;
+} else {
+  cell = TILE.SKULL_INFLUENCER;
+}
+
   if (playerX === skullX && playerY === skullY) {
   damageMorale();
   return;
@@ -799,7 +981,7 @@ function damageMorale() {
   }
 }
 
-function squirtStream() {
+function fireSquirtGun() {
 
   if (!hasSquirtGun) {
     setMessage("Hellhound has nothing to fire.");
@@ -876,7 +1058,7 @@ function moveStream() {
 
   if (streamX === skullX && streamY === skullY) {
     streamActive = false;
-    setMessage("Hellhound sprays the Skull Influencer!");
+    setMessage("Hellhound sprays the Skull Influencer! It resets.");
     skullX = 8;
     skullY = 9;
     drawMaze();
@@ -1068,13 +1250,25 @@ if (nextTile === TILE.FIRE_B &&
 
 if (nextTile === TILE.REVOLVER) {
   hasRevolver = true;
-  setMessage("A revolver? In this vent??! Hmm... No bullets.")
-}
+  currentWeapon = "revolver";
+  setMessage("You picked up the Revolver. Equipped: Revolver.");
 
+  maze[nextY] =
+    maze[nextY].substring(0, nextX) +
+    " " +
+    maze[nextY].substring(nextX + 1);
+
+  playerX = nextX;
+  playerY = nextY;
+
+  drawMaze();
+  return;
+}
 
 if (nextTile === TILE.SQUIRT_GUN) {
   hasSquirtGun = true;
-  setMessage("You found a water gun. Space bar pulls the trigger. [on Mobile: Center Button]");
+  currentWeapon = "squirtgun";
+  setMessage("You picked up the Squirt Gun. Equipped: Squirt Gun.");
 
   maze[nextY] =
     maze[nextY].substring(0, nextX) +
@@ -1586,8 +1780,8 @@ document.addEventListener("keydown", function(event) {
   if (event.key === "ArrowRight") movePlayer(1, 0);
 
   if (event.code === "Space") {
-    squirtStream();
-  }
+  fireCurrentWeapon();
+}
 });
 
 /* ==========================
