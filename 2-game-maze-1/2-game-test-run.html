@@ -241,8 +241,7 @@ const TILE = {
   
   BULLET: ":",
   REVOLVER: "x",
-  SQUIRT_GUN: "^",
-  WATER_STREAM: "~",
+  PLAYER_REVOLVER: ";",
   ROOM_EXIT_DOWN: "d",  
   TELEPORTER_1: "p",
   TELEPORTER_2: "q",
@@ -493,13 +492,14 @@ const ratPath = [
 ========================== */
 
 const tileImages = {
+
+  [TILE.PLAYER_REVOLVER]: "../0-game-gallery/0player-revolver.png",
   [TILE.SKULL_INFLUENCER_BULLET]: "../0-game-gallery/skull-influencer-bullet.png",
   [TILE.BULLET]: "../0-game-gallery/bullet.png",
   [TILE.RAT_ONLY_VENT]: "../0-game-gallery/1-vent-entrance.png",
   [TILE.RAT_1_RIGHT]: "../0-game-gallery/rat-1-right.png",
   [TILE.REVOLVER]: "../0-game-gallery/revolver.png",
-  [TILE.SQUIRT_GUN]: "../0-game-gallery/squirt-gun.png",
-  [TILE.WATER_STREAM]: "../0-game-gallery/water-stream.png",
+  
   [TILE.ROUTER]: "../0-game-gallery/router.png",
   [TILE.BLUE_WALL]: "../0-game-gallery/0-wall.png",
   [TILE.WALL]: "../0-game-gallery/0-wall2.png",
@@ -677,7 +677,7 @@ function getVisibleTile(cell) {
   if (cell === TILE.KEY_B && hasKeyB) return TILE.FLOOR;
   if (cell === TILE.KEY_C && hasKeyC) return TILE.FLOOR;
   if (cell === TILE.KEY_D && hasKeyD) return TILE.FLOOR;
-
+  
   if (cell === TILE.SQUIRT_GUN && hasSquirtGun) return TILE.FLOOR;
   if (cell === TILE.REVOLVER && hasRevolver) return TILE.FLOOR;
   if (cell === TILE.DOOR_D && doorDOpen) return TILE.FLOOR;
@@ -718,9 +718,13 @@ function drawMaze() {
     for (let x = 0; x < maze[y].length; x++) {
       let cell = getVisibleTile(getMapTile(x, y));
 
-      if (x === playerX && y === playerY) {
-        cell = TILE.PLAYER_START;
-      }
+           if (x === playerX && y === playerY) {
+  if (hasRevolver) {
+    cell = TILE.PLAYER_REVOLVER;
+  } else {
+    cell = TILE.PLAYER_START;
+  }
+}
 
       if (x === skullX && y === skullY) {
 
@@ -741,8 +745,8 @@ if (ratScurrying && x === ratX && y === ratY) {
   cell = TILE.RAT_1_RIGHT;
 }
 
-if (streamActive && x === streamX && y === streamY) {
-  cell = TILE.WATER_STREAM;
+if (bulletActive && x === bulletX && y === bulletY) {
+  cell = TILE.BULLET;
 }
 
       const tile = document.createElement("div");
@@ -1072,13 +1076,7 @@ if (nextTile === TILE.FIRE_B &&
 
 if (nextTile === TILE.REVOLVER) {
   hasRevolver = true;
-  setMessage("A revolver? In this vent??! Hmm... Plenty of bullets here, too.")
-}
-
-
-if (nextTile === TILE.SQUIRT_GUN) {
-  hasSquirtGun = true;
-  setMessage("You found a water gun. Space bar pulls the trigger. [on Mobile: Center Button]");
+  setMessage("A revolver? In this vent??! Hmm... Plenty of bullets here, too.");
 
   maze[nextY] =
     maze[nextY].substring(0, nextX) +
