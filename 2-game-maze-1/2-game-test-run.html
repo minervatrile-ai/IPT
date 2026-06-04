@@ -493,7 +493,7 @@ const ratPath = [
 ========================== */
 
 const tileImages = {
-
+  [TILE.SKULL_INFLUENCER_BULLET]: "../0-game-gallery/skull-influencer-bullet.png",
   [TILE.BULLET]: "../0-game-gallery/bullet.png",
   [TILE.RAT_ONLY_VENT]: "../0-game-gallery/1-vent-entrance.png",
   [TILE.RAT_1_RIGHT]: "../0-game-gallery/rat-1-right.png",
@@ -723,8 +723,15 @@ function drawMaze() {
       }
 
       if (x === skullX && y === skullY) {
-        cell = TILE.SKULL_INFLUENCER;
-      }
+
+  if (skullFrozen) {
+    cell = TILE.SKULL_INFLUENCER_BULLET;
+  }
+  else {
+    cell = TILE.SKULL_INFLUENCER;
+  }
+
+}
 
 if (bulletActive && x === bulletX && y === bulletY) {
   cell = TILE.BULLET;
