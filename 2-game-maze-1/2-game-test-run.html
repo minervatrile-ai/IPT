@@ -179,7 +179,7 @@ You're Hellhound, Maintenance Technician, and this is where you woke up... Hellh
   <div></div>
 
   <button onclick="movePlayer(-1, 0)">◀</button>
-  <button onclick="squirtStream()">💦</button>
+  <button onclick="fireBullet()">💥</button>
   <button onclick="movePlayer(1, 0)">▶</button>
 
   <div></div>
@@ -238,7 +238,8 @@ You're Hellhound, Maintenance Technician, and this is where you woke up... Hellh
 ========================== */
 
 const TILE = {
-
+  
+  BULLET: ":",
   REVOLVER: "x",
   SQUIRT_GUN: "^",
   WATER_STREAM: "~",
@@ -321,7 +322,7 @@ const room1 = [
 
 const room2 = [
   "#####d#####",
-  "#^  #     #",
+  "#   #     #",
   "### # ### #",
   "#   #e  ###",
   "# ##### #&p",
@@ -368,8 +369,8 @@ const room5 = [
   "-         -",
   "..... .....",
   "-         -",
-  ".....x.....",
   "..... .....",
+  ".....x.....",
   ".....-.....",
   "...........",
   "..........."
@@ -392,6 +393,12 @@ let hellhoundMorale = 100;
 let inventoryOpen = false;
 
 let hasRevolver = false;
+let bulletActive = false;
+let bulletX = 0;
+let bulletY = 0;
+let bulletDX = 0;
+let bulletDY = 0;
+
 let hasSquirtGun = false;
 let skullFrozen = false;
 let foundCouch = false;
@@ -487,6 +494,7 @@ const ratPath = [
 
 const tileImages = {
 
+  [TILE.BULLET]: "../0-game-gallery/bullet.png",
   [TILE.RAT_ONLY_VENT]: "../0-game-gallery/1-vent-entrance.png",
   [TILE.RAT_1_RIGHT]: "../0-game-gallery/rat-1-right.png",
   [TILE.REVOLVER]: "../0-game-gallery/revolver.png",
@@ -626,7 +634,7 @@ function toggleInventory() {
 function drawInventory() {
   let items = "";
 
-  if (hasRevolver) items += "<div> Revolver</div>";
+  if (hasRevolver) items += "<div>💥 Revolver</div>";
   if (hasSquirtGun) items += "<div>🔫 Squirt Gun</div>";
   if (hasPagerBattery)
   items += "<div>🔋 Pager Battery</div>";
@@ -718,6 +726,10 @@ function drawMaze() {
         cell = TILE.SKULL_INFLUENCER;
       }
 
+if (bulletActive && x === bulletX && y === bulletY) {
+  cell = TILE.BULLET;
+}
+
 if (ratScurrying && x === ratX && y === ratY) {
   cell = TILE.RAT_1_RIGHT;
 }
@@ -795,86 +807,74 @@ function damageMorale() {
   }
 }
 
-function squirtStream() {
+function fireBullet() {
 
-  if (!hasSquirtGun) {
-    setMessage("Hellhound has nothing to fire.");
-    return;
+  if (!hasRevolver) {
+  setMessage ("Hellhound has no weapons to fire.");
+  return; 
 }
 
-  if (streamActive) return;
+  if (bulletActive) return;
 
-  streamX = playerX;
-  streamY = playerY;
+  bulletX = playerX;
+  bulletY = playerY;
 
   if (facingDirection === "right") {
-    streamDX = 1;
-    streamDY = 0;
+    bulletDX = 1;
+    bulletDY = 0;
   }
 
   if (facingDirection === "left") {
-    streamDX = -1;
-    streamDY = 0;
+    bulletDX = -1;
+    bulletDY = 0;
   }
 
   if (facingDirection === "down") {
-    streamDX = 0;
-    streamDY = 1;
+    bulletDX = 0;
+    bulletDY = 1;
   }
 
   if (facingDirection === "up") {
-    streamDX = 0;
-    streamDY = -1;
+    bulletDX = 0;
+    bulletDY = -1;
   }
 
-  streamActive = true;
+  bulletActive = true;
 }
 
-function moveStream() {
-  if (!streamActive) return;
+function moveBullet() {
+  if (!bulletActive) return;
 
-  const nextX = streamX + streamDX;
-  const nextY = streamY + streamDY;
-
-  if (
-    nextY < 0 ||
-    nextY >= maze.length ||
-    nextX < 0 ||
-    nextX >= maze[nextY].length
-  ) {
-    streamActive = false;
-    drawMaze();
-    return;
-  }
-
-
+  const nextX = bulletX + bulletDX;
+  const nextY = bulletY + bulletDY;
+  
+  if ( 
+     nextY < 0 ||
+     nextY >= maze.length ||
+     nextX < 0 ||
+     nextX >= maze[nextY].length
+) {
+     bulletActive = false;
+     drawMaze();
+     return;
+}
 
   const nextTile = getMapTile(nextX, nextY);
 
-    if (nextTile === TILE.ROUTER) {
+  if (nextTile === TILE.WALL) {
+    bulletActive = false;
+    drawMaze();
+    return;
+  }
 
-  streamActive = false;
+  bulletX = nextX;
+  bulletY = nextY;
 
-  skullFrozen = true;
+  if (bulletX === skullX && bulletY === bulletY) {
+    bulletActive = false;
+    skullFrozen = true;
+    setMessage("Hellhound blasts the Skull Influencer! It freezes.. Must be a quantum-particle hologram...");
 
-  setMessage(
-    "The RETRO-TECH LAN ROUTER sparks and crackles. The Skull Influencer freezes."
-  );
-
-  drawMaze();
-  return;
-}
-
-
-
-  streamX = nextX;
-  streamY = nextY;
-
-  if (streamX === skullX && streamY === skullY) {
-    streamActive = false;
-    setMessage("Hellhound sprays the Skull Influencer!");
-    skullX = 8;
-    skullY = 9;
     drawMaze();
     return;
   }
@@ -882,7 +882,8 @@ function moveStream() {
   drawMaze();
 }
 
-setInterval(moveStream, 120);
+
+setInterval(moveBullet, 120);
 
 
 
@@ -1582,7 +1583,7 @@ document.addEventListener("keydown", function(event) {
   if (event.key === "ArrowRight") movePlayer(1, 0);
 
   if (event.code === "Space") {
-    squirtStream();
+    fireBullet();
   }
 });
 
