@@ -486,7 +486,7 @@ const ratPath = [
 ========================== */
 
 const tileImages = {
-
+  [TILE.PLAYER_WATERGUN]: "../0-game-gallery/0player-watergun.png",
   [TILE.RAT_ONLY_VENT]: "../0-game-gallery/1-vent-entrance.png",
   [TILE.RAT_1_RIGHT]: "../0-game-gallery/rat-1-right.png",
   [TILE.REVOLVER]: "../0-game-gallery/revolver.png",
@@ -710,9 +710,13 @@ function drawMaze() {
     for (let x = 0; x < maze[y].length; x++) {
       let cell = getVisibleTile(getMapTile(x, y));
 
-      if (x === playerX && y === playerY) {
-        cell = TILE.PLAYER_START;
-      }
+     if (x === playerX && y === playerY) {
+  if (hasSquirtGun) {
+    cell = TILE.PLAYER_WATERGUN;
+  } else {
+    cell = TILE.PLAYER_START;
+  }
+}
 
       if (x === skullX && y === skullY) {
         cell = TILE.SKULL_INFLUENCER;
