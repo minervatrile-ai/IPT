@@ -1051,7 +1051,21 @@ function moveStream() {
   return;
 }
 
+  if (nextTile === TILE.FIRE_A && !fireAOut) {
+    streamActive = false;
+    fireAOut = true;
+    setMessage("You put out the fire with your squirt gun!");
+    drawMaze();
+    return; 
+  }
 
+  if (nextTile === TILE.FIRE_B && !fireBOut) {
+    streamActive = false;
+    fireBOut = true;
+    setMessage("You put out the fire with your squirt gun!");
+    drawMaze();
+    return; 
+  }
 
   streamX = nextX;
   streamY = nextY;
