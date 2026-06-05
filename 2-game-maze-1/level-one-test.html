@@ -311,15 +311,15 @@ const TILE = {
 
 const room1 = [
   "###########",
-  "#PCOFFF!  V",
-  "#OU#FRF####",
-  "# ## #    #",
+  "# C#   !  #",
+  "# U#   ####",
+  "# ####    #",
   "#    # #  #",
-  "###B## #  #",
-  "#   #  ####",
-  "#L  #    X#",
-  "## ##  #  #",
-  "#E #r  # b#",
+  "###### #  #",
+  "#    # ####",
+  "#X   #   R#",
+  "######B####",
+  "ZP  r     V",
   "#####d#####"
 ];
 
@@ -340,14 +340,14 @@ const room2 = [
 const room3 = [
   "###########",
   "V  @     $#",
-  "# #### ## #",
-  "#4#     # #",
+  "###########",
+  "#  4      #",
   "#####H#####",
   "#    f#   #",
   "####### ###",
   "#    A  M&#",
   "#C  #######",
-  "#U&Q    & Z",
+  "VU&Q    & #",
   "######q####"
 ];
 
@@ -372,7 +372,7 @@ const room5 = [
   "-         -",
   "..... .....",
   "-         -",
-  ".....x.....",
+  "..... .....",
   "..... .....",
   ".....-.....",
   "...........",
@@ -386,7 +386,7 @@ let maze = room1;
 ========================== */
 
 let playerX = 1;
-let playerY = 1;
+let playerY = 9;
 
 
 /* ==========================
@@ -395,8 +395,8 @@ let playerY = 1;
 let hellhoundMorale = 100;
 let inventoryOpen = false;
 
-let hasRevolver = false;
-let hasSquirtGun = false;
+let hasRevolver = true;
+let hasSquirtGun = true;
 let currentWeapon = "";
 let skullShot = false;
 let skullFrozen = false;
@@ -447,9 +447,9 @@ let viewingRadio = false;
 let wallVanish = false;
 
 let hasMedicineDog = false;
-let hasLadder = false;
+let hasLadder = true;
 
-let hasPager = false;
+let hasPager = true;
 let viewingPager = false;
 let pagerBatteryTrapUsed = false;
 let pagerPickedUp = false;
@@ -1052,23 +1052,6 @@ function moveStream() {
 }
 
 
-  if (nextTile === TILE.FIRE_A && !fireAOut) {
-    streamActive = false;
-    fireAOut = true;
-    setMessage("You put out the fire with your squirt gun!");
-    drawMaze();
-    return; 
-  }
-
-  if (nextTile === TILE.FIRE_B && !fireBOut) {
-    streamActive = false;
-    fireBOut = true;
-    setMessage("You put out the fire with your squirt gun!");
-    drawMaze();
-    return; 
-  }
-
-
 
   streamX = nextX;
   streamY = nextY;
@@ -1081,7 +1064,6 @@ function moveStream() {
     drawMaze();
     return;
   }
-
 
   drawMaze();
 }
@@ -1559,7 +1541,7 @@ if (nextTile === TILE.VENT_ENTRANCE) {
     maze = room1;
 
     playerX = 9;
-    playerY = 1;   // one tile below vent
+    playerY = 9; 
   }
 
   drawMaze();
