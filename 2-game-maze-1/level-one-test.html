@@ -316,10 +316,10 @@ const room1 = [
   "# ####    #",
   "#    # #  #",
   "###### #  #",
-  "#    # ####",
-  "#X   #   R#",
-  "######B####",
-  "ZP  r     V",
+  "#        X#",
+  "#  ########",
+  "####R  *r*#",
+  "ZP        V",
   "#####d#####"
 ];
 
@@ -1114,7 +1114,7 @@ if (
 }
 
   if (nextTile === TILE.PHONY_WALL && !wallVanish) {
-    setMessage("This must be the way out. But it's LOCKED.");
+    setMessage("The door has locked behind you...");
     return;
     
   }
