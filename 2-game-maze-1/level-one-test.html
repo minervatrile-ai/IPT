@@ -166,7 +166,7 @@ h1 {
 <h1>Hellhound: Maintenance Technician [Level 0, in development]</h1>
 
 <div id="message">
-You're Hellhound, Maintenance Technician, and this is where you woke up... Hellhound: 'Awww, maaaan... Where the heck am I? This isn't where I went to sleep at!'
+You're Hellhound, Maintenance Technician, and between Level 0 and where you are now, RETRO-TECH facility workers appeared, and confiscated ALL your EQUIPMENT.
 </div>
 
 <div id="maze"></div>
@@ -274,6 +274,8 @@ const TILE = {
   DOOR_D: "5",
   KEY_D: "4",
 
+  DOOR_Z: "+",
+
   FIRE_A: "O",
   FIRE_B: "F",
 
@@ -310,56 +312,56 @@ const TILE = {
 ========================== */
 
 const room1 = [
-  "###########",
-  "# C#   !  #",
-  "# U#   ####",
-  "# ####    #",
-  "#    # #  #",
-  "###### #  #",
-  "#        X#",
-  "#  ########",
-  "####R  *r*#",
-  "ZP        V",
-  "#####d#####"
+  "#####V# #+#",
+  "ZP#x#b# + #",
+  "#f# # #%# #",
+  "#    ^  #a#",
+  "# #######A#",
+  "# #L   #  #",
+  "# ###  # R#",
+  "#  X## ####",
+  "#    ##***#",
+  "#789  B   #",
+  "########d##"
 ];
 
 const room2 = [
-  "#####d#####",
-  "#^  #     #",
-  "### # ### #",
-  "#   #e  ###",
-  "# ##### #&p",
-  "#       #5#",
-  "# ### ### #",
-  "#  h#    0#",
-  "# # ###   #",
-  "# #       #",
+  "########d##",
+  "#         #",
+  "#         #",
+  "#         #",
+  "#    r    #",
+  "#         #",
+  "#         #",
+  "#         #",
+  "#         #",
+  "#         #",
   "###########"
 ];
 
 const room3 = [
   "###########",
-  "V  @     $#",
-  "###########",
-  "#  4      #",
-  "#####H#####",
-  "#    f#   #",
-  "####### ###",
-  "#    A  M&#",
-  "#C  #######",
-  "VU&Q    & #",
-  "######q####"
+  "#       a #",
+  "### #######",
+  "#         #",
+  "######## ##",
+  "#         #",
+  "#### ######",
+  "#         #",
+  "## ########",
+  "#         #",
+  "#####V#####"
 ];
 
 const room4 = [
-  "######q####",
-  "#* *  $#  #",
+  "#####V#####",
+  "#* *  $   #",
   "#     #   #",
   "#     #   #",
   "p     #   #",
   "#     #   #",
   "#     ###*#",
-  "#     789a#",
+  "#     789 #",
   "#  %      #",
   "#*d   $   #",
   "#####S#####"
@@ -386,7 +388,7 @@ let maze = room1;
 ========================== */
 
 let playerX = 1;
-let playerY = 9;
+let playerY = 1;
 
 
 /* ==========================
@@ -395,8 +397,8 @@ let playerY = 9;
 let hellhoundMorale = 100;
 let inventoryOpen = false;
 
-let hasRevolver = true;
-let hasSquirtGun = true;
+let hasRevolver = false;
+let hasSquirtGun = false;
 let currentWeapon = "";
 let skullShot = false;
 let skullFrozen = false;
@@ -447,9 +449,9 @@ let viewingRadio = false;
 let wallVanish = false;
 
 let hasMedicineDog = false;
-let hasLadder = true;
+let hasLadder = false;
 
-let hasPager = true;
+let hasPager = false;
 let viewingPager = false;
 let pagerBatteryTrapUsed = false;
 let pagerPickedUp = false;
@@ -535,6 +537,8 @@ const tileImages = {
   [TILE.DOOR_B]: "../0-game-gallery/1-door.png",
   [TILE.DOOR_C]: "../0-game-gallery/1-door.png",
   [TILE.DOOR_D]: "../0-game-gallery/1-door.png",
+
+  [TILE.DOOR_Z]: "../0-game-gallery/1-door.png",
 
   [TILE.KEY_D]: "../0-game-gallery/1-key.png",
   [TILE.KEY_C]: "../0-game-gallery/1-key.png",
@@ -638,7 +642,7 @@ drawInventory();
 }
 
 function isDarkRoom() {
-  return maze === room4; // change to your dark room
+  return maze === room1; // change to your dark room
 }
 
 function isLitByFlashlight(x, y) {
@@ -837,6 +841,7 @@ function getVisibleTile(cell) {
   if (cell === TILE.DOOR_C && doorCOpen) return TILE.FLOOR;
   if (cell === TILE.FIRE_A && fireAOut) return TILE.FLOOR;
   if (cell === TILE.FIRE_B && fireBOut) return TILE.FLOOR;
+
 
   if (cell === TILE.PAGER && pagerPickedUp) return TILE.FLOOR;
   
@@ -1206,7 +1211,16 @@ if (nextTile === TILE.FIRE_B &&
     setMessage("Key C turns. Door C opens.");
   }
 
-  if (nextTile === TILE.VENDING_MACHINE && hasDollar) {
+  if (nextTile === TILE.VENDING_MACHINE && radioState === 1) {
+
+  }
+
+  if (nextTile === TILE.VENDING_MACHINE && radioState === 1) {
+    setMessage("Vending machine has no power...");
+    return;
+  }
+
+  if (nextTile === TILE.VENDING_MACHINE && hasDollar && radioState === 2) {
     hellhoundMorale = 100;
 
       document.getElementById("moraleFill").style.width =
@@ -1218,9 +1232,12 @@ if (nextTile === TILE.FIRE_B &&
   return;
   }
 
-  if (nextTile === TILE.VENDING_MACHINE && !hasDollar) {
+  if (nextTile === TILE.VENDING_MACHINE && !hasDollar && radioState === 2) {
     setMessage("RETRO-COLA VENDING UNIT\n\nSoda: $1.00");
     return;
+  }
+
+  if (nextTile === TILE.DOOR_Z) {
   }
 
   if (nextTile === TILE.DOOR_A && hasKeyA) {
@@ -1298,7 +1315,7 @@ if (nextTile === TILE.SQUIRT_GUN) {
 
 if (nextTile === TILE.FLASHLIGHT) {
   hasFlashlight = true;
-  setMessage("The flashlight still works.");
+  setMessage("You find the flashlight. It still works.");
 
   maze[nextY] =
     maze[nextY].substring(0, nextX) +
@@ -1449,7 +1466,7 @@ if (nextTile === TILE.BREAKER) {
 
   fireBOut = false;
 
-  setMessage("You flip the breaker. Somewhere nearby, a radio hums to life... and sparks erupt nearby!");
+  setMessage("You flip the breaker. Somewhere nearby, a radio hums to life...");
 
   drawMaze();
   return;
@@ -1482,14 +1499,14 @@ if (nextTile === TILE.ROOM_EXIT_DOWN) {
 
     if (maze === room1) {
         maze = room2;
-        playerX = nextX;
+        playerX = 8;
         playerY = 1;
     }
 
 else if (maze === room2) {
     maze = room1;
-    playerX = nextX;
-    playerY = room1.length - 2;
+    playerX = 8;
+    playerY = 9;
 }
 
   drawMaze();
@@ -1547,15 +1564,15 @@ if (nextTile === TILE.VENT_ENTRANCE) {
   if (maze === room1) {
     maze = room3;
 
-    playerX = 1;
-    playerY = 1;   // one tile above vent
+    playerX = 5;
+    playerY = 9;   // one tile above vent
   }
 
   else if (maze === room3) {
     maze = room1;
 
-    playerX = 9;
-    playerY = 9; 
+    playerX = 5;
+    playerY = 1; 
   }
 
   drawMaze();
