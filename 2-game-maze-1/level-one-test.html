@@ -644,6 +644,7 @@ drawInventory();
 function isDarkRoom() {
   return maze === room1; // change to your dark room
 }
+ 
 
 function isLitByFlashlight(x, y) {
   if (facingDirection === "right") return y === playerY && x > playerX && x <= playerX + 2;
@@ -661,7 +662,7 @@ function isVisible(x, y) {
 
   if (
     tile === TILE.ROUTER ||
-    tile === TILE.VENDING_MACHINE
+    tile === TILE.VENDING_MACHINE 
   ) {
     return true;
   }
