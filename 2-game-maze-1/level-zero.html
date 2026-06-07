@@ -858,23 +858,6 @@ function fireCurrentWeapon() {
   setMessage("No weapon equipped.");
 }
 
-function inventoryIsEmpty() {
-  return (
-    !hasRevolver &&
-    !hasSquirtGun &&
-    !hasFlashlight &&
-    !hasPager &&
-    !hasLadder &&
-    !hasKeyA &&
-    !hasKeyB &&
-    !hasKeyC &&
-    !hasKeyD &&
-    !hasExtinguisher &&
-    !hasLevel2Disk &&
-    !hasMedicineDog &&
-    !hasTapeR 
-  );
-}
 
 function setMessage(text) {
   document.getElementById("message").innerText = text;
@@ -1017,6 +1000,10 @@ function getMapTile(x, y) {
 
 
 function getVisibleTile(cell) {
+
+  if (cell === TILE.EXPLUSION_DOOR && inventoryIsEmpty()) {
+  return TILE.FLOOR;
+}
   if (cell === TILE.PLAYER_START) return TILE.FLOOR;
   if (cell === TILE.LADDER && hasLadder) return TILE.FLOOR;
   if (cell === TILE.KEY_A && hasKeyA) return TILE.FLOOR;
@@ -1280,7 +1267,23 @@ function moveStream() {
 setInterval(moveStream, 120);
 
 
-
+function inventoryIsEmpty() {
+  return (
+    !hasPager &&
+    !hasExtinguisher &&
+    !hasTapeR &&
+    !hasLevel2Disk &&
+    !hasMedicineDog &&
+    !hasKeyA && 
+    !hasKeyB &&
+    !hasKeyC &&
+    !hasKeyD &&
+    !hasFlashlight &&
+    !hasLadder &&
+    !hasRevolver &&
+    !hasSquirtGun
+  );
+}
 
 /* ==========================
    INTERACTION LOGIC
@@ -1308,18 +1311,16 @@ if (
   return;
 }
 
-if (nextTile === TILE.EXPLUSION_DOOR && !expulsionDoorOpen) {
+if (nextTile === TILE.EXPLUSION_DOOR) {
   if (!inventoryIsEmpty()) {
     setMessage(
-      "RETRO-TECH SECURITY NOTICE:\n\nAll possessions must be expelled before passage is permitted."
+      "RETRO-TECH SECURITY NOTICE:\n\nAll possessions must be expelled before passage is permitted. Keep a few dollars on you; you may like to buy a snack from one of our RETRO-TECH vending machines."
     );
     return;
   }
 
-  expulsionDoorOpen = true;
   placeTile(nextX, nextY, TILE.FLOOR);
   setMessage("Inventory expulsion confirmed. The door opens.");
-
   drawMaze();
   return;
 }
