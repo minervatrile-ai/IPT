@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hellhound: Maintenance Technician [Level 0]</title>
+<title>Hellhound Engine Template [Blank 6-Room Build]</title>
 
 <style>
 /* ==========================
@@ -163,10 +163,10 @@ h1 {
 
 <body>
 
-<h1>Hellhound: Maintenance Technician [Level 0, in development]</h1>
+<h1>Hellhound Engine Template [Blank 6-Room Build]</h1>
 
 <div id="message">
-You're Hellhound, Maintenance Technician, and this is where you woke up... Hellhound: 'Awww, maaaan... Where the heck am I? This isn't where I went to sleep at!'
+Blank Hellhound engine template loaded. Six empty rooms are ready for object placement.
 </div>
 
 <div id="maze"></div>
@@ -306,93 +306,78 @@ const TILE = {
 
 };
 
+
+/* ==========================
+   BLANK TEMPLATE NOTES
+
+   This file keeps the engine logic from the working Level 0 build,
+   but removes all placed objects from the six room arrays.
+
+   To build a room, replace FLOOR spaces with TILE symbols from TILE above.
+
+   Examples:
+   x = revolver
+   ^ = squirt gun
+   E = extinguisher
+   @ = pager
+   _ = expulsion door
+   A/a = Door A / Key A
+   B/b = Door B / Key B
+   H/h = Door C / Key C
+   5/4 = Door D / Key D
+   R = radio
+   X = breaker
+   C = computer
+   U = desk
+   V = vent entrance
+   S = special vent
+   p/q/d = room transfer tiles
+
+   The player begins at playerX = 1, playerY = 1 in room1.
+   The player does not need a P in the map to appear.
+
+   Skull Influencer is disabled by default:
+   let skullActive = false;
+   Set it to true and choose skullX/skullY when you want it placed.
+========================== */
+
 /* ==========================
    GAME MAP
 ========================== */
 
+const blankRoom = [
+  "###########",
+  "#         #",
+  "#         #",
+  "#         #",
+  "#         #",
+  "#         #",
+  "#         #",
+  "#         #",
+  "#         #",
+  "#         #",
+  "###########"
+];
+
 const room1 = [
   "###########",
-  "#PCOFFF!  V",
-  "#OU#FRF####",
-  "# ## #    #",
-  "#    # #  #",
-  "###B## #  #",
-  "#   #  ####",
-  "#L  #    X#",
-  "## ##  #  #",
-  "#E #r  # b#",
-  "#####d#####"
-];
-
-const room2 = [
-  "#####d#####",
-  "#^  #     #",
-  "### # ### #",
-  "#   #   ###",
-  "# ##### #&p",
-  "#       #5#",
-  "# ### ### #",
-  "#  h#    0#",
-  "# # ###   #",
+  "ZPf       #",
+  "###       #",
   "# #       #",
+  "# #       #",
+  "#         #",
+  "#         #",
+  "#         #",
+  "#         #",
+  "#         #",
   "###########"
 ];
 
-const room3 = [
-  "###########",
-  "V  @     $#",
-  "# #### ## #",
-  "#4#     # #",
-  "#####H#####",
-  "#    f#   #",
-  "####### ###",
-  "#    A  M&#",
-  "#C  #######",
-  "#U&Q    & Z",
-  "######q####"
-];
-
-const room4 = [
-  "######q####",
-  "#* *  $#  #",
-  "#     #   #",
-  "#     #   #",
-  "p     #   #",
-  "#     #   #",
-  "#     ###*#",
-  "#     789a#",
-  "#  %      #",
-  "#*d   $   #",
-  "#####S#####"
-];
-
-const room5 = [
-  ".....S.....",
-  "..... .....",
-  "..... .....",
-  "-         -",
-  "..... .....",
-  "-         -",
-  ".....x.....",
-  "..... .....",
-  ".....-.....",
-  "...........",
-  "..........."
-];
-
-const room6 = [
-  "###########",
-  "#      #   ",
-  "#      _  #",
-  "#      ####",
-  "#         #",
-  "#         #",
-  "#         #",
-  "#         #",
-  "#         #",
-  "Z         #",
-  "###########"
-];
+const room2 = [...blankRoom];
+const room3 = [...blankRoom];
+const room4 = [...blankRoom];
+const room5 = [...blankRoom];
+const room6 = [...blankRoom];
 
 let maze = room1;
 
@@ -416,6 +401,7 @@ let expulsionDoorOpen = false;
 let hasRevolver = false;
 let hasSquirtGun = false;
 let currentWeapon = "";
+let skullActive = false;
 let skullShot = false;
 let skullFrozen = false;
 let foundCouch = false;
@@ -662,46 +648,14 @@ function refreshInventoryIfOpen() {
 }
 
 function isDarkRoom() {
-  return maze === room4; // change to your dark room
+  return false; // set to: return maze === room4; when you want a dark room
 }
 
 function isLitByFlashlight(x, y) {
-
-  if (facingDirection === "right") {
-    return (
-      (x === playerX + 1 && y === playerY) ||
-      (x === playerX + 2 &&
-       y >= playerY - 1 &&
-       y <= playerY + 1)
-    );
-  }
-
-  if (facingDirection === "left") {
-    return (
-      (x === playerX - 1 && y === playerY) ||
-      (x === playerX - 2 &&
-       y >= playerY - 1 &&
-       y <= playerY + 1)
-    );
-  }
-
-  if (facingDirection === "down") {
-    return (
-      (y === playerY + 1 && x === playerX) ||
-      (y === playerY + 2 &&
-       x >= playerX - 1 &&
-       x <= playerX + 1)
-    );
-  }
-
-  if (facingDirection === "up") {
-    return (
-      (y === playerY - 1 && x === playerX) ||
-      (y === playerY - 2 &&
-       x >= playerX - 1 &&
-       x <= playerX + 1)
-    );
-  }
+  if (facingDirection === "right") return y === playerY && x > playerX && x <= playerX + 2;
+  if (facingDirection === "left") return y === playerY && x < playerX && x >= playerX - 2;
+  if (facingDirection === "down") return x === playerX && y > playerY && y <= playerY + 2;
+  if (facingDirection === "up") return x === playerX && y < playerY && y >= playerY - 2;
 
   return false;
 }
@@ -862,7 +816,7 @@ function moveBullet() {
   bulletX = nextX;
   bulletY = nextY;
 
-  if (bulletX === skullX && bulletY === skullY) {
+  if (skullActive && bulletX === skullX && bulletY === skullY) {
   bulletActive = false;
   skullFrozen = true;
   skullShot = true;
@@ -1033,9 +987,6 @@ function getMapTile(x, y) {
 
 function getVisibleTile(cell) {
 
-  if (cell === TILE.EXPLUSION_DOOR && inventoryIsEmpty()) {
-  return TILE.FLOOR;
-}
   if (cell === TILE.PLAYER_START) return TILE.FLOOR;
   if (cell === TILE.LADDER && hasLadder) return TILE.FLOOR;
   if (cell === TILE.KEY_A && hasKeyA) return TILE.FLOOR;
@@ -1094,7 +1045,7 @@ if (x === playerX && y === playerY) {
   }
 }
 
-if (x === skullX && y === skullY) {
+if (skullActive && x === skullX && y === skullY) {
   if (skullShot) {
     cell = TILE.SKULL_INFLUENCER_BULLET;
   } else {
@@ -1130,6 +1081,10 @@ if (bulletActive && x === bulletX && y === bulletY) {
 }
 
 function moveSkullInfluencer() {
+  if (!skullActive) {
+    return;
+  }
+
   if (skullFrozen) {
     return;
   }
@@ -1283,7 +1238,7 @@ function moveStream() {
   streamX = nextX;
   streamY = nextY;
 
-  if (streamX === skullX && streamY === skullY) {
+  if (skullActive && streamX === skullX && streamY === skullY) {
     streamActive = false;
     setMessage("Hellhound sprays the Skull Influencer! It resets.");
     skullX = 8;
@@ -1358,7 +1313,7 @@ if (nextTile === TILE.EXPLUSION_DOOR) {
 }
 
   if (nextTile === TILE.PHONY_WALL && !wallVanish) {
-    setMessage("This must be the way out. But it's LOCKED.");
+    setMessage("LATCHED and LOCKED.");
     return;
     
   }
@@ -2029,7 +1984,7 @@ if (
 playerX = nextX;
 playerY = nextY;
 
-if (playerX === skullX && playerY === skullY) {
+if (skullActive && playerX === skullX && playerY === skullY) {
   damageMorale();
 }
 
