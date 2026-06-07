@@ -652,10 +652,42 @@ function isDarkRoom() {
 }
 
 function isLitByFlashlight(x, y) {
-  if (facingDirection === "right") return y === playerY && x > playerX && x <= playerX + 2;
-  if (facingDirection === "left") return y === playerY && x < playerX && x >= playerX - 2;
-  if (facingDirection === "down") return x === playerX && y > playerY && y <= playerY + 2;
-  if (facingDirection === "up") return x === playerX && y < playerY && y >= playerY - 2;
+
+    if (facingDirection === "right") {
+    return (
+      (x === playerX + 1 && y === playerY) ||
+      (x === playerX + 2 &&
+       y >= playerY - 1 &&
+       y <= playerY + 1)
+    );
+  }
+
+  if (facingDirection === "left") {
+    return (
+      (x === playerX - 1 && y === playerY) ||
+      (x === playerX - 2 &&
+       y >= playerY - 1 &&
+       y <= playerY + 1)
+    );
+  }
+
+  if (facingDirection === "down") {
+    return (
+      (y === playerY + 1 && x === playerX) ||
+      (y === playerY + 2 &&
+       x >= playerX - 1 &&
+       x <= playerX + 1)
+    );
+  }
+
+  if (facingDirection === "up") {
+    return (
+      (y === playerY - 1 && x === playerX) ||
+      (y === playerY - 2 &&
+       x >= playerX - 1 &&
+       x <= playerX + 1)
+    );
+  }
 
   return false;
 }
