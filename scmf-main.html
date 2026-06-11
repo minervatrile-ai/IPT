@@ -1,0 +1,2044 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>UNRECOGNIZER Snow Vehicle Test Field</title>
+  <style>
+    body {
+      margin: 0;
+      background: #101820;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin: 12px 0 4px;
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: #ff8c00;
+    }
+
+    #hud {
+      margin-bottom: 10px;
+      color: #9cff00;
+      font-size: 14px;
+    }
+
+    #game {
+  display: grid;
+  border: 4px solid #ff8c00;
+  position: relative;
+  background: #cfe8ff;
+}
+
+    .tile {
+      width: 64px;
+      height: 64px;
+      background-image: url("gallery/ground/snow-basic.png");
+      background-size: 64px 64px;
+      position: relative;
+      overflow: visible;
+    }
+
+    .sprite {
+      width: 64px;
+      height: 64px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      background-size: 64px 64px;
+      background-repeat: no-repeat;
+      background-position: center;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .vehicle-full {
+      width: 64px;
+      height: 64px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      background-size: 64px 64px;
+      background-repeat: no-repeat;
+      background-position: center;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    #messageBox {
+      margin-top: 10px;
+      width: 95vw;
+      min-height: 28px;
+      color: #ffb347;
+      font-size: 15px;
+      text-align: center;
+    }
+
+    .instructions {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #b9d7ff;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    #camera {
+  width: 960px;
+  height: 640px;
+  overflow: hidden;
+  border: 4px solid #ff8c00;
+  position: relative;
+  background: #cfe8ff;
+}
+
+#game {
+  position: relative;
+  transform-origin: top left;
+}
+
+#phoneOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+}
+
+#phoneImage {
+  width: 360px;
+  height: 480px;
+  background-image: url("gallery/architecture/scmf/ccphone1.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+#phoneMenu {
+  width: 340px;
+  min-height: 420px;
+  border: 4px solid #ff8c00;
+  background: #101820;
+  color: #9cff00;
+  padding: 22px;
+  font-family: Arial, sans-serif;
+}
+
+#phoneMenu h2 {
+  color: #ff8c00;
+  margin-top: 0;
+  letter-spacing: 2px;
+}
+
+.phoneOption {
+  padding: 10px;
+  margin: 8px 0;
+  border: 2px solid #333;
+  background: #1d2a33;
+}
+
+.phoneOption.selected {
+  border-color: #9cff00;
+  background: #263800;
+}
+
+.phoneHint {
+  color: #b9d7ff;
+  font-size: 13px;
+  margin-top: 22px;
+}
+
+#exchangeOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+}
+
+#exchangeImage {
+  width: 360px;
+  height: 480px;
+  background-image: url("gallery/architecture/scmf/exchange.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+#exchangeMenu {
+  width: 340px;
+  min-height: 420px;
+  border: 4px solid #ff8c00;
+  background: #101820;
+  color: #9cff00;
+  padding: 22px;
+  font-family: Arial, sans-serif;
+}
+
+#exchangeMenu h2 {
+  color: #ff8c00;
+  margin-top: 0;
+  letter-spacing: 2px;
+}
+
+#bubbleOverlay {
+  position: fixed;
+  left: 50%;
+  bottom: 90px;
+  transform: translateX(-50%);
+  width: 720px;
+  max-width: 90vw;
+  min-height: 90px;
+  background: rgba(16, 24, 32, 0.96);
+  border: 4px solid #ff8c00;
+  color: #ffffff;
+  z-index: 90;
+  padding: 18px 22px;
+  font-size: 20px;
+  line-height: 1.35;
+  box-shadow: 0 0 18px #ff00cc;
+}
+
+#bubbleSpeaker {
+  color: #9cff00;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+#bubbleText {
+  color: #ffb347;
+}
+  </style>
+</head>
+
+<body>
+  <h1>UNRECOGNIZER SNOW FIELD TEST</h1>
+  <div id="hud">Mode: Walking | Arrow Keys: Move | E: Enter / Exit / Ride | B: Back</div>
+  <div id="camera">
+  <div id="game"></div>
+</div>
+  <div id="messageBox">Walk to a vehicle and press E.</div>
+
+  <div class="instructions">
+    This template tests: walking, entering a 2x2 operator vehicle,
+    and riding two 2x1 / 1x2 snowmobiles, plus one stretched architecture stamp.
+  </div>
+
+<script>
+
+/*
+  ============================================================
+  UNRECOGNIZER VEHICLE TEST TEMPLATE
+  Cleaned and reorganized phone / vehicle request version
+  ============================================================
+*/
+
+// ------------------------------------------------------------
+// MAP SETTINGS / DOM
+// ------------------------------------------------------------
+
+const TILE_SIZE = 64;
+const MAP_WIDTH = 30;
+const MAP_HEIGHT = 22;
+
+const game = document.getElementById("game");
+const hud = document.getElementById("hud");
+const messageBox = document.getElementById("messageBox");
+
+// ------------------------------------------------------------
+// PLAYER SETTINGS
+// ------------------------------------------------------------
+
+let player = {
+  x: 15,
+  y: 18,
+  facing: "up"
+};
+
+const PLAYER_IMAGES = {
+  up:    "gallery/sprite/badge/unrecognizer/zyr.png",
+  down:  "gallery/sprite/badge/unrecognizer/zyr.png",
+  left:  "gallery/sprite/badge/unrecognizer/zyr.png",
+  right: "gallery/sprite/badge/unrecognizer/zyr.png"
+};
+
+// ------------------------------------------------------------
+// OUTSIDE MAP / TILE IMAGES
+// ------------------------------------------------------------
+
+const GROUND_IMAGES = {
+  snow: "gallery/ground/snow-basic.png",
+  plaza: "gallery/ground/snow-plaza.png",
+  ice: "gallery/ground/snow-ice.png"
+};
+
+const TILE = {
+  ".": GROUND_IMAGES.snow,
+  "=": GROUND_IMAGES.plaza,
+  "~": GROUND_IMAGES.ice,
+  "R": "gallery/ground/snow-plaza.png",
+  "@": "gallery/architecture/barrel.png"
+};
+
+const MAP = [
+  "..............................",
+  "..............................",
+  "..............................",
+  "..............................",
+  "....================..........",
+  "....================..........",
+  "....================..........",
+  "....================..........",
+  "....================..........",
+  "....================..........",
+  "..............................",
+  ".....@@@@..@..............@@@@",
+  "....======================RRRR",
+  "....======================RRRR",
+  ".....@@@@@@@..............@@@@",
+  "..............................",
+  "..............................",
+  "..............................",
+  "..............................",
+  "..............................",
+  "..............................",
+  ".............................."
+];
+
+const ROAD_MAP = [
+  "..............................",
+  "..............................",
+  "..............................",
+  "..............................",
+  "~~~~~~~...............~~~~~~~.",
+  "..............................",
+  "==============================",
+  "==============================",
+  "..............................",
+  "..............................",
+  "..............................",
+  "@@@@..........................",
+  "RRRR==========================",
+  "RRRR==========================",
+  "@@@@..........................",
+  "..............................",
+  "..............................",
+  "..............................",
+  "..............................",
+  "..............................",
+  "..............................",
+  ".............................."
+];
+
+const OUTSIDE_MAPS = {
+  outside: MAP,
+  roadMap: ROAD_MAP
+};
+
+// ------------------------------------------------------------
+// BLUEPRINTS / INTERIORS
+// ------------------------------------------------------------
+
+const BLUEPRINT_TILE = {
+  "W": "gallery/architecture/0-wall1.png",
+  ".": "gallery/architecture/outpost/interior/floor.png",
+  "_": "gallery/architecture/scmf/north-down.png",
+  "-": "gallery/architecture/scmf/south-down.png",
+  "P": "gallery/architecture/scmf/revolving-door.png",
+  "D": "gallery/architecture/outpost/interior/door.png",
+  "T": "gallery/architecture/scmf/ccphone1.png",
+  "C": "gallery/architecture/outpost/interior/computer.png",
+  "B": "gallery/architecture/outpost/interior/bed.png",
+  "=": "gallery/architecture/outpost/interior/entry-mat.png",
+  "t": "gallery/architecture/outpost/interior/table.png",
+  " ": "",
+  "x": "gallery/architecture/scmf/exchange.png",
+  "^": "gallery/architecture/scmf/revolving-door.png"
+};
+
+const BLUEPRINTS = {
+
+  tower: [
+    "tC",
+    "-.",
+    "..",
+    ".-",
+    "..",
+    "-D"
+  ], 
+  
+  outpost: [
+    "WWWWW",
+    "WCT.W",
+    "W...W",
+    "WB=DW",
+    "WWWWW"
+  ],
+
+  scmfBusArrival: [
+    "WWWWWWWWW^^WWWWWWWWW",
+    "W.xTTTTTT__TTTTTTx.W",
+    "W..................W",
+    "W..TTTTTT..TTTTTT..W",
+    "W..................W",
+    "WWWWWWWW____WWWWWWWW",
+    "WWWWWWWWPPPPWWWWWWWW"
+  ],
+
+  cafeteria: [
+  "WWWWWWWWWW",
+  "W........W",
+  "W..tttt..W",
+  "W........W",
+  "W..TT....W",
+  "W........W",
+  "WWWW^^WWWW"
+]
+};
+
+let currentMap = "outside";
+let outsideReturnSpot = null;
+
+// ------------------------------------------------------------
+// VEHICLE IMAGE PATHS
+// ------------------------------------------------------------
+
+const VEHICLE_IMAGES = {
+  wf: {
+    operator: {
+      full: {
+        up:    "gallery/vehicle/wf/operator/full/up.png",
+        down:  "gallery/vehicle/wf/operator/full/down.png",
+        left:  "gallery/vehicle/wf/operator/full/left.png",
+        right: "gallery/vehicle/wf/operator/full/right.png"
+      }
+    },
+
+    snowmobile: {
+      pieces: {
+        up: {
+          front: "gallery/vehicle/wf/snowmobile/up/front.png",
+          rear:  "gallery/vehicle/wf/snowmobile/up/rear.png"
+        },
+        down: {
+          front: "gallery/vehicle/wf/snowmobile/down/front.png",
+          rear:  "gallery/vehicle/wf/snowmobile/down/rear.png"
+        },
+        left: {
+          front: "gallery/vehicle/wf/snowmobile/left/front.png",
+          rear:  "gallery/vehicle/wf/snowmobile/left/rear.png"
+        },
+        right: {
+          front: "gallery/vehicle/wf/snowmobile/right/front.png",
+          rear:  "gallery/vehicle/wf/snowmobile/right/rear.png"
+        }
+      }
+    }
+  },
+
+  unrecognizer: {
+    snowmobile: {
+      pieces: {
+        up: {
+          front: "gallery/vehicle/unrecognizer/snowmobile/up/front.png",
+          rear:  "gallery/vehicle/unrecognizer/snowmobile/up/rear.png"
+        },
+        down: {
+          front: "gallery/vehicle/unrecognizer/snowmobile/down/front.png",
+          rear:  "gallery/vehicle/unrecognizer/snowmobile/down/rear.png"
+        },
+        left: {
+          front: "gallery/vehicle/unrecognizer/snowmobile/left/front.png",
+          rear:  "gallery/vehicle/unrecognizer/snowmobile/left/rear.png"
+        },
+        right: {
+          front: "gallery/vehicle/unrecognizer/snowmobile/right/front.png",
+          rear:  "gallery/vehicle/unrecognizer/snowmobile/right/rear.png"
+        }
+      }
+    }
+  },
+
+  snowbus: {
+  full: {
+    up: "gallery/vehicle/snowbus/snowbus-full-up.png",
+    down: "gallery/vehicle/snowbus/snowbus-full-down.png",
+    left: "gallery/vehicle/snowbus/snowbus-full-left.png",
+    right: "gallery/vehicle/snowbus/snowbus-full-right.png"
+  }
+}
+
+
+};
+
+// ------------------------------------------------------------
+// VEHICLE OBJECTS
+// ------------------------------------------------------------
+
+const VEHICLES_BY_MAP = {
+  outside: [
+    {
+      id: "wf-operator",
+      type: "operator",
+      skin: "wf",
+      name: "WF Operator Vehicle",
+      x: 12,
+      y: 17,
+      facing: "up",
+      width: 2,
+      height: 2,
+      occupied: false
+    },
+
+    {
+      id: "wf-snowmobile",
+      type: "snowmobile",
+      skin: "wf",
+      name: "WF Snowmobile",
+      x: 17,
+      y: 17,
+      facing: "right",
+      width: 2,
+      height: 1,
+      occupied: false
+    },
+
+    {
+      id: "green-snowmobile",
+      type: "snowmobile",
+      skin: "unrecognizer",
+      name: "Unrecognizer Snowmobile",
+      x: 14,
+      y: 20,
+      facing: "right",
+      width: 2,
+      height: 1,
+      occupied: false
+    },
+
+    {
+      id: "snowbus-1",
+      type: "snowbus",
+      skin: "snowbus",
+      name: "Snow Bus",
+      x: 4,
+      y: 12,
+      facing: "right",
+      width: 4,
+      height: 2,
+      occupied: false
+    }
+  ],
+
+  roadMap: []
+};
+
+let currentVehicle = null;
+let mode = "walking";
+
+// ------------------------------------------------------------
+// NPCS
+// ------------------------------------------------------------
+
+let dealerConversationStep = 0;
+let yordConversationStep = 0;
+
+let npcs = [
+  {
+    id: "unrecognizer-dealer",
+    name: "Unrecognizer Dealer",
+    x: 15,
+    y: 19,
+    image: "gallery/sprite/badge/unrecognizer/kigh.png",
+    visible: true,
+    dialogueUsed: false
+  },
+
+  {
+  id: "yord",
+  name: "Yord",
+  x: 18,
+  y: 1,
+  image: "gallery/sprite/badge/wf/yord.png",
+  visible: true,
+  dialogueUsed: false
+}
+];
+
+// ------------------------------------------------------------
+// ARCHITECTURE STAMPS
+// ------------------------------------------------------------
+
+const BUILDING_IMAGES = {
+  scmfMain: "gallery/architecture/scmf/scmf-main.png",
+  outpost: "gallery/architecture/outpost/outpost-test.png",
+  weatherTower: "gallery/architecture/tower/tower.png"
+};
+
+let buildings = [
+  {
+    id: "scmf-main",
+    type: "scmfMain",
+    name: "Stro Central Mining Facility",
+    x: Math.floor((MAP_WIDTH - 24) / 2),
+    y: 2,
+    width: 16,
+    height: 9,
+    image: BUILDING_IMAGES.scmfMain,
+    collision: [
+      "................",
+      "................",
+      "...XXXXXXXXXX...",
+      "...XXXXXXXXXX...",
+      "...XXXXXXXXXX...",
+      "...XXXXXXXXXX...",
+      ".....DDDDDD.....",
+      "================",
+      "================"
+    ],
+    blueprint: "scmfBusArrival",
+    entryX: 9,
+    entryY: 5
+  },
+
+  {
+    id: "outpost",
+    type: "outpost",
+    name: "Outpost",
+    x: 15,
+    y: 17,
+    width: 7,
+    height: 4,
+    image: BUILDING_IMAGES.outpost,
+    collision: [
+      ".......",
+      ".......",
+      "..DDD..",
+      "......."
+    ],
+    blueprint: "outpost",
+    entryX: 2,
+    entryY: 3
+  },
+  
+  {
+    id: "tower",
+    type: "tower",
+    name: "Tower",
+    x: 0,
+    y: 0,
+    width: 2,
+    height: 6,
+    image: "gallery/architecture/tower/tower.png",
+    collision: [
+      "XX",
+      "XX",
+      "XX",
+      "XX",
+      "XX",
+      "DD"
+    ],
+    blueprint: "tower",
+    entryX: 1,
+    entryY: 4
+  }
+];
+
+
+
+// ------------------------------------------------------------
+// PHONE MENU STATE
+// ------------------------------------------------------------
+
+let usingPhone = false;
+let phoneMenuIndex = 0;
+let phoneScreen = "main";
+let vehicleRequestIndex = 0;
+
+const phoneOptions = [
+  "Personnel Directory",
+  "Message Queue",
+  "Transit Schedule",
+  "Vehicle Requests",
+  "Facility Notices",
+  "Hang Up"
+];
+
+const vehicleRequestOptions = [
+  "White Fang Snowmobile",
+  "Unrecognizer Snowmobile",
+  "White Fang Operator Vehicle",
+  "Back"
+];
+
+let viewingExchange = false;
+
+function playerIsBesideExchange() {
+  const checks = [
+    { x: player.x, y: player.y - 1 },
+    { x: player.x, y: player.y + 1 },
+    { x: player.x - 1, y: player.y },
+    { x: player.x + 1, y: player.y }
+  ];
+
+  for (const spot of checks) {
+    if (!inBounds(spot.x, spot.y)) continue;
+
+    const symbol = BLUEPRINTS[currentMap]?.[spot.y]?.[spot.x];
+    if (symbol === "x") return true;
+  }
+
+  return false;
+}
+
+function openExchangeOverlay() {
+  viewingExchange = true;
+
+  const overlay = document.createElement("div");
+  overlay.id = "exchangeOverlay";
+
+  overlay.innerHTML = `
+    <div id="exchangeImage"></div>
+    <div id="exchangeMenu">
+      <h2>SERPENTINE EXCHANGE</h2>
+
+      <div class="phoneOption">1. Exchange 100 Merit</div>
+      <div class="phoneOption">2. Exchange 500 Merit</div>
+      <div class="phoneOption">3. Exchange 1000 Merit</div>
+      <div class="phoneOption">4. Leave Machine</div>
+
+      <p class="phoneHint">Number keys: choose | 4 or B: leave</p>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+  setMessage("Merit-to-Serpentine exchange terminal active.");
+}
+
+function closeExchangeOverlay() {
+  viewingExchange = false;
+
+  const overlay = document.getElementById("exchangeOverlay");
+  if (overlay) overlay.remove();
+
+  setMessage("Exchange terminal closed.");
+}
+// ------------------------------------------------------------
+// BASIC HELPERS
+// ------------------------------------------------------------
+
+function getActiveVehicles() {
+  return VEHICLES_BY_MAP[currentMap] || [];
+}
+
+function getVehicleById(id) {
+  for (const mapName in VEHICLES_BY_MAP) {
+    const found = VEHICLES_BY_MAP[mapName].find(v => v.id === id);
+    if (found) return found;
+  }
+
+  return null;
+}
+
+function moveVehicleToMap(vehicle, targetMap, x, y, facing, width, height) {
+  for (const mapName in VEHICLES_BY_MAP) {
+    VEHICLES_BY_MAP[mapName] = VEHICLES_BY_MAP[mapName].filter(v => v.id !== vehicle.id);
+  }
+
+  vehicle.x = x;
+  vehicle.y = y;
+  vehicle.facing = facing;
+  vehicle.width = width;
+  vehicle.height = height;
+
+  VEHICLES_BY_MAP[targetMap].push(vehicle);
+}
+
+function getActiveMap() {
+  if (OUTSIDE_MAPS[currentMap]) {
+    return OUTSIDE_MAPS[currentMap];
+  }
+
+  return BLUEPRINTS[currentMap];
+}
+
+function getActiveWidth() {
+  return getActiveMap()[0].length;
+}
+
+function getActiveHeight() {
+  return getActiveMap().length;
+}
+
+function inBounds(x, y) {
+  return x >= 0 && x < getActiveWidth() && y >= 0 && y < getActiveHeight();
+}
+
+function getVehicleFootprint(vehicle) {
+  const spots = [];
+
+  for (let yy = 0; yy < vehicle.height; yy++) {
+    for (let xx = 0; xx < vehicle.width; xx++) {
+      spots.push({
+        x: vehicle.x + xx,
+        y: vehicle.y + yy
+      });
+    }
+  }
+
+  return spots;
+}
+
+function isOccupiedByVehicle(x, y, ignoreVehicleId = null) {
+  for (const vehicle of getActiveVehicles()) {
+    if (vehicle.id === ignoreVehicleId) continue;
+
+    const footprint = getVehicleFootprint(vehicle);
+
+    for (const spot of footprint) {
+      if (spot.x === x && spot.y === y) return true;
+    }
+  }
+
+  return false;
+}
+
+function isOccupiedByBuilding(x, y) {
+  for (const building of buildings) {
+    const localX = x - building.x;
+    const localY = y - building.y;
+
+    if (
+      localX < 0 ||
+      localY < 0 ||
+      localX >= building.width ||
+      localY >= building.height
+    ) {
+      continue;
+    }
+
+    const row = building.collision[localY];
+    const cell = row[localX];
+
+    if (cell === "X") return true;
+  }
+
+  return false;
+}
+
+function isOccupiedByInteriorTile(x, y) {
+  const symbol = BLUEPRINTS[currentMap]?.[y]?.[x];
+
+  if (symbol === "W") return true;
+  if (symbol === "T") return true;
+  if (symbol === "C") return true;
+  if (symbol === "B") return true;
+
+  return false;
+}
+
+function areAdjacent(aX, aY, bX, bY) {
+  return Math.abs(aX - bX) + Math.abs(aY - bY) === 1;
+}
+
+function setMessage(text) {
+  messageBox.textContent = text;
+}
+
+function showBubble(speaker, text) {
+  let bubble = document.getElementById("bubbleOverlay");
+
+  if (!bubble) {
+    bubble = document.createElement("div");
+    bubble.id = "bubbleOverlay";
+    document.body.appendChild(bubble);
+  }
+
+  bubble.innerHTML = `
+    <div id="bubbleSpeaker">${speaker}</div>
+    <div id="bubbleText">${text}</div>
+  `;
+}
+
+function hideBubble() {
+  const bubble = document.getElementById("bubbleOverlay");
+  if (bubble) bubble.remove();
+}
+
+function updateHud() {
+  if (mode === "walking") {
+    hud.textContent = "Mode: Walking | Arrow Keys: Move | E: Enter / Ride";
+  } else {
+    hud.textContent = "Mode: Driving " + currentVehicle.name + " | Arrow Keys: Drive | E: Exit | B: Back";
+  }
+}
+
+// ------------------------------------------------------------
+// CAMERA
+// ------------------------------------------------------------
+
+function updateCamera() {
+  const camera = document.getElementById("camera");
+
+  const viewW = camera.clientWidth;
+  const viewH = camera.clientHeight;
+
+  const mapW = getActiveWidth() * TILE_SIZE;
+  const mapH = getActiveHeight() * TILE_SIZE;
+
+  let targetX;
+  let targetY;
+
+  if (mode === "driving" && currentVehicle) {
+    targetX = currentVehicle.x * TILE_SIZE + (currentVehicle.width * TILE_SIZE) / 2;
+    targetY = currentVehicle.y * TILE_SIZE + (currentVehicle.height * TILE_SIZE) / 2;
+  } else {
+    targetX = player.x * TILE_SIZE + TILE_SIZE / 2;
+    targetY = player.y * TILE_SIZE + TILE_SIZE / 2;
+  }
+
+  let camX = targetX - viewW / 2;
+  let camY = targetY - viewH / 2;
+
+  camX = Math.max(0, Math.min(camX, Math.max(0, mapW - viewW)));
+  camY = Math.max(0, Math.min(camY, Math.max(0, mapH - viewH)));
+
+  game.style.transform = `translate(${-camX}px, ${-camY}px)`;
+}
+
+// ------------------------------------------------------------
+// PHONE FUNCTIONS
+// ------------------------------------------------------------
+
+function playerIsBesidePhone() {
+  const checks = [
+    { x: player.x, y: player.y - 1 },
+    { x: player.x, y: player.y + 1 },
+    { x: player.x - 1, y: player.y },
+    { x: player.x + 1, y: player.y }
+  ];
+
+  for (const spot of checks) {
+    if (!inBounds(spot.x, spot.y)) continue;
+
+    const symbol = BLUEPRINTS[currentMap]?.[spot.y]?.[spot.x];
+    if (symbol === "T") return true;
+  }
+
+  return false;
+}
+
+function openPhoneOverlay() {
+  usingPhone = true;
+  phoneScreen = "main";
+  phoneMenuIndex = 0;
+  vehicleRequestIndex = 0;
+  setMessage("S.C.M.F. closed circuit communications active.");
+  drawPhoneOverlay();
+}
+
+function closePhoneOverlay() {
+  usingPhone = false;
+  phoneScreen = "main";
+
+  const overlay = document.getElementById("phoneOverlay");
+  if (overlay) overlay.remove();
+
+  setMessage("Handset returned.");
+}
+
+function drawPhoneOverlay() {
+  let oldOverlay = document.getElementById("phoneOverlay");
+  if (oldOverlay) oldOverlay.remove();
+
+  const overlay = document.createElement("div");
+  overlay.id = "phoneOverlay";
+
+  overlay.innerHTML = `
+    <div id="phoneImage"></div>
+    <div id="phoneMenu">
+      <h2>S.C.M.F. COMMS</h2>
+      ${phoneOptions.map((option, index) => `
+        <div class="phoneOption ${index === phoneMenuIndex ? "selected" : ""}">
+          ${index + 1}. ${option}
+        </div>
+      `).join("")}
+      <p class="phoneHint">Arrow keys: choose | E: select | B: hang up</p>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+
+function openVehicleRequestMenu() {
+  phoneScreen = "vehicles";
+  vehicleRequestIndex = 0;
+  drawVehicleRequestMenu();
+}
+
+function drawVehicleRequestMenu() {
+  let oldOverlay = document.getElementById("phoneOverlay");
+  if (oldOverlay) oldOverlay.remove();
+
+  const overlay = document.createElement("div");
+  overlay.id = "phoneOverlay";
+
+  overlay.innerHTML = `
+    <div id="phoneImage"></div>
+    <div id="phoneMenu">
+      <h2>VEHICLE REQUESTS</h2>
+      ${vehicleRequestOptions.map((option, index) => `
+        <div class="phoneOption ${index === vehicleRequestIndex ? "selected" : ""}">
+          ${index + 1}. ${option}
+        </div>
+      `).join("")}
+      <p class="phoneHint">Arrow keys: choose | E: request | B: back</p>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+
+function handleMainPhoneMenu(key) {
+  if (key === "arrowup") {
+    phoneMenuIndex = Math.max(0, phoneMenuIndex - 1);
+    drawPhoneOverlay();
+    return;
+  }
+
+  if (key === "arrowdown") {
+    phoneMenuIndex = Math.min(phoneOptions.length - 1, phoneMenuIndex + 1);
+    drawPhoneOverlay();
+    return;
+  }
+
+  if (key === "e") {
+    const option = phoneOptions[phoneMenuIndex];
+
+    if (option === "Hang Up") {
+      closePhoneOverlay();
+      return;
+    }
+
+    if (option === "Vehicle Requests") {
+      openVehicleRequestMenu();
+      return;
+    }
+
+    setMessage("Selected: " + option);
+    return;
+  }
+
+  if (key === "b") {
+    closePhoneOverlay();
+  }
+}
+
+function handleVehicleRequestMenu(key) {
+  if (key === "arrowup") {
+    vehicleRequestIndex = Math.max(0, vehicleRequestIndex - 1);
+    drawVehicleRequestMenu();
+    return;
+  }
+
+  if (key === "arrowdown") {
+    vehicleRequestIndex = Math.min(vehicleRequestOptions.length - 1, vehicleRequestIndex + 1);
+    drawVehicleRequestMenu();
+    return;
+  }
+
+  if (key === "b") {
+    phoneScreen = "main";
+    drawPhoneOverlay();
+    return;
+  }
+
+  if (key !== "e") return;
+
+  const option = vehicleRequestOptions[vehicleRequestIndex];
+
+  if (option === "Back") {
+    phoneScreen = "main";
+    drawPhoneOverlay();
+    return;
+  }
+
+  if (option === "White Fang Snowmobile") {
+    requestVehicle("wf-snowmobile");
+    return;
+  }
+
+  if (option === "Unrecognizer Snowmobile") {
+    requestVehicle("green-snowmobile");
+    return;
+  }
+
+  if (option === "White Fang Operator Vehicle") {
+    requestVehicle("wf-operator");
+  }
+}
+
+function handlePhoneInput(key, event) {
+  event.preventDefault();
+
+  if (phoneScreen === "vehicles") {
+    handleVehicleRequestMenu(key);
+    return;
+  }
+
+  handleMainPhoneMenu(key);
+}
+
+function requestVehicle(vehicleId) {
+  const vehicle = getVehicleById(vehicleId);
+
+  if (!vehicle) {
+    setMessage("Vehicle request failed. Unit not found.");
+    return;
+  }
+
+  if (currentVehicle && currentVehicle.id === vehicle.id) {
+    setMessage("That vehicle is already in use.");
+    return;
+  }
+
+  const deliverySpots = {
+    "wf-snowmobile": {
+      x: 8,
+      y: 11,
+      facing: "right",
+      width: 2,
+      height: 1
+    },
+    "green-snowmobile": {
+      x: 11,
+      y: 11,
+      facing: "right",
+      width: 2,
+      height: 1
+    },
+    "wf-operator": {
+      x: 14,
+      y: 11,
+      facing: "down",
+      width: 2,
+      height: 2
+    }
+  };
+
+  const spot = deliverySpots[vehicleId];
+
+  vehicle.occupied = false;
+  vehicle.npcDriven = false;
+  vehicle.x = spot.x;
+  vehicle.y = spot.y;
+  vehicle.facing = spot.facing;
+  vehicle.width = spot.width;
+  vehicle.height = spot.height;
+
+  closePhoneOverlay();
+  setMessage(vehicle.name + " delivered outside the SCMF revolving doors.");
+  drawGame();
+}
+
+// ------------------------------------------------------------
+// BUILDING ENTRY / EXIT
+// ------------------------------------------------------------
+
+function enterBlueprintRoom(targetMap, x, y, facing = "up") {
+  currentMap = targetMap;
+  player.x = x;
+  player.y = y;
+  player.facing = facing;
+
+  setMessage("Entered new SCMF section.");
+  drawGame();
+}
+
+function enterOutpostBlueprint(building) {
+  outsideReturnSpot = {
+    x: player.x,
+    y: player.y
+  };
+
+  currentMap = building.blueprint;
+  player.x = building.entryX;
+  player.y = building.entryY;
+  player.facing = "up";
+
+  setMessage("Entered " + building.name + ".");
+  drawGame();
+}
+
+function exitOutpostBlueprint() {
+  currentMap = "outside";
+
+  player.x = outsideReturnSpot.x;
+  player.y = outsideReturnSpot.y;
+  player.facing = "down";
+
+  let safetyY = player.y + 1;
+
+  while (
+    safetyY < MAP_HEIGHT &&
+    isOccupiedByBuilding(player.x, safetyY)
+  ) {
+    safetyY++;
+  }
+
+  player.y = safetyY;
+  player.facing = "down";
+
+  setMessage("Exited building.");
+  drawGame();
+}
+
+// ------------------------------------------------------------
+// DRAWING
+// ------------------------------------------------------------
+
+function drawGame() {
+  game.innerHTML = "";
+
+  const activeMap = getActiveMap();
+  const activeTileSet = OUTSIDE_MAPS[currentMap] ? TILE : BLUEPRINT_TILE;
+
+  game.style.gridTemplateColumns = `repeat(${getActiveWidth()}, 64px)`;
+  game.style.gridTemplateRows = `repeat(${getActiveHeight()}, 64px)`;
+
+  for (let y = 0; y < getActiveHeight(); y++) {
+    for (let x = 0; x < getActiveWidth(); x++) {
+      const tile = document.createElement("div");
+      tile.className = "tile";
+
+      const symbol = activeMap[y]?.[x] || ".";
+      tile.style.backgroundImage = `url("${activeTileSet[symbol]}")`;
+
+      game.appendChild(tile);
+    }
+  }
+
+if (currentMap === "outside") {
+  drawBuildings();
+  drawVehicles();
+}
+
+if (currentMap === "roadMap") {
+  drawVehicles();
+}
+
+drawNpcs();
+
+  if (mode === "walking") {
+    drawPlayer();
+  }
+
+  updateCamera();
+  updateHud();
+}
+
+function getTile(x, y) {
+  const activeWidth = getActiveWidth();
+  return game.children[y * activeWidth + x];
+}
+
+function addImageToTile(x, y, src, className = "sprite") {
+  if (!inBounds(x, y)) return;
+
+  const tile = getTile(x, y);
+  if (!tile) return;
+
+  const sprite = document.createElement("div");
+  sprite.className = className;
+  sprite.style.backgroundImage = `url("${src}")`;
+  tile.appendChild(sprite);
+}
+
+function drawPlayer() {
+  const img = PLAYER_IMAGES[player.facing];
+  if (img) addImageToTile(player.x, player.y, img);
+}
+
+function drawNpcs() {
+  for (const npc of npcs) {
+    if (!npc.visible) continue;
+    addImageToTile(npc.x, npc.y, npc.image);
+  }
+}
+
+function drawVehicles() {
+  for (const vehicle of getActiveVehicles()) {
+    if (currentVehicle && vehicle.id === currentVehicle.id) continue;
+
+    if (vehicle.type === "operator") drawOperatorVehicle(vehicle);
+    if (vehicle.type === "snowmobile") drawSnowmobile(vehicle);
+    if (vehicle.type === "snowbus") {
+  drawSnowbus(vehicle);}
+  }
+
+  if (currentVehicle) {
+    if (currentVehicle.type === "operator") drawOperatorVehicle(currentVehicle);
+    if (currentVehicle.type === "snowmobile") drawSnowmobile(currentVehicle);
+    if (currentVehicle.type === "snowbus") drawSnowbus(currentVehicle);
+  }
+}
+
+function drawBuildings() {
+  for (const building of buildings) {
+    drawBuilding(building);
+  }
+}
+
+function drawBuilding(building) {
+  const tile = getTile(building.x, building.y);
+  const sprite = document.createElement("div");
+
+  sprite.style.position = "absolute";
+  sprite.style.left = "0";
+  sprite.style.top = "0";
+  sprite.style.width = (building.width * TILE_SIZE) + "px";
+  sprite.style.height = (building.height * TILE_SIZE) + "px";
+  sprite.style.backgroundImage = `url("${building.image}")`;
+  sprite.style.backgroundSize = `${building.width * TILE_SIZE}px ${building.height * TILE_SIZE}px`;
+  sprite.style.backgroundRepeat = "no-repeat";
+  sprite.style.zIndex = "3";
+  sprite.style.pointerEvents = "none";
+
+  tile.appendChild(sprite);
+}
+
+function drawOperatorVehicle(vehicle) {
+  const img = VEHICLE_IMAGES[vehicle.skin].operator.full[vehicle.facing];
+  const tile = getTile(vehicle.x, vehicle.y);
+  const sprite = document.createElement("div");
+
+  sprite.style.position = "absolute";
+  sprite.style.left = "0";
+  sprite.style.top = "0";
+  sprite.style.width = (vehicle.width * TILE_SIZE) + "px";
+  sprite.style.height = (vehicle.height * TILE_SIZE) + "px";
+  sprite.style.backgroundImage = `url("${img}")`;
+  sprite.style.backgroundSize = `${vehicle.width * TILE_SIZE}px ${vehicle.height * TILE_SIZE}px`;
+  sprite.style.backgroundRepeat = "no-repeat";
+  sprite.style.zIndex = "6";
+  sprite.style.pointerEvents = "none";
+
+  tile.appendChild(sprite);
+}
+
+function drawSnowmobile(vehicle) {
+  const p = VEHICLE_IMAGES[vehicle.skin].snowmobile.pieces[vehicle.facing];
+
+  if (vehicle.facing === "left") {
+    addImageToTile(vehicle.x, vehicle.y, p.front);
+    addImageToTile(vehicle.x + 1, vehicle.y, p.rear);
+  }
+
+  if (vehicle.facing === "right") {
+    addImageToTile(vehicle.x, vehicle.y, p.rear);
+    addImageToTile(vehicle.x + 1, vehicle.y, p.front);
+  }
+
+  if (vehicle.facing === "up") {
+    addImageToTile(vehicle.x, vehicle.y, p.front);
+    addImageToTile(vehicle.x, vehicle.y + 1, p.rear);
+  }
+
+  if (vehicle.facing === "down") {
+    addImageToTile(vehicle.x, vehicle.y, p.rear);
+    addImageToTile(vehicle.x, vehicle.y + 1, p.front);
+  }
+}
+
+function drawSnowbus(vehicle) {
+  const img = VEHICLE_IMAGES.snowbus.full[vehicle.facing];
+
+  const tile = getTile(vehicle.x, vehicle.y);
+  const sprite = document.createElement("div");
+
+  sprite.style.position = "absolute";
+  sprite.style.left = "0";
+  sprite.style.top = "0";
+  sprite.style.width = (vehicle.width * TILE_SIZE) + "px";
+  sprite.style.height = (vehicle.height * TILE_SIZE) + "px";
+  sprite.style.backgroundImage = `url("${img}")`;
+  sprite.style.backgroundSize = `${vehicle.width * TILE_SIZE}px ${vehicle.height * TILE_SIZE}px`;
+  sprite.style.backgroundRepeat = "no-repeat";
+  sprite.style.zIndex = "6";
+  sprite.style.pointerEvents = "none";
+
+  tile.appendChild(sprite);
+}
+
+// ------------------------------------------------------------
+// PLAYER MOVEMENT
+// ------------------------------------------------------------
+
+function movePlayer(dx, dy, direction) {
+  hideBubble();
+  player.facing = direction;
+
+  const nextX = player.x + dx;
+  const nextY = player.y + dy;
+
+  if (!inBounds(nextX, nextY)) {
+    setMessage("The snowfield boundary blocks the way.");
+    drawGame();
+    return;
+  }
+
+  if (OUTSIDE_MAPS[currentMap] && isOccupiedByVehicle(nextX, nextY)) {
+    setMessage("Vehicle here. Press E beside it to interact.");
+    drawGame();
+    return;
+  }
+
+  if (currentMap === "outside" && isOccupiedByBuilding(nextX, nextY)) {
+    setMessage("A building blocks the way.");
+    drawGame();
+    return;
+  }
+
+  if (!OUTSIDE_MAPS[currentMap] && isOccupiedByInteriorTile(nextX, nextY)) {
+    setMessage("Interior object blocks the way.");
+    drawGame();
+    return;
+  }
+
+  player.x = nextX;
+  player.y = nextY;
+
+  const nextSymbol = getActiveMap()[nextY]?.[nextX];
+
+if (OUTSIDE_MAPS[currentMap] && nextSymbol === "R") {
+  showBubble(
+  "CHECKPOINT",
+  "ACCESS DENIED. Authorized snow bus transit only."
+);
+setMessage("Checkpoint access denied.");
+  drawGame();
+  return;
+}
+
+  drawGame();
+}
+
+// ------------------------------------------------------------
+// VEHICLE MOVEMENT
+// ------------------------------------------------------------
+
+function getVehicleSizeForDirection(vehicle, direction) {
+  if (vehicle.type === "snowbus") {
+  if (direction === "left" || direction === "right") {
+    return { width: 4, height: 2 };
+  }
+
+  if (direction === "up" || direction === "down") {
+    return { width: 2, height: 4 };
+  }
+}
+  
+  if (vehicle.type === "operator") {
+    return { width: 2, height: 2 };
+  }
+
+  if (vehicle.type === "snowmobile") {
+    if (direction === "left" || direction === "right") {
+      return { width: 2, height: 1 };
+    }
+
+    if (direction === "up" || direction === "down") {
+      return { width: 1, height: 2 };
+    }
+  }
+
+  return { width: vehicle.width, height: vehicle.height };
+}
+
+function canVehicleMove(vehicle, nextX, nextY, nextWidth, nextHeight) {
+  for (let yy = 0; yy < nextHeight; yy++) {
+    for (let xx = 0; xx < nextWidth; xx++) {
+      const checkX = nextX + xx;
+      const checkY = nextY + yy;
+
+      if (!inBounds(checkX, checkY)) return false;
+      if (isOccupiedByVehicle(checkX, checkY, vehicle.id)) return false;
+      if (currentMap === "outside" && isOccupiedByBuilding(checkX, checkY)) return false;
+    }
+  }
+
+  return true;
+}
+
+function moveCurrentVehicle(dx, dy, direction) {
+  hideBubble();
+  const vehicle = currentVehicle;
+  const newSize = getVehicleSizeForDirection(vehicle, direction);
+
+  vehicle.facing = direction;
+
+  const nextX = vehicle.x + dx;
+  const nextY = vehicle.y + dy;
+
+  const nextSymbol = getActiveMap()[nextY]?.[nextX];
+
+if (vehicle.type === "snowbus" && nextSymbol === "R") {
+
+  if (currentMap === "outside") {
+    transferSnowbusToRoadMap();
+  } else if (currentMap === "roadMap") {
+    transferSnowbusToScmf();
+  }
+
+  return;
+}
+
+  if (!canVehicleMove(vehicle, nextX, nextY, newSize.width, newSize.height)) {
+    setMessage("The vehicle cannot move there.");
+    vehicle.width = newSize.width;
+    vehicle.height = newSize.height;
+    drawGame();
+    return;
+  }
+
+  vehicle.x = nextX;
+  vehicle.y = nextY;
+  vehicle.width = newSize.width;
+  vehicle.height = newSize.height;
+
+  setMessage("Driving " + vehicle.name + ".");
+  drawGame();
+}
+
+
+function transferSnowbusToRoadMap() {
+  currentMap = "roadMap";
+
+  moveVehicleToMap(currentVehicle, "roadMap", 5, 12, "right", 4, 2);
+
+  setMessage("The snow bus passes through the checkpoint into the regional road.");
+  drawGame();
+}
+
+function transferSnowbusToScmf() {
+  currentMap = "outside";
+
+  moveVehicleToMap(currentVehicle, "outside", 26, 12, "left", 4, 2);
+
+  setMessage("The snow bus returns to SCMF.");
+  drawGame();
+}
+// ------------------------------------------------------------
+// INTERACTION HELPERS
+// ------------------------------------------------------------
+
+function getBuildingDoorAtPlayer() {
+  for (const building of buildings) {
+    const localX = player.x - building.x;
+    const localY = player.y - building.y;
+
+    if (
+      localX < 0 ||
+      localY < 0 ||
+      localX >= building.width ||
+      localY >= building.height
+    ) {
+      continue;
+    }
+
+    const cell = building.collision[localY][localX];
+    if (cell === "D") return building;
+  }
+
+  return null;
+}
+
+function playerIsBesideVehicle(vehicle) {
+  const footprint = getVehicleFootprint(vehicle);
+
+  for (const spot of footprint) {
+    if (areAdjacent(player.x, player.y, spot.x, spot.y)) return true;
+  }
+
+  return false;
+}
+
+function getAdjacentVehicle() {
+  for (const vehicle of getActiveVehicles()) {
+    if (!vehicle.occupied && playerIsBesideVehicle(vehicle)) return vehicle;
+  }
+
+  return null;
+}
+
+function getAdjacentNpc() {
+  for (const npc of npcs) {
+    if (!npc.visible) continue;
+    if (areAdjacent(player.x, player.y, npc.x, npc.y)) return npc;
+  }
+
+  return null;
+}
+// ------------------------------------------------------------
+// NPC DEALER
+// ------------------------------------------------------------
+
+function talkToDealer(npc) {
+  if (dealerConversationStep === 99) {
+    showBubble(
+      "KIGH",
+      "I already showed you the demonstration model."
+    );
+    setMessage("Kigh has already shown the demo.");
+    return;
+  }
+
+  if (dealerConversationStep === 0) {
+    showBubble(
+      "KIGH",
+      "These Unrecognizer fleet snowmobiles are the most speedy ones! Press E to continue listening."
+    );
+    setMessage("Talking to Kigh.");
+    dealerConversationStep = 1;
+    return;
+  }
+
+  if (dealerConversationStep === 1) {
+    showBubble(
+      "KIGH",
+      "Built for the snowfields. Reliable. Fast. Easy maintenance. Press E to continue listening."
+    );
+    setMessage("Kigh continues explaining the snowmobile.");
+    dealerConversationStep = 2;
+    return;
+  }
+
+  if (dealerConversationStep === 2) {
+    showBubble(
+      "KIGH",
+      "Not convinced? Watch this!"
+    );
+    setMessage("Kigh starts the demonstration.");
+    dealerConversationStep = 3;
+
+    setTimeout(() => {
+      hideBubble();
+      startDealerDemo(npc);
+    }, 1000);
+
+    return;
+  }
+}
+
+function startDealerDemo(npc) {
+  const snowmobile = getVehicleById("green-snowmobile");
+
+  if (!snowmobile) {
+    setMessage("Dealer: The demo unit is missing.");
+    return;
+  }
+
+  setMessage('Dealer: "Watch this!"');
+
+  npc.visible = false;
+  snowmobile.occupied = true;
+  snowmobile.npcDriven = true;
+
+  const path = [
+  { x: 14, y: 19, facing: "up", width: 1, height: 2 },
+  { x: 14, y: 18, facing: "up", width: 1, height: 2 },
+  { x: 14, y: 17, facing: "up", width: 1, height: 2 },
+
+  { x: 13, y: 17, facing: "left", width: 2, height: 1 },
+  { x: 12, y: 17, facing: "left", width: 2, height: 1 },
+  { x: 11, y: 17, facing: "left", width: 2, height: 1 },
+  { x: 10, y: 17, facing: "left", width: 2, height: 1 },
+
+  { x: 10, y: 16, facing: "up", width: 1, height: 2 },
+  { x: 10, y: 15, facing: "up", width: 1, height: 2 },
+  { x: 10, y: 14, facing: "up", width: 1, height: 2 },
+  { x: 10, y: 13, facing: "up", width: 1, height: 2 },
+  { x: 10, y: 12, facing: "up", width: 1, height: 2 },
+  { x: 10, y: 11, facing: "up", width: 1, height: 2 }
+];
+
+  let step = 0;
+
+  const demoTimer = setInterval(() => {
+    if (step >= path.length) {
+      clearInterval(demoTimer);
+
+      snowmobile.occupied = false;
+      snowmobile.npcDriven = false;
+      snowmobile.x = 10;
+      snowmobile.y = 11;
+      snowmobile.facing = "up";
+      snowmobile.width = 1;
+      snowmobile.height = 2;
+
+      npc.x = 8;
+      npc.y = 11;
+      npc.visible = true;
+
+      dealerConversationStep = 99;
+      setMessage("The dealer entered SCMF.");
+      drawGame();
+      return;
+    }
+
+    const move = path[step];
+
+    snowmobile.x = move.x;
+    snowmobile.y = move.y;
+    snowmobile.facing = move.facing;
+    snowmobile.width = move.width;
+    snowmobile.height = move.height;
+
+    step++;
+    drawGame();
+  }, 400);
+}
+
+
+// ------------------------------------------------------------
+// NPC YORD
+// ------------------------------------------------------------
+
+function talkToYord() {
+  if (yordConversationStep === 0) {
+    showBubble(
+      "YORD",
+      "New to Stro, eh? That's the Merit/Serpentine exchange machine. Press E to keep listening."
+    );
+    setMessage("Talking to Yord.");
+    yordConversationStep = 1;
+    return;
+  }
+
+  if (yordConversationStep === 1) {
+    showBubble(
+      "YORD",
+      "Merit is the official system. Not money exactly. More like your contribution score."
+    );
+    setMessage("Yord explains merit.");
+    yordConversationStep = 2;
+    return;
+  }
+
+  if (yordConversationStep === 2) {
+    showBubble(
+      "YORD",
+      "Mining, transport, infrastructure, research, emergency response, education... useful work earns merit."
+    );
+    setMessage("Yord lists merit work.");
+    yordConversationStep = 3;
+    return;
+  }
+
+  if (yordConversationStep === 3) {
+    showBubble(
+      "YORD",
+      "High merit can open doors: housing, transport priority, equipment licenses, jobs, permits, restricted districts."
+    );
+    setMessage("Yord explains merit rewards.");
+    yordConversationStep = 4;
+    return;
+  }
+
+  if (yordConversationStep === 4) {
+    showBubble(
+      "YORD",
+      "Serpentine is the cash side. Everybody knows about it. Nobody makes a big ceremony of admitting it."
+    );
+    setMessage("Yord explains Serpentine.");
+    yordConversationStep = 5;
+    return;
+  }
+
+  if (yordConversationStep === 5) {
+    showBubble(
+      "YORD",
+      "Cash, favors, side deals, imports, salvage rights, collectibles... all the bendy stuff."
+    );
+    setMessage("Yord explains cash society.");
+    yordConversationStep = 6;
+    return;
+  }
+
+  if (yordConversationStep === 6) {
+    showBubble(
+      "YORD",
+      "They call it Serpentine because cash doesn't move in a straight line. It coils through people."
+    );
+    setMessage("Yord explains the name.");
+    yordConversationStep = 7;
+    return;
+  }
+
+  if (yordConversationStep === 7) {
+    showBubble(
+      "YORD",
+      "A mechanic knows a dispatcher. Dispatcher knows a warehouse boss. Warehouse boss knows a quartermaster."
+    );
+    setMessage("Yord explains the coil.");
+    yordConversationStep = 8;
+    return;
+  }
+
+  if (yordConversationStep === 8) {
+    showBubble(
+      "YORD",
+      "Then suddenly, the discontinued snowmobile part you needed just appears."
+    );
+    setMessage("Yord explains Serpentine results.");
+    yordConversationStep = 9;
+    return;
+  }
+
+  if (yordConversationStep === 9) {
+    showBubble(
+      "YORD",
+      "Merit keeps Stro running. Serpentine keeps Stro interesting."
+    );
+    setMessage("Yord finishes the explanation.");
+    yordConversationStep = 10;
+    return;
+  }
+
+  showBubble(
+    "YORD",
+    "Remember: merit opens doors. Serpentine finds the side entrance."
+  );
+  setMessage("Yord has already explained the exchange system.");
+}
+// ------------------------------------------------------------
+// ENTERING / EXITING VEHICLES
+// ------------------------------------------------------------
+
+function enterVehicle(vehicle) {
+  mode = "driving";
+  currentVehicle = vehicle;
+  vehicle.occupied = true;
+
+  setMessage("Entered " + vehicle.name + ".");
+  drawGame();
+}
+
+function exitVehicle() {
+  const vehicle = currentVehicle;
+  const exitSpot = findExitSpot(vehicle);
+
+  if (!exitSpot) {
+    setMessage("No safe place to exit.");
+    return;
+  }
+
+  player.x = exitSpot.x;
+  player.y = exitSpot.y;
+  player.facing = vehicle.facing;
+
+  vehicle.occupied = false;
+  mode = "walking";
+  currentVehicle = null;
+
+  setMessage("Exited vehicle.");
+  drawGame();
+}
+
+function findExitSpot(vehicle) {
+  let exitSpot;
+
+  if (vehicle.facing === "up") {
+    exitSpot = { x: vehicle.x - 1, y: vehicle.y };
+  }
+
+  if (vehicle.facing === "left") {
+    exitSpot = { x: vehicle.x, y: vehicle.y + vehicle.height };
+  }
+
+  if (vehicle.facing === "down") {
+    exitSpot = { x: vehicle.x + vehicle.width, y: vehicle.y };
+  }
+
+  if (vehicle.facing === "right") {
+    exitSpot = { x: vehicle.x, y: vehicle.y - 1 };
+  }
+
+  if (!exitSpot) return null;
+  if (!inBounds(exitSpot.x, exitSpot.y)) return null;
+  if (isOccupiedByVehicle(exitSpot.x, exitSpot.y, vehicle.id)) return null;
+  if (currentMap === "outside" && isOccupiedByBuilding(exitSpot.x, exitSpot.y)) return null;
+
+  return exitSpot;
+}
+
+// ------------------------------------------------------------
+// MAIN INTERACTION
+// ------------------------------------------------------------
+
+function interact() {
+
+ if (playerIsBesideExchange()) {
+  openExchangeOverlay();
+  return;
+}
+
+  if (mode === "driving") {
+    exitVehicle();
+    return;
+  }
+
+  if (OUTSIDE_MAPS[currentMap] && mode === "walking") {
+    if (currentMap === "outside") {
+      const building = getBuildingDoorAtPlayer();
+
+      if (building) {
+        enterOutpostBlueprint(building);
+        return;
+      }
+
+      const npc = getAdjacentNpc();
+
+      if (npc && npc.id === "unrecognizer-dealer") {
+        talkToDealer(npc);
+        return;
+      }
+    }
+
+    const vehicle = getAdjacentVehicle();
+
+    if (!vehicle) {
+      setMessage("No vehicle or door close enough.");
+      return;
+    }
+
+    enterVehicle(vehicle);
+    return;
+  }
+
+  if (!OUTSIDE_MAPS[currentMap]) {
+    const symbol = BLUEPRINTS[currentMap][player.y]?.[player.x];
+
+if (symbol === "^" && currentMap === "scmfBusArrival") {
+  enterBlueprintRoom("cafeteria", 3, 5, "up");
+  return;
+}
+
+if (symbol === "^" && currentMap === "cafeteria") {
+  enterBlueprintRoom("scmfBusArrival", 9, 1, "down");
+  return;
+}
+
+    if (symbol === "D" || symbol === "P") {
+      exitOutpostBlueprint();
+      return;
+    }
+
+    if (playerIsBesidePhone()) {
+      openPhoneOverlay();
+      return;
+    }
+
+const npc = getAdjacentNpc();
+
+if (npc && npc.id === "yord") {
+  talkToYord();
+  return;
+}
+
+    setMessage("Nothing to use here.");
+  }
+}
+
+// ------------------------------------------------------------
+// BACK BUTTON / MENU PLACEHOLDER
+// ------------------------------------------------------------
+
+function backAction() {
+  if (mode === "driving") {
+    setMessage("Back selected. Press E to exit the vehicle.");
+  } else {
+    setMessage("Back selected. No menu is open yet.");
+  }
+}
+
+// ------------------------------------------------------------
+// KEYBOARD CONTROLS
+// ------------------------------------------------------------
+
+document.addEventListener("keydown", function(event) {
+  const key = event.key.toLowerCase();
+
+if (viewingExchange) {
+  event.preventDefault();
+
+  if (key === "1") {
+    setMessage("100 Merit exchange selected. Token system not wired yet.");
+  }
+
+  if (key === "2") {
+    setMessage("500 Merit exchange selected. Token system not wired yet.");
+  }
+
+  if (key === "3") {
+    setMessage("1000 Merit exchange selected. Token system not wired yet.");
+  }
+
+  if (key === "4" || key === "b" || key === "escape") {
+    closeExchangeOverlay();
+  }
+
+  return;
+}
+  if (usingPhone) {
+    handlePhoneInput(key, event);
+    return;
+  }
+
+  if (key === "arrowup") {
+    event.preventDefault();
+    if (mode === "walking") movePlayer(0, -1, "up");
+    else moveCurrentVehicle(0, -1, "up");
+  }
+
+  if (key === "arrowdown") {
+    event.preventDefault();
+    if (mode === "walking") movePlayer(0, 1, "down");
+    else moveCurrentVehicle(0, 1, "down");
+  }
+
+  if (key === "arrowleft") {
+    event.preventDefault();
+    if (mode === "walking") movePlayer(-1, 0, "left");
+    else moveCurrentVehicle(-1, 0, "left");
+  }
+
+  if (key === "arrowright") {
+    event.preventDefault();
+    if (mode === "walking") movePlayer(1, 0, "right");
+    else moveCurrentVehicle(1, 0, "right");
+  }
+
+  if (key === "e") {
+    interact();
+  }
+
+  if (key === "b") {
+    backAction();
+  }
+});
+
+drawGame();
+</script>
+</body>
+</html>
