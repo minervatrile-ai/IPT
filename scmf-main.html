@@ -219,6 +219,30 @@
   color: #ffb347;
 }
 
+/* Mobile talk bubble fix */
+@media (max-width: 768px) {
+  #bubbleOverlay {
+    position: fixed;
+
+    left: 12px;
+    right: 12px;
+    width: auto;
+
+    bottom: 190px;
+
+    transform: none;
+
+    max-height: 35vh;
+    overflow-y: auto;
+
+    z-index: 9999;
+
+    font-size: 16px;
+    line-height: 1.35;
+    padding: 12px;
+  }
+}
+
 #mobileControls {
   position: fixed;
   bottom: 20px;
@@ -227,10 +251,10 @@
 }
 
 #mobileControls button {
-  width: 90px;
-  height: 90px;
-  font-size: 32px;
-  margin: 4px;
+  width: 140px;
+  height: 140px;
+  font-size: 48px;
+  margin: 8px;
 }
 
 #mobileControls {
