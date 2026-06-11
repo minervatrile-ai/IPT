@@ -218,6 +218,30 @@
 #bubbleText {
   color: #ffb347;
 }
+
+#mobileControls {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 999;
+}
+
+#mobileControls button {
+  width: 90px;
+  height: 90px;
+  font-size: 32px;
+  margin: 4px;
+}
+
+#mobileControls {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  #mobileControls {
+    display: block;
+  }
+}
   </style>
 </head>
 
@@ -233,7 +257,18 @@
     This template tests: walking, entering a 2x2 operator vehicle,
     and riding two 2x1 / 1x2 snowmobiles, plus one stretched architecture stamp.
   </div>
+<div id="mobileControls">
+  <button id="upBtn">▲</button>
 
+  <div>
+    <button id="leftBtn">◀</button>
+    <button id="eBtn">E</button>
+    <button id="rightBtn">▶</button>
+        <button id="bBtn">B</button>
+  </div>
+
+  <button id="downBtn">▼</button>
+</div>
 <script>
 
 /*
@@ -2039,6 +2074,22 @@ if (viewingExchange) {
 });
 
 drawGame();
+
+function simulateKey(key) {
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", {
+      key: key
+    })
+  );
+}
+
+upBtn.onclick = () => simulateKey("ArrowUp");
+downBtn.onclick = () => simulateKey("ArrowDown");
+leftBtn.onclick = () => simulateKey("ArrowLeft");
+rightBtn.onclick = () => simulateKey("ArrowRight");
+eBtn.onclick = () => simulateKey("e");
+bBtn.onclick = () => simulateKey("b");
+
 </script>
 </body>
 </html>
