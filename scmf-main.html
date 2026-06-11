@@ -220,35 +220,6 @@
 }
 
 /* Mobile talk bubble fix */
-@media (max-width: 768px) {
-  #bubbleOverlay {
-    position: fixed;
-
-    left: 12px;
-    right: 12px;
-    width: auto;
-
-    bottom: 700px;
-
-    transform: none;
-
-    max-height: 35vh;
-    overflow-y: auto;
-
-    z-index: 9999;
-
-    font-size: 16px;
-    line-height: 1.35;
-    padding: 12px;
-  }
-}
-
-#mobileControls {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 999;
-}
 
 #mobileControls button {
   width: 140px;
@@ -259,12 +230,39 @@
 }
 
 #mobileControls {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 999;
+}
+
+#mobileControls {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 999;
   display: none;
 }
 
 @media (pointer: coarse) {
   #mobileControls {
     display: block;
+  }
+
+  #bubbleOverlay {
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    bottom: 350px !important;
+    transform: none !important;
+
+    max-height: 35vh;
+    overflow-y: auto;
+    z-index: 9999;
+
+    font-size: 16px;
+    line-height: 1.35;
+    padding: 12px;
   }
 }
   </style>
