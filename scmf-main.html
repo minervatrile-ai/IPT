@@ -377,10 +377,10 @@ const ROAD_MAP = [
   "..............................",
   "..............................",
   "..............................",
-  "@@@@..........................",
+  "@@@@......................@@@@",
   "RRRR==========================",
   "RRRR==========================",
-  "@@@@..........................",
+  "@@@@......................@@@@",
   "..............................",
   "..............................",
   "..............................",
@@ -581,6 +581,7 @@ const VEHICLES_BY_MAP = {
   type: "snowbus",
   skin: "snowbus",
   name: "Snow Bus",
+  map: "outside",
   x: 0,
   y: 12,
   facing: "right",
@@ -720,9 +721,6 @@ let buildings = [
 ];
 
 
-let snowbusRouteTimer = null;
-
-
 // ------------------------------------------------------------
 // PHONE MENU STATE
 // ------------------------------------------------------------
@@ -831,6 +829,7 @@ function moveVehicleToMap(vehicle, targetMap, x, y, facing, width, height) {
     VEHICLES_BY_MAP[mapName] = VEHICLES_BY_MAP[mapName].filter(v => v.id !== vehicle.id);
   }
 
+  vehicle.map = targetMap;
   vehicle.x = x;
   vehicle.y = y;
   vehicle.facing = facing;
@@ -1515,15 +1514,14 @@ setMessage("Checkpoint access denied.");
 // VEHICLE MOVEMENT
 // ------------------------------------------------------------
 
+let snowbusRouteTimer = null;
+
 function startSnowbusRoute() {
   if (snowbusRouteTimer) clearInterval(snowbusRouteTimer);
 
   snowbusRouteTimer = setInterval(() => {
-    if (currentMap !== "outside") return;
-
     const bus = getVehicleById("snowbus-1");
     if (!bus) return;
-
     if (bus.occupied) return;
 
     bus.facing = "right";
@@ -1533,22 +1531,38 @@ function startSnowbusRoute() {
     const nextX = bus.x + 1;
     const nextY = bus.y;
 
-    if (nextX >= MAP_WIDTH - 4) {
-      bus.x = 0;
-      bus.y = 12;
-      bus.facing = "right";
-      bus.width = 4;
-      bus.height = 2;
+    // OUTSIDE: drive into ROAD_MAP portal
+    if (bus.map === "outside" || currentMap === "outside") {
+      if (nextX >= MAP_WIDTH - 4) {
+        moveVehicleToMap(bus, "roadMap", 0, 12, "right", 4, 2);
+        drawGame();
+        return;
+      }
 
-      setMessage("Snow Bus 1 completes its loop and returns to the SCMF route start.");
-      drawGame();
+      if (currentMap === "outside" && canVehicleMove(bus, nextX, nextY, 4, 2)) {
+        bus.x = nextX;
+        bus.y = nextY;
+        drawGame();
+      }
+
       return;
     }
 
-    if (canVehicleMove(bus, nextX, nextY, 4, 2)) {
-      bus.x = nextX;
-      bus.y = nextY;
-      drawGame();
+    // ROAD_MAP: drive across highway, then loop back to outside
+    if (bus.map === "roadMap" || currentMap === "roadMap") {
+      if (nextX >= MAP_WIDTH - 4) {
+        moveVehicleToMap(bus, "outside", 0, 12, "right", 4, 2);
+        drawGame();
+        return;
+      }
+
+      if (currentMap === "roadMap" && canVehicleMove(bus, nextX, nextY, 4, 2)) {
+        bus.x = nextX;
+        bus.y = nextY;
+        drawGame();
+      }
+
+      return;
     }
   }, 500);
 }
