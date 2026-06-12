@@ -352,10 +352,10 @@ const MAP = [
   "....================..........",
   "....================..........",
   "..............................",
-  ".....@@@@..@..............@@@@",
-  "....======================RRRR",
-  "....======================RRRR",
-  ".....@@@@@@@..............@@@@",
+  "@@@....@@..@..............@@@@",
+  "==========================RRRR",
+  "==========================RRRR",
+  "@@@.....@@@@..............@@@@",
   "..............................",
   "..............................",
   "..............................",
@@ -576,18 +576,31 @@ const VEHICLES_BY_MAP = {
       occupied: false
     },
 
+  {
+  id: "snowbus-1",
+  type: "snowbus",
+  skin: "snowbus",
+  name: "Snow Bus",
+  x: 0,
+  y: 12,
+  facing: "right",
+  width: 4,
+  height: 2,
+  occupied: false
+},
+
     {
-      id: "snowbus-1",
-      type: "snowbus",
-      skin: "snowbus",
-      name: "Snow Bus",
-      x: 4,
-      y: 12,
-      facing: "right",
-      width: 4,
-      height: 2,
-      occupied: false
-    }
+  id: "snowbus-2",
+  type: "snowbus",
+  skin: "snowbus",
+  name: "Snow Bus 2",
+  x: 18,
+  y: 6,
+  facing: "down",
+  width: 2,
+  height: 4,
+  occupied: false
+}
   ],
 
   roadMap: []
@@ -706,6 +719,8 @@ let buildings = [
   }
 ];
 
+
+let snowbusRouteTimer = null;
 
 
 // ------------------------------------------------------------
@@ -1500,6 +1515,44 @@ setMessage("Checkpoint access denied.");
 // VEHICLE MOVEMENT
 // ------------------------------------------------------------
 
+function startSnowbusRoute() {
+  if (snowbusRouteTimer) clearInterval(snowbusRouteTimer);
+
+  snowbusRouteTimer = setInterval(() => {
+    if (currentMap !== "outside") return;
+
+    const bus = getVehicleById("snowbus-1");
+    if (!bus) return;
+
+    if (bus.occupied) return;
+
+    bus.facing = "right";
+    bus.width = 4;
+    bus.height = 2;
+
+    const nextX = bus.x + 1;
+    const nextY = bus.y;
+
+    if (nextX >= MAP_WIDTH - 4) {
+      bus.x = 0;
+      bus.y = 12;
+      bus.facing = "right";
+      bus.width = 4;
+      bus.height = 2;
+
+      setMessage("Snow Bus 1 completes its loop and returns to the SCMF route start.");
+      drawGame();
+      return;
+    }
+
+    if (canVehicleMove(bus, nextX, nextY, 4, 2)) {
+      bus.x = nextX;
+      bus.y = nextY;
+      drawGame();
+    }
+  }, 500);
+}
+
 function getVehicleSizeForDirection(vehicle, direction) {
   if (vehicle.type === "snowbus") {
   if (direction === "left" || direction === "right") {
@@ -2205,6 +2258,8 @@ leftBtn.onclick = () => simulateKey("ArrowLeft");
 rightBtn.onclick = () => simulateKey("ArrowRight");
 eBtn.onclick = () => simulateKey("e");
 bBtn.onclick = () => simulateKey("b");
+
+startSnowbusRoute();
 
 </script>
 </body>
