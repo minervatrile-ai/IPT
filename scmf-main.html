@@ -787,6 +787,15 @@ function closeExchangeOverlay() {
 // BASIC HELPERS
 // ------------------------------------------------------------
 
+function directionToDelta(direction) {
+  if (direction === "up") return { dx: 0, dy: -1 };
+  if (direction === "down") return { dx: 0, dy: 1 };
+  if (direction === "left") return { dx: -1, dy: 0 };
+  if (direction === "right") return { dx: 1, dy: 0 };
+
+  return { dx: 0, dy: 0 };
+}
+
 function getActiveVehicles() {
   return VEHICLES_BY_MAP[currentMap] || [];
 }
@@ -1515,6 +1524,88 @@ function getVehicleSizeForDirection(vehicle, direction) {
   return { width: vehicle.width, height: vehicle.height };
 }
 
+function pickNpcVehicleMove(vehicle) {
+  const directions = [
+    { dx: 0, dy: -1, facing: "up" },
+    { dx: 0, dy: 1, facing: "down" },
+    { dx: -1, dy: 0, facing: "left" },
+    { dx: 1, dy: 0, facing: "right" }
+  ];
+
+  const legalMoves = [];
+
+  for (const dir of directions) {
+    const size = getVehicleSizeForDirection(vehicle, dir.facing);
+    const nextX = vehicle.x + dir.dx;
+    const nextY = vehicle.y + dir.dy;
+
+    if (canVehicleMove(vehicle, nextX, nextY, size.width, size.height)) {
+      legalMoves.push({
+        x: nextX,
+        y: nextY,
+        facing: dir.facing,
+        width: size.width,
+        height: size.height
+      });
+    }
+  }
+
+  if (legalMoves.length === 0) return null;
+
+  return legalMoves[Math.floor(Math.random() * legalMoves.length)];
+}
+
+let dealerRoamTimer = null;
+
+let dealerRoamDirection = "left";
+let dealerRoamStepsLeft = 4;
+
+function startDealerFreeRoam(snowmobile) {
+  if (dealerRoamTimer) clearInterval(dealerRoamTimer);
+
+  dealerRoamTimer = setInterval(() => {
+    if (currentMap !== "outside") return;
+
+    const dir = directionToDelta(dealerRoamDirection);
+    const size = getVehicleSizeForDirection(snowmobile, dealerRoamDirection);
+
+    const nextX = snowmobile.x + dir.dx;
+    const nextY = snowmobile.y + dir.dy;
+
+    if (
+      dealerRoamStepsLeft > 0 &&
+      canVehicleMove(snowmobile, nextX, nextY, size.width, size.height)
+    ) {
+      snowmobile.x = nextX;
+      snowmobile.y = nextY;
+      snowmobile.facing = dealerRoamDirection;
+      snowmobile.width = size.width;
+      snowmobile.height = size.height;
+
+      dealerRoamStepsLeft--;
+      drawGame();
+      return;
+    }
+
+    const nextMove = pickNpcVehicleMove(snowmobile);
+
+    if (!nextMove) return;
+
+    dealerRoamDirection = nextMove.facing;
+    dealerRoamStepsLeft = 3 + Math.floor(Math.random() * 5);
+
+    snowmobile.x = nextMove.x;
+    snowmobile.y = nextMove.y;
+    snowmobile.facing = nextMove.facing;
+    snowmobile.width = nextMove.width;
+    snowmobile.height = nextMove.height;
+
+    dealerRoamStepsLeft--;
+
+    drawGame();
+  }, 700);
+}
+
 function canVehicleMove(vehicle, nextX, nextY, nextWidth, nextHeight) {
   for (let yy = 0; yy < nextHeight; yy++) {
     for (let xx = 0; xx < nextWidth; xx++) {
@@ -1723,41 +1814,44 @@ function startDealerDemo(npc) {
   { x: 4, y: 16, facing: "left", width: 2, height: 1 }
 ];
 
-  let step = 0;
+let step = 0;
 
-  const demoTimer = setInterval(() => {
-    if (step >= path.length) {
-      clearInterval(demoTimer);
+const demoTimer = setInterval(() => {
+  if (step >= path.length) {
+    clearInterval(demoTimer);
 
-      snowmobile.occupied = false;
-      snowmobile.npcDriven = false;
-      snowmobile.x = 4;
-      snowmobile.y = 16;
-      snowmobile.facing = "left";
-      snowmobile.width = 2;
-      snowmobile.height = 1;
+    snowmobile.occupied = true;
+    snowmobile.npcDriven = true;
+    snowmobile.x = 4;
+    snowmobile.y = 16;
+    snowmobile.facing = "left";
+    snowmobile.width = 2;
+    snowmobile.height = 1;
 
-      npc.x = 4;
-      npc.y = 17;
-      npc.visible = true;
+    npc.x = 4;
+    npc.y = 17;
+    npc.visible = false;
 
-      dealerConversationStep = 99;
-      setMessage("The dealer is done with the snowmobile demonstration.");
-      drawGame();
-      return;
-    }
-
-    const move = path[step];
-
-    snowmobile.x = move.x;
-    snowmobile.y = move.y;
-    snowmobile.facing = move.facing;
-    snowmobile.width = move.width;
-    snowmobile.height = move.height;
-
-    step++;
+    dealerConversationStep = 99;
+    setMessage("Kigh finishes the demonstration and keeps roaming the snowfield.");
     drawGame();
-  }, 400);
+
+    startDealerFreeRoam(snowmobile);
+    return;
+  }
+
+  const move = path[step];
+
+  snowmobile.x = move.x;
+  snowmobile.y = move.y;
+  snowmobile.facing = move.facing;
+  snowmobile.width = move.width;
+  snowmobile.height = move.height;
+
+  step++;
+  drawGame();
+}, 400);
+
 }
 
 
