@@ -1652,7 +1652,7 @@ function startSnowbusRoute() {
     // OUTSIDE: drive into ROAD_MAP portal
     if (bus.map === "outside" || currentMap === "outside") {
       if (nextX >= MAP_WIDTH - 4) {
-        moveVehicleToMap(bus, "roadMap", 0, 12, "right", 4, 2);
+        moveVehicleToMap(bus, "roadMap", 8, 12, "right", 4, 2);
         drawGame();
         return;
       }
