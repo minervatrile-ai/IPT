@@ -429,7 +429,7 @@ const BLUEPRINTS = {
   
   outpost: [
     "WWWWW",
-    "WCT.W",
+    "WC..W",
     "W...W",
     "WB=DW",
     "WWWWW"
@@ -575,6 +575,118 @@ const VEHICLES_BY_MAP = {
       height: 1,
       occupied: false
     },
+
+    {
+  id: "green-snowmobile-2",
+  map: "outside",
+  type: "snowmobile",
+  skin: "unrecognizer",
+  name: "Unrecognizer Snowmobile",
+  x: 22,
+  y: 19,
+  facing: "right",
+  width: 2,
+  height: 1,
+  occupied: false
+},
+
+{
+  id: "green-snowmobile-3",
+  map: "outside",
+  type: "snowmobile",
+  skin: "unrecognizer",
+  name: "Unrecognizer Snowmobile",
+  x: 20,
+  y: 20,
+  facing: "right",
+  width: 2,
+  height: 1,
+  occupied: false
+},
+
+{
+  id: "green-snowmobile-4",
+  map: "outside",
+  type: "snowmobile",
+  skin: "unrecognizer",
+  name: "Unrecognizer Snowmobile",
+  x: 22,
+  y: 20,
+  facing: "right",
+  width: 2,
+  height: 1,
+  occupied: false
+},
+
+{
+  id: "green-snowmobile-5",
+  map: "outside",
+  type: "snowmobile",
+  skin: "unrecognizer",
+  name: "Unrecognizer Snowmobile",
+  x: 24,
+  y: 20,
+  facing: "right",
+  width: 2,
+  height: 1,
+  occupied: false
+},
+
+{
+  id: "green-snowmobile-6",
+  map: "outside",
+  type: "snowmobile",
+  skin: "unrecognizer",
+  name: "Unrecognizer Snowmobile",
+  x: 20,
+  y: 17,
+  facing: "right",
+  width: 2,
+  height: 1,
+  occupied: false
+},
+
+{
+  id: "green-snowmobile-7",
+  map: "outside",
+  type: "snowmobile",
+  skin: "unrecognizer",
+  name: "Unrecognizer Snowmobile",
+  x: 20,
+  y: 18,
+  facing: "right",
+  width: 2,
+  height: 1,
+  occupied: false
+},
+
+{
+  id: "green-snowmobile-8",
+  map: "outside",
+  type: "snowmobile",
+  skin: "unrecognizer",
+  name: "Unrecognizer Snowmobile",
+  x: 22,
+  y: 18,
+  facing: "right",
+  width: 2,
+  height: 1,
+  occupied: false
+},
+
+{
+  id: "green-snowmobile-9",
+  map: "outside",
+  type: "snowmobile",
+  skin: "unrecognizer",
+  name: "Unrecognizer Snowmobile",
+  x: 24,
+  y: 18,
+  facing: "right",
+  width: 2,
+  height: 1,
+  occupied: false
+},
 
   {
   id: "snowbus-1",
@@ -1492,20 +1604,26 @@ function movePlayer(dx, dy, direction) {
     return;
   }
 
-  player.x = nextX;
-  player.y = nextY;
-
   const nextSymbol = getActiveMap()[nextY]?.[nextX];
 
-if (OUTSIDE_MAPS[currentMap] && nextSymbol === "R") {
-  showBubble(
-  "CHECKPOINT",
-  "ACCESS DENIED. Authorized snow bus transit only."
-);
-setMessage("Checkpoint access denied.");
-  drawGame();
-  return;
-}
+  if (OUTSIDE_MAPS[currentMap] && nextSymbol === "@") {
+    setMessage("A barrel blocks the way.");
+    drawGame();
+    return;
+  }
+
+  if (OUTSIDE_MAPS[currentMap] && nextSymbol === "R") {
+    showBubble(
+      "CHECKPOINT",
+      "ACCESS DENIED. Authorized snow bus transit only."
+    );
+    setMessage("Checkpoint access denied.");
+    drawGame();
+    return;
+  }
+
+  player.x = nextX;
+  player.y = nextY;
 
   drawGame();
 }
