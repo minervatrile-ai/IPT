@@ -544,7 +544,7 @@ const VEHICLES_BY_MAP = {
       name: "WF Operator Vehicle",
       x: 12,
       y: 17,
-      facing: "up",
+      facing: "down",
       width: 2,
       height: 2,
       occupied: false
@@ -555,9 +555,9 @@ const VEHICLES_BY_MAP = {
       type: "snowmobile",
       skin: "wf",
       name: "WF Snowmobile",
-      x: 17,
-      y: 19,
-      facing: "right",
+      x: 16,
+      y: 20,
+      facing: "left",
       width: 2,
       height: 1,
       occupied: false
@@ -1731,14 +1731,14 @@ function startDealerDemo(npc) {
 
       snowmobile.occupied = false;
       snowmobile.npcDriven = false;
-      snowmobile.x = 10;
-      snowmobile.y = 11;
-      snowmobile.facing = "up";
-      snowmobile.width = 1;
-      snowmobile.height = 2;
+      snowmobile.x = 4;
+      snowmobile.y = 16;
+      snowmobile.facing = "left";
+      snowmobile.width = 2;
+      snowmobile.height = 1;
 
-      npc.x = 8;
-      npc.y = 11;
+      npc.x = 4;
+      npc.y = 17;
       npc.visible = true;
 
       dealerConversationStep = 99;
