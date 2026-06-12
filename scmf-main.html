@@ -607,6 +607,7 @@ let npcs = [
   {
     id: "unrecognizer-dealer",
     name: "Unrecognizer Dealer",
+    map: "outside",
     x: 15,
     y: 19,
     image: "gallery/sprite/badge/unrecognizer/kigh.png",
@@ -615,14 +616,15 @@ let npcs = [
   },
 
   {
-  id: "yord",
-  name: "Yord",
-  x: 18,
-  y: 1,
-  image: "gallery/sprite/badge/wf/yord.png",
-  visible: true,
-  dialogueUsed: false
-}
+    id: "yord",
+    name: "Yord",
+    map: "scmfBusArrival",
+    x: 18,
+    y: 1,
+    image: "gallery/sprite/badge/wf/yord.png",
+    visible: true,
+    dialogueUsed: false
+  }
 ];
 
 // ------------------------------------------------------------
@@ -1331,6 +1333,8 @@ function drawPlayer() {
 function drawNpcs() {
   for (const npc of npcs) {
     if (!npc.visible) continue;
+    if (npc.map !== currentMap) continue;
+
     addImageToTile(npc.x, npc.y, npc.image);
   }
 }
@@ -1725,6 +1729,8 @@ function getAdjacentVehicle() {
 function getAdjacentNpc() {
   for (const npc of npcs) {
     if (!npc.visible) continue;
+    if (npc.map !== currentMap) continue;
+
     if (areAdjacent(player.x, player.y, npc.x, npc.y)) return npc;
   }
 
