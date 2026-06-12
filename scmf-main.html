@@ -1708,18 +1708,19 @@ function startDealerDemo(npc) {
   { x: 14, y: 19, facing: "up", width: 1, height: 2 },
   { x: 14, y: 18, facing: "up", width: 1, height: 2 },
   { x: 14, y: 17, facing: "up", width: 1, height: 2 },
+  { x: 14, y: 16, facing: "up", width: 1, height: 2 },
 
-  { x: 13, y: 17, facing: "left", width: 2, height: 1 },
-  { x: 12, y: 17, facing: "left", width: 2, height: 1 },
-  { x: 11, y: 17, facing: "left", width: 2, height: 1 },
-  { x: 10, y: 17, facing: "left", width: 2, height: 1 },
+  { x: 13, y: 16, facing: "left", width: 2, height: 1 },
+  { x: 12, y: 16, facing: "left", width: 2, height: 1 },
+  { x: 11, y: 16, facing: "left", width: 2, height: 1 },
+  { x: 10, y: 16, facing: "left", width: 2, height: 1 },
 
-  { x: 10, y: 16, facing: "up", width: 1, height: 2 },
-  { x: 10, y: 15, facing: "up", width: 1, height: 2 },
-  { x: 10, y: 14, facing: "up", width: 1, height: 2 },
-  { x: 10, y: 13, facing: "up", width: 1, height: 2 },
-  { x: 10, y: 12, facing: "up", width: 1, height: 2 },
-  { x: 10, y: 11, facing: "up", width: 1, height: 2 }
+  { x: 9, y: 16, facing: "left", width: 2, height: 1 },
+  { x: 8, y: 16, facing: "left", width: 2, height: 1 },
+  { x: 7, y: 16, facing: "left", width: 2, height: 1 },
+  { x: 6, y: 16, facing: "left", width: 2, height: 1 },
+  { x: 5, y: 16, facing: "left", width: 2, height: 1 },
+  { x: 4, y: 16, facing: "left", width: 2, height: 1 }
 ];
 
   let step = 0;
@@ -1741,7 +1742,7 @@ function startDealerDemo(npc) {
       npc.visible = true;
 
       dealerConversationStep = 99;
-      setMessage("The dealer entered SCMF.");
+      setMessage("The dealer is done with the snowmobile demonstration.");
       drawGame();
       return;
     }
