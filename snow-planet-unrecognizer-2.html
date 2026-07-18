@@ -3419,7 +3419,7 @@ const BLUEPRINTS = {
 
   tiles: [
     "WWWWWWWWWWWW",
-    "W..........#",
+    "W.......F..#",
     "W.TTTTT....W",
     "W.........%E",
     "W.TTTTT...%E",
@@ -3484,7 +3484,7 @@ const BLUEPRINTS = {
 
   tiles: [
     "WWWWWWWWWWWW",
-    "W..........#",
+    "W.......F..#",
     "W.TTTTT....W",
     "W.........%E",
     "W.TTTTT...%E",
@@ -3549,7 +3549,7 @@ const BLUEPRINTS = {
     ],
    tiles: [
     "WWWWWWWWWWWW",
-    "WT...CttxLLW",
+    "WTF..CttxLLW",
     "W..........W",
     "W.AAAA.....W",
     "W.A.....S..W",
@@ -3572,7 +3572,7 @@ const BLUEPRINTS = {
 
   tiles: [
     "WWWWWWWWWWWW",
-    "WT...CttxLLW",
+    "WTF..CttxLLW",
     "W..........W",
     "W.AAAA.....W",
     "W.A..A.....W",
@@ -3594,12 +3594,12 @@ beerMineInterior: {
     ],
    tiles: [
     "WWWWWWWWWWWW",
-    "WT...CttxLLW",
+    "W........TxW",
+    "W.kbbbbk...W",
+    "W.l........W",
+    "W.l........W",
+    "Wkb........W",
     "W..........W",
-    "W.AAAA.....W",
-    "W.A.....S..W",
-    "W...^......W",
-    "W.........kW",
     "WWWWWDWWWWWW"
   ],
 
@@ -3911,18 +3911,35 @@ jegnaDialogue: {
     }
 
     /*
-      Temporary future branch.
-      We will replace this when the Outpost 3 pickup exists.
-    */
-    if (
-      worldState.questFlags.binocularUpgradeKitsRetrieved &&
-      player.binocularsCondition === "operational"
-    ) {
-      return [
-        "You actually brought the Sorcery Tech kits back. " +
-        "Let me have a look at those."
-      ];
+  Yoi has returned with the Sorcery Tech augmentation kit.
+  Cruk installs it and upgrades the binoculars to Enhanced.
+*/
+if (
+  hasItem("sorceryTechBinocularsAugmentationKit") &&
+  player.binocularsCondition === "operational"
+) {
+  return [
+    "You actually found the Sorcery Tech augmentation kit. " +
+    "Hand me the box and those binoculars.",
+
+    {
+      text:
+        "There. The optics are synchronized and the scanning hardware " +
+        "is talking to the U-7 properly.<br><br>" +
+        "<strong>U-7 BINOCULARS AUGMENTED</strong><br>" +
+        "Condition updated: Enhanced.",
+
+      action: () => {
+        removeItem("sorceryTechBinocularsAugmentationKit");
+
+        player.binocularsCondition = "enhanced";
+
+        worldState.questFlags.binocularUpgradeKitsRetrieved = true;
+        worldState.questFlags.binocularUpgradeCompleted = true;
+      }
     }
+  ];
+}
 
     /*
       Enhanced-state fallback.
@@ -4888,12 +4905,13 @@ const buildingStamps = [
 },
 
   {
-    id: "subfrost-rail-station-BF-2",
-    definitionId: "scmfMain",
-    mapId: "BF",
-    x: 12,
-    y: 13
-  },
+  id: "subfrost-rail-station-BF-2",
+  definitionId: "scmfMain",
+  blueprintId: "subfrostRailStationBF",
+  mapId: "BF",
+  x: 12,
+  y: 13
+},
 
   {
     id: "subfrost-rail-station-aa-1",
@@ -8038,9 +8056,13 @@ function getAdjacentBuildingEntrance() {
 }
 
 function enterBuilding(stamp, definition) {
-  const blueprint = BLUEPRINTS[definition.blueprintId];
+  const blueprintId =
+    stamp.blueprintId ||
+    definition.blueprintId;
 
-  if (!definition.blueprintId || !blueprint) {
+  const blueprint = BLUEPRINTS[blueprintId];
+
+  if (!blueprintId || !blueprint) {
     showBubble(
       definition.name.toUpperCase(),
       "This interior has not been built yet."
@@ -8050,7 +8072,7 @@ function enterBuilding(stamp, definition) {
 
   if (!blueprint.spawn) {
     console.warn(
-      `Blueprint "${definition.blueprintId}" has no spawn coordinate.`
+      `Blueprint "${blueprintId}" has no spawn coordinate.`
     );
 
     showBubble(
@@ -8066,8 +8088,8 @@ function enterBuilding(stamp, definition) {
     y: player.y
   };
 
-  worldState.currentMapId = definition.blueprintId;
-  player.mapId = definition.blueprintId;
+  worldState.currentMapId = blueprintId;
+  player.mapId = blueprintId;
 
   player.x = blueprint.spawn.x;
   player.y = blueprint.spawn.y;
