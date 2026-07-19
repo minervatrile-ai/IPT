@@ -4706,7 +4706,7 @@ const vehicles = [
   definitionId: "htiCalibrationVehicle",
   mapId: "AA",
   x: 2,
-  y: 7,
+  y: 8,
   facing: "right",
   fuel: 120,
   cargo: ["hereoBackpack"]
@@ -5119,6 +5119,8 @@ const buildingStamps = [
 
   teleporterName: "AA Calibration Target",
 
+  triangulationIndex: 1,
+
   arrival: {
     player: {
       x: 7,
@@ -5141,6 +5143,8 @@ const buildingStamps = [
   y: 16,
 
   teleporterName: "AC Calibration Target",
+
+  triangulationIndex: 2,
 
   arrival: {
     player: {
@@ -5165,17 +5169,19 @@ const buildingStamps = [
 
   teleporterName: "BB Calibration Target",
 
-  arrival: {
-  player: {
-    x: 8,
-    y: 5
-  },
+  triangulationIndex: 3,
 
-  vehicle: {
-    x: 8,
-    y: 3,
-    facing: "right"
-  }
+  arrival: {
+    player: {
+      x: 8,
+      y: 5
+    },
+
+    vehicle: {
+      x: 8,
+      y: 3,
+      facing: "right"
+    }
   }
 },
 
@@ -5230,7 +5236,7 @@ const player = {
     Survival state carried forward from UNRECOGNIZER I.
     Body heat ranges from 1 to 100 while active.
   */
-  bodyHeat: 28,
+  bodyHeat: 100,
   bodyHeatActive: true,
 
   inventory: [
@@ -5238,7 +5244,8 @@ const player = {
     "yoiUnrecognizerBadge",
     "gasJug",
     "basicLaserHandgun",
-    "binoculars"
+    "binoculars",
+    "hereoDevice"
   ],
   equippedWeaponId: null,
 equippedSuitId: null,
@@ -5262,6 +5269,15 @@ const worldState = {
   currentMapId: "AA",
   previousOutsidePosition: null,
   timeOfDay: "day",
+
+  htiNetwork: {
+  calibratedTargetIds: [],
+  triangulationEstablished: false
+},
+
+ tutorialFlags: {
+  htiCalibrationInstructionsShown: false
+},
 
  questFlags: {
   wylBinocularReferralCompleted: false,
@@ -5528,6 +5544,41 @@ function showCharacterPortrait(character) {
   });
 }
 
+/* initial instructions */
+
+let hereoStartupBriefingShown = false;
+
+function showHereoStartupBriefing() {
+  if (hereoStartupBriefingShown) {
+    return;
+  }
+
+  hereoStartupBriefingShown = true;
+
+  showBubble(
+    "HEREO TELEPORTER INCORPORATED",
+
+    "Hello, Yoi Zimek. " +
+
+    "As a Teleportation Surveyor / Field Operative for " +
+    "HEREO Teleporter Incorporated, your assignment is to " +
+    "establish Stro's initial surface teleportation network. " +
+
+    "Carry the HTI Calibration Backpack to the calibration " +
+    "targets located in sectors AA, AC, and BB. Stand beside " +
+    "the blue HEREO flag at each site and press E to synchronize " +
+    "the node. " +
+
+    "Once all three targets have been calibrated, the HEREO " +
+    "Handheld Teleporter will become operational and may be used " +
+    "to travel between synchronized calibration sites. " +
+
+    "Good luck, Yoi. " +
+
+    "UNDERSTOOD? PRESS E"
+  );
+}
+
 /* TELEPORTOR CODES */
 
 function getHtiCalibrationTargets() {
@@ -5543,6 +5594,245 @@ function getHtiCalibrationTargetById(targetId) {
   ) || null;
 }
 
+  /* hereo calibration */
+
+  function isHtiTargetCalibrated(targetId) {
+  return worldState.htiNetwork.calibratedTargetIds.includes(
+    targetId
+  );
+}
+
+function getCalibratedHtiTargets() {
+  return getHtiCalibrationTargets().filter(target =>
+    isHtiTargetCalibrated(target.id)
+  );
+}
+
+function getCalibratedTriangulationTargets() {
+  return getHtiCalibrationTargets().filter(target =>
+    target.triangulationIndex &&
+    isHtiTargetCalibrated(target.id)
+  );
+}
+
+function updateHtiTriangulationState() {
+  const calibratedTriangulationTargets =
+    getCalibratedTriangulationTargets();
+
+  if (calibratedTriangulationTargets.length >= 3) {
+    worldState.htiNetwork.triangulationEstablished = true;
+  }
+}
+
+function canCalibrateHtiTarget() {
+  return (
+    player.mode === "walking" &&
+    player.carryingHereoBackpack
+  );
+}
+
+function calibrateHtiTarget(target) {
+  if (!target) {
+    showBubble(
+      "HTI CALIBRATION",
+      "No calibration target was detected."
+    );
+    return;
+  }
+
+  if (isHtiTargetCalibrated(target.id)) {
+    showBubble(
+      "HTI CALIBRATION",
+      `${target.teleporterName || target.mapId} is already calibrated.`
+    );
+    return;
+  }
+
+  if (!canCalibrateHtiTarget()) {
+    showBubble(
+      "HTI CALIBRATION",
+      "The HTI calibration backpack must be carried to perform this procedure."
+    );
+    return;
+  }
+
+  worldState.htiNetwork.calibratedTargetIds.push(
+    target.id
+  );
+
+  const triangulationWasEstablished =
+    worldState.htiNetwork.triangulationEstablished;
+
+  updateHtiTriangulationState();
+
+  const triangulationNowEstablished =
+    worldState.htiNetwork.triangulationEstablished;
+
+  if (
+    !triangulationWasEstablished &&
+    triangulationNowEstablished
+  ) {
+    showBubble(
+      "HTI TRIANGULATION COMPLETE",
+      "Three calibration targets are now synchronized. " +
+      "The HEREO Teleporter handheld network is operational."
+    );
+
+    return;
+  }
+
+  if (!triangulationNowEstablished) {
+    const count =
+      getCalibratedTriangulationTargets().length;
+
+    showBubble(
+      "HTI CALIBRATION SUCCESS",
+      `${target.teleporterName || target.mapId} calibrated. ` +
+      `${count} of 3 triangulation targets synchronized.`
+    );
+
+    return;
+  }
+
+  showBubble(
+    "HTI CALIBRATION SUCCESS",
+    `${target.teleporterName || target.mapId} has been added to the active HEREO network.`
+  );
+}
+
+function getAdjacentHtiCalibrationTarget() {
+  if (!isOutsideMap()) return null;
+
+  return getHtiCalibrationTargets().find(target => {
+    if (target.mapId !== worldState.currentMapId) {
+      return false;
+    }
+
+    const definition =
+      BUILDING_DEFINITIONS[target.definitionId];
+
+    if (!definition) return false;
+
+    for (
+      let localY = 0;
+      localY < definition.collisionMask.length;
+      localY++
+    ) {
+      const row =
+        definition.collisionMask[localY] || "";
+
+      for (
+        let localX = 0;
+        localX < row.length;
+        localX++
+      ) {
+        if (row[localX] !== "X") continue;
+
+        const targetX = target.x + localX;
+        const targetY = target.y + localY;
+
+        const adjacent =
+          Object.values(DIRECTIONS).some(direction =>
+            player.x + direction.dx === targetX &&
+            player.y + direction.dy === targetY
+          );
+
+        if (adjacent) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }) || null;
+}
+
+function openHtiCalibrationTargetMenu(target) {
+
+  if (!worldState.tutorialFlags.htiCalibrationInstructionsShown) {
+
+  worldState.tutorialFlags.htiCalibrationInstructionsShown = true;
+
+  showBubble(
+    "HEREO FIELD ASSIGNMENT",
+    "Establish the initial teleportation network by calibrating the targets located in sectors AA, AC, and BB. Carry the HTI calibration backpack to each site, stand beside the blue HEREO flag, and press E. All three targets must be synchronized before teleportation becomes operational."
+  );
+
+  return;
+}
+
+  const calibrated =
+    isHtiTargetCalibrated(target.id);
+
+  const triangulationReady =
+    worldState.htiNetwork.triangulationEstablished;
+
+  const options = [];
+
+  if (!calibrated) {
+    options.push({
+      label: "Calibrate Target",
+      image: ASSETS.architecture.htiCalibrationTarget,
+
+      text: player.carryingHereoBackpack
+        ? "Connect the HTI calibration backpack and synchronize this target."
+        : "The HTI calibration backpack is required.",
+
+      disabled: !player.carryingHereoBackpack,
+
+      action: () => {
+        closeOverlay();
+        calibrateHtiTarget(target);
+      }
+    });
+  }
+
+  options.push({
+    label: "Inspect Status",
+    image: ASSETS.architecture.htiCalibrationTarget,
+
+    text: calibrated
+      ? (
+          `${target.teleporterName || target.mapId}<br><br>` +
+          `<strong>Status:</strong> Calibrated<br>` +
+          `<strong>Network:</strong> ` +
+          `${
+            triangulationReady
+              ? "Operational"
+              : "Awaiting triangulation"
+          }`
+        )
+      : (
+          `${target.teleporterName || target.mapId}<br><br>` +
+          `<strong>Status:</strong> Uncalibrated`
+        ),
+
+    action: () => {
+      openHtiCalibrationTargetMenu(target);
+    }
+  });
+
+  options.push({
+    label: "Leave",
+    action: closeOverlay
+  });
+
+  openOverlay({
+    title: "HTI CALIBRATION TARGET",
+    image: ASSETS.architecture.htiCalibrationTarget,
+
+    text:
+      `${target.teleporterName || target.mapId}<br><br>` +
+      `${
+        calibrated
+          ? "This target has been synchronized."
+          : "This target is awaiting field calibration."
+      }`,
+
+    options
+  });
+}
+
 function teleportToHtiTarget(targetId) {
   const target =
     getHtiCalibrationTargetById(targetId);
@@ -5552,6 +5842,25 @@ function teleportToHtiTarget(targetId) {
       "HEREO TELEPORTER",
       "The selected calibration target could not be located."
     );
+
+    return;
+  }
+
+  if (!worldState.htiNetwork.triangulationEstablished) {
+    showBubble(
+      "HEREO TELEPORTER",
+      "The network cannot transfer matter until three targets have established triangulation."
+    );
+
+    return;
+  }
+
+  if (!isHtiTargetCalibrated(target.id)) {
+    showBubble(
+      "HEREO TELEPORTER",
+      "That destination has not been visited and calibrated."
+    );
+
     return;
   }
 
@@ -5570,6 +5879,7 @@ function teleportToHtiTarget(targetId) {
         "HEREO TELEPORTER",
         "This calibration target cannot receive a vehicle."
       );
+
       return;
     }
 
@@ -5612,6 +5922,7 @@ function teleportToHtiTarget(targetId) {
       "HEREO TELEPORTER",
       "This calibration target has no registered arrival position."
     );
+
     return;
   }
 
@@ -5638,18 +5949,41 @@ function teleportToHtiTarget(targetId) {
 /* teleporter destination menu */
 
 function openHtiTeleporterMenu() {
-  const targets = getHtiCalibrationTargets();
+  if (!worldState.htiNetwork.triangulationEstablished) {
+    openOverlay({
+      title: "HEREO TELEPORTER",
+      image: ASSETS.item.hereoDevice,
+
+      text:
+        "Teleportation network unavailable." +
+        "<br><br>" +
+        `${getCalibratedTriangulationTargets().length} of 3 ` +
+        "required triangulation targets are synchronized.",
+
+      options: [
+        {
+          label: "Close",
+          action: closeOverlay
+        }
+      ]
+    });
+
+    return;
+  }
+
+  const targets = getCalibratedHtiTargets();
 
   const options = targets.map(target => {
-    const isCurrentMap =
+    const isCurrentTarget =
       target.mapId === worldState.currentMapId;
 
     return {
       label:
         `${target.teleporterName || target.mapId}` +
-        `${isCurrentMap ? " [CURRENT SECTOR]" : ""}`,
+        `${isCurrentTarget ? " [CURRENT SECTOR]" : ""}`,
 
-      image: ASSETS.architecture.htiCalibrationTarget,
+      image:
+        ASSETS.architecture.htiCalibrationTarget,
 
       text:
         `Transfer destination: ${target.mapId}.` +
@@ -5660,7 +5994,7 @@ function openHtiTeleporterMenu() {
             : "Yoi will be transferred on foot."
         }`,
 
-      disabled: isCurrentMap,
+      disabled: isCurrentTarget,
 
       action: () => {
         teleportToHtiTarget(target.id);
@@ -5680,12 +6014,9 @@ function openHtiTeleporterMenu() {
     image: ASSETS.item.hereoDevice,
 
     text:
-      "Select a calibrated HTI destination.<br><br>" +
-      `${
-        player.mode === "driving"
-          ? "VEHICLE TRANSFER LINK: ACTIVE"
-          : "PERSONNEL TRANSFER LINK: ACTIVE"
-      }`,
+      "Triangulation network online." +
+      "<br><br>" +
+      "Select a calibrated destination.",
 
     options
   });
@@ -9399,6 +9730,14 @@ if (character) {
   return;
 }
 
+const htiTarget =
+  getAdjacentHtiCalibrationTarget();
+
+if (htiTarget) {
+  openHtiCalibrationTargetMenu(htiTarget);
+  return;
+}
+
   const entrance = getAdjacentBuildingEntrance();
   if (entrance) {
     enterBuilding(entrance.stamp, entrance.definition);
@@ -10421,6 +10760,7 @@ function initializeGame() {
 
   drawGame();
   startWeatherSystem();
+  showHereoStartupBriefing();
 
   /*
     UNRECOGNIZER I updated body heat every three seconds.
