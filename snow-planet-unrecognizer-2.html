@@ -570,6 +570,7 @@ const ASSETS = {
   },
 
   props: {
+  campfireOut: "gallery/0-gallery/props/campfire-out.png",
   television: "gallery/0-gallery/props/television.png",
   televisionNews: "gallery/0-gallery/props/television-news.png",
   televisionUnrecognizer1:
@@ -705,6 +706,12 @@ right: "gallery/0-gallery/sprite/yoi.png"
 
   item: {
 
+    pineFaceWitness:
+  "gallery/0-gallery/item/totem-1.png",
+
+stakeWitness:
+  "gallery/0-gallery/item/totem-2.png",
+
     heatedMealRation: "gallery/0-gallery/item/ration-1.png",
 
     hereoBackpack:
@@ -739,6 +746,8 @@ binocularsAugmentationKit:
 
   vehicle: {
 
+
+
     htiCalibrationVehicle: {
   up: "gallery/0-gallery/vehicle/hti/up.png",
   down: "gallery/0-gallery/vehicle/hti/down.png",
@@ -746,19 +755,40 @@ binocularsAugmentationKit:
   right: "gallery/0-gallery/vehicle/hti/right.png"
 },
 
-    trackedCar1: {
-      up: "gallery/vehicle/tracked-car/car-1/up.png",
-      down: "gallery/vehicle/tracked-car/car-1/down.png",
-      left: "gallery/vehicle/tracked-car/car-1/left.png",
-      right: "gallery/vehicle/tracked-car/car-1/right.png"
+    trackedVan1: {
+      up: "gallery/0-gallery/vehicle/civ/van-1/up.png",
+      down: "gallery/0-gallery/vehicle/civ/van-1/down.png",
+      left: "gallery/0-gallery/vehicle/civ/van-1/left.png",
+      right: "gallery/0-gallery/vehicle/civ/van-1/right.png"
     },
 
-    trackedCar2: {
-      up: "gallery/vehicle/tracked-car/car-2/up.png",
-      down: "gallery/vehicle/tracked-car/car-2/down.png",
-      left: "gallery/vehicle/tracked-car/car-2/left.png",
-      right: "gallery/vehicle/tracked-car/car-2/right.png"
-    },
+    trackedCar1: {
+    up: "gallery/vehicle/tracked-car/car-1/up.png",
+    down: "gallery/vehicle/tracked-car/car-1/down.png",
+    left: "gallery/vehicle/tracked-car/car-1/left.png",
+    right: "gallery/vehicle/tracked-car/car-1/right.png",
+
+    overlay: {
+      up: "gallery/vehicle/tracked-car/car-1/intro.png",
+      down: "gallery/vehicle/tracked-car/car-1/intro.png",
+      left: "gallery/vehicle/tracked-car/car-1/intro.png",
+      right: "gallery/vehicle/tracked-car/car-1/intro.png"
+    }
+  },
+
+  trackedCar2: {
+    up: "gallery/vehicle/tracked-car/car-2/up.png",
+    down: "gallery/vehicle/tracked-car/car-2/down.png",
+    left: "gallery/vehicle/tracked-car/car-2/left.png",
+    right: "gallery/vehicle/tracked-car/car-2/right.png",
+
+    overlay: {
+      up: "gallery/vehicle/tracked-car/car-2/car-2.png",
+      down: "gallery/vehicle/tracked-car/car-2/car-2.png",
+      left: "gallery/vehicle/tracked-car/car-2/car-2.png",
+      right: "gallery/vehicle/tracked-car/car-2/car-2.png"
+    }
+  },
 
     rs1: {
       up: "gallery/vehicle/red-snow/rs-1/full-up.png",
@@ -892,6 +922,7 @@ const OUTSIDE_TILES = {
   "p": { name: "small pine", image: ASSETS.ground.pineSmall, walkable: false, driveable: false },
   "@": { name: "barrel", image: ASSETS.props.barrel, walkable: false, driveable: false },
   "g": { name: "fuel pump", image: ASSETS.ground.fuel, walkable: false, driveable: false },
+  "o": { name: "campfire out", image: ASSETS.props.campfireOut, walkable: false, driveable: false, interaction: "campfire" },
 };
 
 /* =============================================================
@@ -1260,10 +1291,10 @@ const AA_MAP = [
   "p=..........................",
   "P=..=.......................",
   "p=..=...........ppp.......pp",
-  ".=..=.g..............ppp....",
-  ".===========================",
-  ".===========================",
-  ".===========================",
+  "@=..=.g..............ppp....",
+  "@===========================",
+  "@===========================",
+  "@===========================",
   "@===========================",
   "p===========================",
   ".......=====................",
@@ -1325,9 +1356,9 @@ const AC_MAP = [
   "............................",
   "=====PP..............PPp....",
   "======P.....................",
-  "======p.....................",
-  "======Ppppp.................",
-  "=======.=.=.................",
+  "======p...======............",
+  "======Ppppp=====............",
+  "=======.=.======............",
   "..=====.=.=.................",
   "..=====.=.=..g..............",
   "...===========..............",
@@ -1459,10 +1490,10 @@ const AG_MAP = [
   "...................pPPpPpppp",
   "...................PPppP....",
   "..................pPPPPP.PPp",
-  "PppPpPPPpPPPpPPpPPPpPpPp.pPP",
-  "PpPPpPPpPPppPPPPPppPPPpp.PpP",
-  "PPPPPpPPpPPPpPpPpPpPPpPP.PPP",
-  "pPPPpPpPppPppPPPppPPPPPp.PpP",
+  "PppPp.PPpPPPpPPpPPPpPpPp.pPP",
+  "PpPPp.PpPPppPPPPPppPPPpp.PpP",
+  "PPPPP.PPpPPPpPpPpPpPPpPP.PPP",
+  "pPPPp.pPppPppPPPppPPPPPp.PpP",
   "pPP..................PpP.PPP",
   "PP..........................",
   "pp...................ppp.PPP",
@@ -1485,9 +1516,9 @@ const AH_MAP = [
   "ppp.ppPPPP.pPPPPP.pPPPpp.PPP",
   "PpP.PpPPPP.pPPPPp.ppPPPp....",
   "PpP.PppPpp.PpPPpp.PpPPPP.pPp",
-  "PPp.PpPpPp.PPPPpP.PpPpPp.PpP",
-  "PPP.PPpPpP.pPPPpp.PppPpP.PPP",
-  "pPp.PpPpPP.PPPpPP.PppPPp.PPp",
+  "PPp.PpPpPp.PPPPpP.Pp...p.PpP",
+  "PPP.PPpPpP.pPPPpp.Pp.o...PPP",
+  "pPp.PpPpPP.PPPpPP.Pp...p.PPp",
   "....PpPPPP.PPPpPP.PpppPp.PpP",
   "pPPPpppPpP.pPPPPP.PPPPPP.PPp",
   "PpPPPPPPPp.PPPPpP.PpPPPp.pPP",
@@ -4032,6 +4063,33 @@ cruk: {
 
 const ITEM_DEFINITIONS = {
 
+  pineFaceWitness: {
+  name: "Pine Face Witness",
+  image: ASSETS.item.pineFaceWitness,
+  category: "culturalArtifact",
+
+  description:
+    "A pine-log face carved and painted by UNRECOGNIZER agents. " +
+    "Witnesses are left at temporary camps as symbols of presence, " +
+    "identity, and devotion.",
+
+  sellValue: 45,
+  buyerId: "verkos"
+},
+
+stakeWitness: {
+  name: "Stake Witness",
+  image: ASSETS.item.stakeWitness,
+  category: "culturalArtifact",
+
+  description:
+    "A sharpened pine Witness bound with cord and ornamented by an " +
+    "UNRECOGNIZER agent. It appears intended to be driven into the ground.",
+
+  sellValue: 70,
+  buyerId: "verkos"
+},
+
   tapeNews1: {
   name: "STRO NEWS Broadcast #1",
   image: "gallery/0-gallery/item/tape-news-1.png",
@@ -4200,6 +4258,188 @@ binoculars: {
   }
 };
 
+/* campfire contents */
+
+const CAMPFIRE_CONTENTS = {
+  /*
+    Format:
+    "MAP_ID:X:Y": ["itemId", "itemId"]
+  */
+
+  "AH:21:15": [
+    "pineFaceWitness",
+    "stakeWitness"
+  ]
+};
+
+const campfireStates = {};
+
+function getCampfireKey(mapId, x, y) {
+  return `${mapId}:${x}:${y}`;
+}
+
+function getCampfireState(mapId, x, y) {
+  const key = getCampfireKey(mapId, x, y);
+
+  if (!campfireStates[key]) {
+    campfireStates[key] = {
+      searched: false,
+      items: []
+    };
+  }
+
+  return campfireStates[key];
+}
+
+function searchCampfire(mapId, x, y) {
+  const key = getCampfireKey(mapId, x, y);
+  const state = getCampfireState(mapId, x, y);
+
+  if (!state.searched) {
+    state.searched = true;
+
+    state.items = [
+      ...(CAMPFIRE_CONTENTS[key] || [])
+    ];
+  }
+
+  openCampfireContents(mapId, x, y);
+}
+
+function openCampfireContents(mapId, x, y) {
+  const state = getCampfireState(mapId, x, y);
+
+  if (state.items.length === 0) {
+    openOverlay({
+      title: "ABANDONED CAMP",
+      image: ASSETS.props.campfireOut,
+
+      text:
+        "You search around the cold firepit, but find nothing " +
+        "worth carrying.",
+
+      options: [
+        {
+          label: "Leave",
+          action: closeOverlay
+        }
+      ]
+    });
+
+    return;
+  }
+
+  const itemOptions = state.items.map((itemId, index) => {
+    const item = ITEM_DEFINITIONS[itemId];
+
+    return {
+      label: item?.name || itemId,
+
+      action: () => {
+        openCampfireItemMenu(
+          mapId,
+          x,
+          y,
+          index
+        );
+      }
+    };
+  });
+
+  openOverlay({
+    title: "ITEMS AROUND CAMPFIRE",
+    image: ASSETS.props.campfireOut,
+
+    text:
+      "You search through the remains of the campsite. " +
+      "These items are still here.",
+
+    options: [
+      ...itemOptions,
+
+      {
+        label: "Leave",
+        action: closeOverlay
+      }
+    ]
+  });
+}
+
+function openCampfireItemMenu(
+  mapId,
+  x,
+  y,
+  itemIndex
+) {
+  const state = getCampfireState(mapId, x, y);
+  const itemId = state.items[itemIndex];
+  const item = ITEM_DEFINITIONS[itemId];
+
+  if (!itemId || !item) {
+    openCampfireContents(mapId, x, y);
+    return;
+  }
+
+  openOverlay({
+    title: item.name,
+    image: item.image,
+
+    text:
+      item.description ||
+      "An item found near the abandoned campfire.",
+
+    options: [
+      {
+        label: "Take",
+        action: () => {
+          takeCampfireItem(
+            mapId,
+            x,
+            y,
+            itemIndex
+          );
+        }
+      },
+
+      {
+        label: "Leave it",
+        action: () => {
+          openCampfireContents(mapId, x, y);
+        }
+      }
+    ]
+  });
+}
+
+function takeCampfireItem(
+  mapId,
+  x,
+  y,
+  itemIndex
+) {
+  const state = getCampfireState(mapId, x, y);
+  const itemId = state.items[itemIndex];
+  const item = ITEM_DEFINITIONS[itemId];
+
+  if (!itemId) {
+    openCampfireContents(mapId, x, y);
+    return;
+  }
+
+  addItem(itemId);
+
+  state.items.splice(itemIndex, 1);
+
+  closeOverlay();
+
+  showBubble(
+    "ITEM TAKEN",
+    `${item?.name || itemId} added to inventory.`
+  );
+
+  updateHud();
+}
+
 /* =============================================================
    07. VEHICLE DEFINITIONS
 
@@ -4224,11 +4464,30 @@ const VEHICLE_DEFINITIONS = {
   },
 
   boardable: true,
-  fuelCapacity: 120,
-  fuelPerStep: 0.25,
+  fuelCapacity: 160,
+  fuelPerStep: 0.10,
   engineSound: "car1",
   hasDoorSound: true
 },
+
+  trackedCargoVan1: {
+    name: "Driftwagon",
+    family: "trackedCar",
+    faction: "civilian",
+    renderMode: "full",
+    images: ASSETS.vehicle.trackedVan1,
+    size: {
+      up: { width: 2, height: 3 },
+      down: { width: 2, height: 3 },
+      left: { width: 3, height: 2 },
+      right: { width: 3, height: 2 }
+    },
+    boardable: true,
+    fuelCapacity: 160,
+    fuelPerStep: 0.60,
+    engineSound: "car1",
+    hasDoorSound: true
+  },
 
   trackedUtilitySedan: {
     name: "Tracked Utility Sedan",
@@ -4243,8 +4502,8 @@ const VEHICLE_DEFINITIONS = {
       right: { width: 3, height: 2 }
     },
     boardable: true,
-    fuelCapacity: 100,
-    fuelPerStep: 0.25,
+    fuelCapacity: 110,
+    fuelPerStep: 0.20,
     engineSound: "car1",
     hasDoorSound: true
   },
@@ -4262,8 +4521,9 @@ const VEHICLE_DEFINITIONS = {
       right: { width: 3, height: 2 }
     },
     boardable: true,
-    fuelCapacity: 100,
+    fuelCapacity: 140,
     fuelPerStep: 0.25,
+    engineSound: "rs1",
     hasDoorSound: true
   },
 
@@ -4336,7 +4596,7 @@ const VEHICLE_DEFINITIONS = {
     },
     boardable: false,
     fuelCapacity: 60,
-    fuelPerStep: 0.25,
+    fuelPerStep: 0.05,
     engineSound: "snowmobile",
     hasDoorSound: false
   },
@@ -4356,7 +4616,7 @@ const VEHICLE_DEFINITIONS = {
     boardable: true,
     requiredEquippedBadgeId: "yoiUnrecognizerBadge",
     fuelCapacity: 60,
-    fuelPerStep: 0.25,
+    fuelPerStep: 0.05,
     engineSound: "snowmobile",
     hasDoorSound: false
   },
@@ -4452,27 +4712,41 @@ const vehicles = [
   cargo: ["hereoBackpack"]
 },
 
-  /*
+  {
+    id: "driftwagon",
+    definitionId: "trackedCargoVan1",
+    mapId: "AA",
+    x: 2,
+    y: 17,
+    facing: "right",
+    fuel: 160,
+    ownerId: "jegna-engine-test-facility"
+  },
 
   {
     id: "zyr-sedan",
     definitionId: "trackedUtilitySedan",
     mapId: "AA",
     x: 2,
-    y: 18,
+    y: 13,
     facing: "right",
-    fuel: 100
+    fuel: 100,
+    ownerId: "zyr"
   },
+
   {
     id: "purple-tracked-car",
     definitionId: "frontierMuscleCruiser",
-    mapId: "AA",
-    x: 13,
-    y: 20,
+    mapId: "AC",
+    x: 12,
+    y: 9,
     facing: "left",
     fuel: 70,
     ownerId: "verkos"
   },
+
+/*
+  
   {
     id: "rs-1",
     definitionId: "rs1BlooddriftHellrunner",
@@ -4602,8 +4876,8 @@ const characters = [
   autonomous: false,
   residentState: "stationary",
   nextResidentState: null,
-  talkGateCompleted: false
-
+  talkGateCompleted: false,
+  vehicleId: "zyr-sedan"
 },
 
 {
@@ -4673,7 +4947,8 @@ const characters = [
   defeated: false,
   visible: true,
   conversationStep: 0,
-  portraitShown: false
+  portraitShown: false,
+  vehicleId: "driftwagon"
 }
 
 ];
@@ -5449,6 +5724,10 @@ function getVehicleOccupiedTiles(vehicle, x = vehicle.x, y = vehicle.y, facing =
 function getVehicleOverlayImage(vehicle) {
   const definition = getVehicleDefinition(vehicle);
   const facingImage = definition.images[vehicle.facing];
+
+  if (definition.images.overlay?.[vehicle.facing]) {
+    return definition.images.overlay[vehicle.facing];
+  }
 
   if (definition.renderMode === "pieces") {
     return facingImage.front;
@@ -7771,6 +8050,45 @@ function playNewsTape1(pageIndex = 0) {
 /* Standard object interactions demonstrate varied menus. */
 const INTERACTIONS = {
 
+  campfire(interaction) {
+  const mapId = worldState.currentMapId;
+  const { x, y } = interaction;
+
+  const state = getCampfireState(
+    mapId,
+    x,
+    y
+  );
+
+  openOverlay({
+    title: "ABANDONED CAMP",
+    image: ASSETS.props.campfireOut,
+
+    text: state.searched
+      ? "You have already searched this campsite. " +
+        "Anything you left behind may still be here."
+      : "A cold ring of stones rests in the snow. " +
+        "The people who camped here have moved on.",
+
+    options: [
+      {
+        label: state.searched
+          ? "Check remaining items"
+          : "Search area",
+
+        action: () => {
+          searchCampfire(mapId, x, y);
+        }
+      },
+
+      {
+        label: "Leave",
+        action: closeOverlay
+      }
+    ]
+  });
+},
+
   noEntry() {
   openOverlay({
     title: "NO ENTRY",
@@ -8188,6 +8506,28 @@ function getNearestResidentBlueprintExit(character) {
   }
 
   return nearestExit;
+}
+
+function getAdjacentOutsideInteraction() {
+  if (!isOutsideMap()) return null;
+
+  for (const direction of Object.values(DIRECTIONS)) {
+    const x = player.x + direction.dx;
+    const y = player.y + direction.dy;
+
+    const symbol = getTileSymbol(x, y);
+    const tile = OUTSIDE_TILES[symbol];
+
+    if (tile?.interaction) {
+      return {
+        interaction: tile.interaction,
+        x,
+        y
+      };
+    }
+  }
+
+  return null;
 }
 
 function getAdjacentInteriorInteraction() {
@@ -9064,6 +9404,20 @@ if (character) {
     enterBuilding(entrance.stamp, entrance.definition);
     return;
   }
+
+  const outsideInteraction =
+  getAdjacentOutsideInteraction();
+
+if (outsideInteraction) {
+  const handler =
+    INTERACTIONS[outsideInteraction.interaction];
+
+  if (handler) {
+    handler(outsideInteraction);
+  }
+
+  return;
+}
 
   const interiorInteraction = getAdjacentInteriorInteraction();
   if (interiorInteraction) {
