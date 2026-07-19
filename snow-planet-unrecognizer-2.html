@@ -1383,29 +1383,29 @@ const AD_MAP = [
   "............................",
   "............................",
   "............................",
-  ".......pp...PpPPPPPpPPP...PP",
-  ".....PPpp...pPPPPpPpPPP...pp",
-  "....PPPpp...PPpPPPpPPPp...Pp",
-  "......PpP...pPpPPPPPPPP...pP",
-  "......PpP...PPPPp...........",
-  ".......Pp...pppP............",
-  "......ppp...PPpp............",
-  "......PPP...pPpp...........p",
-  "....PPpPp...PPP.............",
-  "....PPpPP...pPP.............",
-  "......ppp...pPP.............",
-  "......Ppp...PP..............",
-  ".......pP...pPp.............",
-  "......PPP...PPP.............",
-  "......PPp...pPP.............",
-  ".....PPPp...Pppp............",
-  ".....pPpp...PPPp............",
-  ".....Pppp...PPPp............",
-  ".....PPPP...................",
-  ".....PpPp...................",
-  "....PpPPP...................",
-  "....ppPPP...PPPPpPpPpPp...pP",
-  "..PpppPpP...ppPPpPPPPPp...Pp",
+  ".............pPPPPPpPPP...PP",
+  "......P......PPPPpPpPPP...pp",
+  ".....PP......PpPPPpPPPp...Pp",
+  "......Pp.....PpPPPPPPPP...pP",
+  "......Pp.....PPPp...........",
+  ".......P.....ppP............",
+  "......pp.....Ppp............",
+  "......PP.....Ppp...........p",
+  "....PPpP.....PP.............",
+  "....PPpP.....PP.............",
+  "......pp.....PP.............",
+  "......Pp.....P..............",
+  ".......p.....Pp.............",
+  "......PP.....PP.............",
+  "......PP.....PP.............",
+  ".....PPP.....ppp............",
+  ".....pPp.....PPp............",
+  ".....Ppp......Pp............",
+  ".....PPP....................",
+  ".....PpP....................",
+  "....PpPP....................",
+  "....ppPP....PPPPpPpPpPp...pP",
+  "..PpppPp....ppPPpPPPPPp...Pp",
 ];
 
 const AE_MAP = [
@@ -3558,7 +3558,7 @@ const BLUEPRINTS = {
 
  tiles: [
   "WWWWWWWWWWWW",
-  "WTkbbbk.FttW",
+  "WTkbbbk.FtCW",
   "W.l...r....W",
   "W.k...k....W",
   "W..........R",
@@ -5090,6 +5090,28 @@ const buildingStamps = [
   },
 
   {
+    id: "hti-calibration-target-ad",
+    definitionId: "htiCalibrationTarget",
+    mapId: "AD",
+    x: 17,
+    y: 10,
+
+    teleporterName: "AD Calibration Target",
+
+    arrival: {
+      player: {
+        x: 17,
+        y: 16
+      },
+      
+      vehicle: {
+        x: 17,
+        y: 16
+      }
+    }
+  },
+
+  {
   id: "hti-calibration-target-be",
   definitionId: "htiCalibrationTarget",
   mapId: "BE",
@@ -5928,13 +5950,28 @@ function teleportToHtiTarget(targetId) {
     return;
   }
 
-  worldState.currentMapId = target.mapId;
+  const safeArrival = findSafePlayerArrival(
+  target.mapId,
+  arrival.x,
+  arrival.y
+);
 
-  player.mapId = target.mapId;
-  player.x = arrival.x;
-  player.y = arrival.y;
-  player.mode = "walking";
-  player.vehicleId = null;
+if (!safeArrival) {
+  showBubble(
+    "HEREO TELEPORTER",
+    "Transfer aborted. The destination arrival area is obstructed."
+  );
+
+  return;
+}
+
+worldState.currentMapId = target.mapId;
+
+player.mapId = target.mapId;
+player.x = safeArrival.x;
+player.y = safeArrival.y;
+player.mode = "walking";
+player.vehicleId = null;
 
   if (ATLAS[target.mapId]) {
     ATLAS[target.mapId].discovered = true;
@@ -6022,6 +6059,88 @@ function openHtiTeleporterMenu() {
 
     options
   });
+}
+
+/* teleporter cheatcode */
+
+function getHtiCalibrationTargetById(targetId) {
+  return getHtiCalibrationTargets().find(
+    target => target.id === targetId
+  ) || null;
+}
+
+const HTI_NETWORK_CHEAT_CODE = "HEREO-ALL-NODES";
+
+function activateAllHtiCalibrationTargetsCheat() {
+  const targets = getHtiCalibrationTargets();
+
+  if (targets.length === 0) {
+    showBubble(
+      "STRO CENTRAL TERMINAL",
+      "No registered HEREO calibration targets were found."
+    );
+
+    return;
+  }
+
+  /*
+    Replace the calibrated list with every currently registered
+    HTI calibration target.
+
+    This automatically includes future targets added to
+    buildingStamps, provided they have an arrival definition.
+  */
+  worldState.htiNetwork.calibratedTargetIds =
+    targets.map(target => target.id);
+
+  worldState.htiNetwork.triangulationEstablished = true;
+
+  /*
+    Make sure the player possesses the handheld during testing.
+  */
+  if (!hasItem("hereoDevice")) {
+    addItem("hereoDevice");
+  }
+
+  updateHud();
+
+  showBubble(
+    "HEREO NETWORK OVERRIDE",
+    `${targets.length} calibration targets synchronized.<br><br>` +
+    "The HEREO Handheld Teleporter now has access to the complete registered calibration network."
+  );
+}
+
+function enterComputerAccessCode() {
+  /*
+    Close the universal overlay before opening the browser's
+    temporary typed-code prompt.
+  */
+  closeOverlay();
+
+  const enteredCode = window.prompt(
+    "STRO CENTRAL TERMINAL\n\nENTER ACCESS CODE:"
+  );
+
+  /*
+    Cancel was pressed.
+  */
+  if (enteredCode === null) {
+    return;
+  }
+
+  const normalizedCode =
+    enteredCode.trim().toUpperCase();
+
+  if (normalizedCode === HTI_NETWORK_CHEAT_CODE) {
+    activateAllHtiCalibrationTargetsCheat();
+    return;
+  }
+
+  showBubble(
+    "STRO CENTRAL TERMINAL",
+    "ACCESS CODE NOT RECOGNIZED."
+  );
 }
 
 function getCharacterDefinition(character) {
@@ -6404,6 +6523,72 @@ function isOccupiedByCharacter(x, y, ignoreId = null) {
     character.y === y
   );
 }
+
+/* teleportation safety arrival */
+
+function isTileOccupiedByVehicle(mapId, x, y) {
+  return vehicles.some(vehicle => {
+    if (vehicle.mapId !== mapId) return false;
+
+    return getVehicleOccupiedTiles(vehicle).some(
+      tile => tile.x === x && tile.y === y
+    );
+  });
+}
+
+function findSafePlayerArrival(mapId, preferredX, preferredY) {
+  const offsets = [
+    { x: 0, y: 0 },
+
+    { x: 0, y: -1 },
+    { x: 1, y: 0 },
+    { x: 0, y: 1 },
+    { x: -1, y: 0 },
+
+    { x: 1, y: -1 },
+    { x: 1, y: 1 },
+    { x: -1, y: 1 },
+    { x: -1, y: -1 },
+
+    { x: 0, y: -2 },
+    { x: 2, y: 0 },
+    { x: 0, y: 2 },
+    { x: -2, y: 0 }
+  ];
+
+  const map = ATLAS[mapId];
+
+  for (const offset of offsets) {
+    const x = preferredX + offset.x;
+    const y = preferredY + offset.y;
+
+    if (
+      x < 0 ||
+      y < 0 ||
+      x >= OUTSIDE_MAP_SIZE ||
+      y >= OUTSIDE_MAP_SIZE
+    ) {
+      continue;
+    }
+
+    const symbol = map.tiles[y][x];
+    const tileDefinition = OUTSIDE_TILES[symbol];
+
+    if (!tileDefinition?.walkable) {
+      continue;
+    }
+
+    if (isTileOccupiedByVehicle(mapId, x, y)) {
+      continue;
+    }
+
+    return { x, y };
+  }
+
+  return null;
+}
+
+/* normal vehicle occupy code */
 
 function isOccupiedByVehicle(x, y, ignoreVehicleId = null) {
   return vehicles.some(vehicle => {
@@ -8627,33 +8812,57 @@ trashChute() {
   },
 
   computer() {
-    openOverlay({
-      title: "STRO CENTRAL TERMINAL",
-      image: ASSETS.props.computer,
-      text: "The terminal is ready. This menu may later be replaced by typed commands.",
-      options: [
-        {
-          label: "Display current coordinate",
-          action: () => {
-            closeOverlay();
-            showBubble(
-              "TERMINAL",
-              `Current location: ${worldState.currentMapId} · ${getCurrentMap().title}`
-            );
-          }
-        },
-        {
-          label: "Display atlas completion",
-          action: () => {
-            const discovered = Object.values(ATLAS).filter(map => map.discovered).length;
-            closeOverlay();
-            showBubble("TERMINAL", `${discovered} of 64 sectors discovered.`);
-          }
-        },
-        { label: "Log out", action: closeOverlay }
-      ]
-    });
-  },
+  openOverlay({
+    title: "STRO CENTRAL TERMINAL",
+    image: ASSETS.props.computer,
+
+    text:
+      "The terminal is ready. Select a system operation.",
+
+    options: [
+      {
+        label: "Display current coordinate",
+
+        action: () => {
+          closeOverlay();
+
+          showBubble(
+            "TERMINAL",
+            `Current location: ${worldState.currentMapId} · ${getCurrentMap().title}`
+          );
+        }
+      },
+
+      {
+        label: "Display atlas completion",
+
+        action: () => {
+          const discovered =
+            Object.values(ATLAS).filter(
+              map => map.discovered
+            ).length;
+
+          closeOverlay();
+
+          showBubble(
+            "TERMINAL",
+            `${discovered} of 64 sectors discovered.`
+          );
+        }
+      },
+
+      {
+        label: "Enter access code",
+        action: enterComputerAccessCode
+      },
+
+      {
+        label: "Log out",
+        action: closeOverlay
+      }
+    ]
+  });
+},
 
   exchange() {
     openOverlay({
