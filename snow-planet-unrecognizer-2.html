@@ -3929,19 +3929,6 @@ jegnaDialogue: {
     }
 
     /*
-      Quest has already begun, but Yoi has not recovered the kits.
-    */
-    if (
-      questStarted &&
-      !worldState.questFlags.binocularUpgradeKitsRetrieved
-    ) {
-      return [
-        "Those Sorcery Tech augmentation kits should still be at " +
-        "Outpost 3. If you get out that way, bring them back here."
-      ];
-    }
-
-    /*
   Yoi has returned with the Sorcery Tech augmentation kit.
   Cruk installs it and upgrades the binoculars to Enhanced.
 */
@@ -3971,6 +3958,21 @@ if (
     }
   ];
 }
+
+
+    /*
+      Quest has already begun, but Yoi has not recovered the kits.
+    */
+    if (
+      questStarted &&
+      !worldState.questFlags.binocularUpgradeKitsRetrieved
+    ) {
+      return [
+        "Those Sorcery Tech augmentation kits should still be at " +
+        "Outpost 3. If you get out that way, bring them back here."
+      ];
+    }
+
 
     /*
       Enhanced-state fallback.
