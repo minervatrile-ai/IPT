@@ -10548,7 +10548,10 @@ const BODY_HEAT_RULES = {
   snowDayLoss: 2,
   snowNightLoss: 4,
   blizzardLoss: 6,
+
   snowSuitProtection: 2,
+  thermalSnowSuitProtection: 4,
+
   shelterRecovery: 2,
   criticalThreshold: 50,
   emergencyThreshold: 25
@@ -10795,17 +10798,6 @@ function getCurrentBodyHeatLoss() {
 function updateBodyHeat() {
   if (!player.bodyHeatActive) return;
 
-  /*
-    The thermal snow suit completely stabilizes body heat.
-  */
-  if (player.equippedSuitId === "thermalSnowSuit") {
-    player.bodyHeat = 100;
-    worldState.lastBodyHeatWarning = "";
-    worldState.lastBodyHeat = player.bodyHeat;
-    updateHud();
-    return;
-  }
-
   const outside = isOutsideMap();
   const inVehicle = player.mode === "driving";
 
@@ -10815,10 +10807,24 @@ function updateBodyHeat() {
   if (outside && !inVehicle) {
     let heatLoss = getCurrentBodyHeatLoss();
 
+    /*
+      The regular Snow Suit reduces heat loss.
+    */
     if (player.equippedSuitId === "snowSuit") {
       heatLoss = Math.max(
         0,
         heatLoss - BODY_HEAT_RULES.snowSuitProtection
+      );
+    }
+
+    /*
+      The Thermal Snow Suit provides stronger protection,
+      but does not make Yoi completely immune to cold.
+    */
+    if (player.equippedSuitId === "thermalSnowSuit") {
+      heatLoss = Math.max(
+        0,
+        heatLoss - BODY_HEAT_RULES.thermalSnowSuitProtection
       );
     }
 
@@ -10832,6 +10838,9 @@ function updateBodyHeat() {
     player.bodyHeat += BODY_HEAT_RULES.shelterRecovery;
   }
 
+  /*
+    Keep body heat between 0 and 100.
+  */
   player.bodyHeat = Math.max(
     0,
     Math.min(100, player.bodyHeat)
@@ -10868,9 +10877,9 @@ function updateBodyHeat() {
     Temporary protection until the death system exists.
   */
   if (player.bodyHeat <= 0) {
-  recoverPlayer("bodyHeat");
-  return;
-}
+    recoverPlayer("bodyHeat");
+    return;
+  }
 
   worldState.lastBodyHeat = player.bodyHeat;
   updateHud();
