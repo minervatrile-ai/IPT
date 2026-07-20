@@ -570,6 +570,7 @@ const ASSETS = {
   },
 
   props: {
+  doorBlue: "gallery/0-gallery/props/door-blue.png",
   campfireOut: "gallery/0-gallery/props/campfire-out.png",
   television: "gallery/0-gallery/props/television.png",
   televisionNews: "gallery/0-gallery/props/television-news.png",
@@ -601,6 +602,10 @@ const ASSETS = {
 
 architecture: {
   /* Full outside building stamps */
+
+  luxurySnowcraftSales:
+  "gallery/0-gallery/architecture/luxury-snowcraft-sales.png",
+
   htiCalibrationTarget:
   "gallery/0-gallery/architecture/hti-target.png",
 
@@ -746,7 +751,19 @@ binocularsAugmentationKit:
 
   vehicle: {
 
+    softCandy: {
+      up: "gallery/0-gallery/vehicle/civ/soft-candy/up.png",
+      down: "gallery/0-gallery/vehicle/civ/soft-candy/down.png",
+      left: "gallery/0-gallery/vehicle/civ/soft-candy/left.png",
+      right: "gallery/0-gallery/vehicle/civ/soft-candy/right.png"
+    },
 
+  pinkLeopard: {
+    up: "gallery/0-gallery/vehicle/civ/pink-leopard/up.png",
+    down: "gallery/0-gallery/vehicle/civ/pink-leopard/down.png",
+    left: "gallery/0-gallery/vehicle/civ/pink-leopard/left.png",
+    right: "gallery/0-gallery/vehicle/civ/pink-leopard/right.png"
+  },
 
     htiCalibrationVehicle: {
   up: "gallery/0-gallery/vehicle/hti/up.png",
@@ -950,6 +967,7 @@ const OUTSIDE_TILES = {
   prevents a door image from automatically meaning "exit building."
 */
 const BLUEPRINT_TILE = {
+  "}": ASSETS.props.doorBlue,
   "d": ASSETS.architecture.doubleDoors,
   "W": ASSETS.architecture.wall,
   ".": ASSETS.architecture.interiorFloor,
@@ -1015,6 +1033,9 @@ const BLUEPRINT_TILE = {
   door unless that exact location is declared as an exit.
 */
 const BLUEPRINT_TILE_RULES = {
+
+  "}": { name: "door blue", walkable: false },
+
   " ": { name: "empty", walkable: false },
 
   ".": { name: "floor", walkable: true },
@@ -1285,7 +1306,7 @@ AA_MAP and AB_MAP are preserved exactly from the supplied file.
 
 
 const AA_MAP = [
-  "pppp........................",
+  "pppp............@.@.........",
   "pPPPPPPP....................",
   "p==pPP......................",
   "p=..........................",
@@ -1572,26 +1593,26 @@ const BB_MAP = [
   "..........=====.............",
   "..........=====.............",
   "....PPPPPP=====.............",
-  "......PP....................",
-  "......PP....................",
-  "............................",
-  ".......p....................",
-  ".......p....................",
-  ".......ppP..................",
-  ".....................PPp....",
-  ".....................P......",
-  ".....................P......",
-  "............................",
-  "p....................P......",
-  "P....................P......",
-  "PpP..................pPP....",
-  ".........................PpP",
-  "...........................P",
-  "...........................P",
-  "............................",
-  ".............p..............",
-  ".............P..............",
-  "...........PPP..............",
+  "......PP...=====............",
+  "......PP....=====...........",
+  ".............=====..........",
+  ".......p.....=====..........",
+  ".......p.....=====..........",
+  ".......ppP...=====..........",
+  ".............=====...PPp....",
+  "............=====....P......",
+  "............=====....P......",
+  "...........=====............",
+  "p.........=====......P......",
+  "P........=====.......P......",
+  "PpP.....=====........pPP....",
+  ".......=====.............PpP",
+  "......=====................P",
+  ".....=====.................P",
+  "....=====...................",
+  "....=====....p..............",
+  "....=====....P..............",
+  "....=====..PPP..............",
 ];
 
 const BC_MAP = [
@@ -1784,15 +1805,15 @@ const CA_MAP = [
   ".........................Ppp",
   "...........................P",
   "...........................p",
-  "............................",
+  "@...........................",
   ".......P....................",
-  ".......P....................",
-  ".......P....................",
-  "....................P.......",
-  ".............Pp.....P.......",
-  ".............pp.....P.......",
+  "@......P....................",
+  "@......P....................",
+  "@...................P.......",
+  "@............Pp.....P.......",
+  "@............pp.....P.......",
   "............................",
-  "............................",
+  "@...........................",
   "............................",
   "............................",
   "............................",
@@ -1803,21 +1824,21 @@ const CA_MAP = [
   "....................pp......",
   "..................PpPpPP....",
   "..............PpP...........",
-  "..............P.............",
+  "@.............P.............",
   "..............p.............",
-  "............................",
+  "@...........................",
   "............................",
   "............................",
   "............................",
 ];
 
 const CB_MAP = [
-  "pPP.........................",
-  "p...........................",
-  "P...........................",
-  "............................",
-  "............................",
-  "............................",
+  "pPP.=====...................",
+  "p...=====...................",
+  "P...=====...................",
+  "....=====...................",
+  "....=====...................",
+  "....=====...................",
   "............................",
   "............................",
   ".............P..............",
@@ -2002,13 +2023,13 @@ const CH_MAP = [
   "ppPPppPpppPPPP.......PPP.ppp",
   "PpPpPPPPPPPpppp.....PPPp.PPp",
   "..................PPPPpP.PPP",
-  "PpP.PppPPpPpPPPppPpPpPPP.PPP",
+  "PpP.PppPPpPpPPPppPpPpPPP....",
   "pPp.PPPPppPpPpPppPpPppPP.pPP",
   "PPP.PpPpPpPPppPpPPPPPPPp.Ppp",
   "pPp.pPPPpPPPpPPPPpppPpPP.pPp",
   "pPp.PpPPpppPPppppPPPpPPp.ppP",
   "pPp.PpPPpppPPPpPpPPPPppP.PPP",
-  "...........PpPppp........PPp",
+  "...........PpPppp...........",
   "pPpPPPPpPP.pppPPP.PPPPPpppPP",
   "PPPPpppPpp.PpPPPP.PPPPppPPPP",
   "pPPPpPPPpP.PPPpPP.pPPPpPPpPp",
@@ -2021,7 +2042,7 @@ const CH_MAP = [
   "PpP.pPPpPppPpppPpPPpPppp.ppP",
   "PPp.PPPPpppPPPPPppppPppp.PpP",
   "PpP.pPpPPppppppPppPPPPPP.Ppp",
-  "pPp.PpPPPppppPpPpppPPPpp.PPP",
+  "pPp.PpPPPppppPpPpppPPPpp....",
   "..................pPpPPp.ppp",
   "pppPPPPppP.pPppPp.pPPpPp.ppP",
   "pPp.ppppPP.PpPPPp.ppPpPP.ppP",
@@ -3044,11 +3065,11 @@ const HA_MAP = [
   "PPp.PppppPPpPPpPp.PPpppP.PpP",
   "Ppp.PPPppPPPppPpP.PppPpP.Ppp",
   "ppP.pPpPPPPppPPPP.PPPPpP.Ppp",
-  "ppp.PPpPpPPpPpPPP.pPPPPP.pPp",
-  "pPp.........................",
-  "PppPpPpPPPPPPPpppPpPPPPPPpPP",
-  "PPPPPPPPPPpPpPPpPpPPppPpPPPp",
-  "pPPPpPPpPpPPPpPPpPPppPpPPppP",
+  "ppp.P.....PpPpPPP.pPPPPP.pPp",
+  "pPp....o....................",
+  "PppPp......PPPppp.pPPPPPPpPP",
+  "PPPPPPP.PPpPpPPpP.PPppPpPPPp",
+  "pPPPpPP.PpPPPpPPp.PppPpPPppP",
 ];
 
 const HB_MAP = [
@@ -3436,6 +3457,29 @@ replaceMapSymbol(ATLAS.AA.tiles, 9, 17, "?");
 
 const BLUEPRINTS = {
 
+  luxurySnowcraftSalesInterior: {
+  id: "luxurySnowcraftSalesInterior",
+  title: "LUXURY SNOWCRAFT SALES",
+  kind: "interior",
+
+  exits: [
+    { x: 5, y: 7 }
+  ],
+
+  tiles: [
+    "WWWWWWWWWWWW",
+    "WCtt.l...CTW",
+    "W....l.....W",
+    "WCtt.bbbbb.W",
+    "W..........W",
+    "WCtt.......W",
+    "W..........W",
+    "WWWWW}WWWWWW"
+  ],
+
+  spawn: { x: 5, y: 6 }
+},
+
   subfrostRailStationBF: {
   id: "subfrostRailStationBF",
   title: "SUBFROST RAIL STATION",
@@ -3716,7 +3760,7 @@ jegnaDialogue: {
   ]
 },
 
-  yordDialogue: {
+yordDialogue: {
   lines: character => {
     /*
       OUTSIDE CONVERSATION
@@ -3740,6 +3784,14 @@ jegnaDialogue: {
               );
             }
 
+            if (!canPlayerCarryItem("tapeNews1")) {
+              return (
+                "I've got something you should see.<br><br>" +
+                "But you're carrying too much right now.<br><br>" +
+                "Make some room and talk to me again. I'll keep the tape with me."
+              );
+            }
+
             return (
               "Here.<br><br>" +
               "If you want to understand Stro, start with this.<br><br>" +
@@ -3749,7 +3801,26 @@ jegnaDialogue: {
           },
 
           action: character => {
-            addItem("tapeNews1");
+            if (hasItem("tapeNews1")) {
+              releaseResidentAfterTalk(character);
+              return;
+            }
+
+            if (!canPlayerCarryItem("tapeNews1")) {
+              return;
+            }
+
+            const rewardAdded = addItem("tapeNews1");
+
+            if (!rewardAdded) {
+              showBubble(
+                "YORD",
+                "Your inventory is too full. Make some room and talk to me again. I'll keep the tape with me."
+              );
+
+              return;
+            }
+
             releaseResidentAfterTalk(character);
           }
         }
@@ -3843,7 +3914,37 @@ jegnaDialogue: {
       },
 
       action: character => {
-  rewardKighSnowmobileReturn();
+  const questCompleted =
+    worldState.questFlags.kighSnowmobileQuestCompleted;
+
+  /*
+    Kigh has not delivered the reward yet.
+  */
+  if (!questCompleted) {
+    const rewardCompleted =
+      rewardKighSnowmobileReturn();
+
+    if (
+      isKighSnowmobileReturned() &&
+      !rewardCompleted
+    ) {
+      return;
+    }
+
+    /*
+      rewardKighSnowmobileReturn() has now placed
+      Kigh into leavingStation. Do not try to release
+      stopUntilTalkedTo until the next conversation.
+    */
+    if (rewardCompleted) {
+      return;
+    }
+  }
+
+  /*
+    On the later outside conversation, Kigh is already
+    in stopUntilTalkedTo, so release him toward his vehicle.
+  */
   releaseResidentAfterTalk(character);
 }
     }
@@ -4069,6 +4170,7 @@ const ITEM_DEFINITIONS = {
   name: "Pine Face Witness",
   image: ASSETS.item.pineFaceWitness,
   category: "culturalArtifact",
+  bulk: 3,
 
   description:
     "A pine-log face carved and painted by UNRECOGNIZER agents. " +
@@ -4083,6 +4185,7 @@ stakeWitness: {
   name: "Stake Witness",
   image: ASSETS.item.stakeWitness,
   category: "culturalArtifact",
+  bulk: 2,
 
   description:
     "A sharpened pine Witness bound with cord and ornamented by an " +
@@ -4096,6 +4199,7 @@ stakeWitness: {
   name: "STRO NEWS Broadcast #1",
   image: "gallery/0-gallery/item/tape-news-1.png",
   type: "media",
+  bulk: 1,
   description: "A labeled VHS cassette containing an archived STRO NEWS broadcast."
 },
 
@@ -4103,6 +4207,7 @@ stakeWitness: {
   name: "UNRECOGNIZER Intro Tape #1",
   image: "gallery/0-gallery/item/tape-unrecognizer-1.png",
   type: "media",
+  bulk: 1,
   description: "A labeled VHS cassette containing an old UNRECOGNIZER Agency orientation program."
 },
 
@@ -4111,6 +4216,7 @@ stakeWitness: {
   image: ASSETS.item.heatedMealRation,
   category: "food",
   usable: true,
+  bulk: 1,
   description:
     "A self-heating expedition meal. Restores health and body heat."
 },
@@ -4120,6 +4226,7 @@ stakeWitness: {
   image: ASSETS.item.hereoBackpack,
   category: "missionCargo",
   usable: false,
+  bulk: 0,
   description:
     "Heavy HEREO Teleporter Incorporated calibration equipment."
 },
@@ -4128,14 +4235,16 @@ stakeWitness: {
     name: "Snow Suit",
     image: ASSETS.item.snowSuit,
     category: "suit",
-    usable: true
+    usable: true,
+    bulk: 0
   },
 
   thermalSnowSuit: {
     name: "Thermal Snow Suit",
     image: ASSETS.item.thermalSnowSuit,
     category: "suit",
-    usable: true
+    usable: true,
+    bulk: 0
   },
 
   gasJug: {
@@ -4145,6 +4254,7 @@ stakeWitness: {
   category: "fuelContainer",
   usable: true,
   capacity: 20,
+  bulk: 4,
   description:
     "Portable fuel container. Equip it before interacting with a vehicle to transfer fuel."
 },
@@ -4152,6 +4262,7 @@ stakeWitness: {
 binoculars: {
   name: "U-7 UNRECOGNIZER Binoculars",
   category: "tool",
+  bulk: 2,
 
   states: {
     broken: {
@@ -4202,6 +4313,7 @@ binoculars: {
   image: ASSETS.item.binocularsAugmentationKit,
   category: "missionCargo",
   usable: false,
+  bulk: 4,
   description:
     "A boxed collection of SORCERY TECH optical augmentation components. " +
     "Cruk may know what to do with it."
@@ -4211,6 +4323,7 @@ binoculars: {
   name: "Keycard 1",
   image: ASSETS.item.keycard1,
   category: "key",
+  bulk: 0,
   description:
     "Electronic access credential. Must be equipped when attempting to use a compatible security door."
 },
@@ -4220,6 +4333,7 @@ binoculars: {
   image: ASSETS.character.badge.yoiUnrecognizer,
   category: "badge",
   usable: true,
+  bulk: 0,
   description:
     "Identity credential belonging to Yoi. Must be equipped to operate authorized Unrecognizer equipment."
 },
@@ -4228,13 +4342,15 @@ binoculars: {
     name: "HEREO Teleporter",
     image: ASSETS.item.hereoDevice,
     category: "device",
+    bulk: 3,
     usable: true
   },
 
   boltCutters: {
     name: "Bolt-cutters",
     image: ASSETS.item.boltCutters,
-    category: "tool"
+    category: "tool",
+    bulk: 4
   },
 
   basicLaserHandgun: {
@@ -4245,6 +4361,7 @@ binoculars: {
   damage: 25,
   range: 6,
   projectileImage: ASSETS.effect.basicLaser,
+  bulk: 2,
   description:
     "Basic Sorcery Tech sidearm. Must be equipped before it can be fired with F."
 },
@@ -4253,6 +4370,7 @@ binoculars: {
     name: "SDA Standard-Issue Service Laser",
     image: ASSETS.item.sdaServiceLaser,
     category: "weapon",
+    bulk: 2,
     usable: true,
     damage: 35,
     range: 8,
@@ -4428,7 +4546,18 @@ function takeCampfireItem(
     return;
   }
 
-  addItem(itemId);
+  const itemAdded = addItem(itemId);
+
+  if (!itemAdded) {
+    closeOverlay();
+
+    showBubble(
+      "INVENTORY TOO FULL",
+      `Make room before taking ${item?.name || itemId}.`
+    );
+
+    return;
+  }
 
   state.items.splice(itemIndex, 1);
 
@@ -4455,6 +4584,7 @@ const VEHICLE_DEFINITIONS = {
   name: "HTI Calibration Vehicle",
   family: "trackedCar",
   faction: "hereo",
+  cargoCapacity: 50,
   renderMode: "full",
   images: ASSETS.vehicle.htiCalibrationVehicle,
 
@@ -4472,10 +4602,52 @@ const VEHICLE_DEFINITIONS = {
   hasDoorSound: true
 },
 
+  softCandyRide: {
+    name: "Soft Candy Ride",
+    family: "luxurySnowcraft",
+    faction: "civilian",
+    cargoCapacity: 20,
+    renderMode: "full",
+    images: ASSETS.vehicle.softCandy,
+    size: {
+      up: { width: 1, height: 2 },
+      down: { width: 1, height: 2 },
+      left: { width: 2, height: 1 },
+      right: { width: 2, height: 1 }
+    },
+    boardable: true,
+    fuelCapacity: 200,
+    fuelPerStep: 0.05,
+    engineSound: "snowmobile",
+    hasDoorSound: false
+  },
+
+  pinkLeopardRide: {
+    name: "Pink Leopard Ride",
+    family: "luxurySnowcraft",
+    faction: "civilian",
+    cargoCapacity: 20,
+    renderMode: "full",
+    images: ASSETS.vehicle.pinkLeopard,
+    size: {
+      up: { width: 1, height: 2 },
+      down: { width: 1, height: 2 },
+      left: { width: 2, height: 1 },
+      right: { width: 2, height: 1 }
+    },
+    boardable: true,
+    fuelCapacity: 200,
+    fuelPerStep: 0.05,
+    engineSound: "snowmobile",
+    hasDoorSound: false
+  },
+
+
   trackedCargoVan1: {
     name: "Driftwagon",
     family: "trackedCar",
     faction: "civilian",
+    cargoCapacity: 40,
     renderMode: "full",
     images: ASSETS.vehicle.trackedVan1,
     size: {
@@ -4495,6 +4667,7 @@ const VEHICLE_DEFINITIONS = {
     name: "Tracked Utility Sedan",
     family: "trackedCar",
     faction: "civilian",
+    cargoCapacity: 30,
     renderMode: "full",
     images: ASSETS.vehicle.trackedCar1,
     size: {
@@ -4514,6 +4687,7 @@ const VEHICLE_DEFINITIONS = {
     name: "Frontier Muscle Cruiser",
     family: "trackedCar",
     faction: "artCorp",
+    cargoCapacity: 30,
     renderMode: "full",
     images: ASSETS.vehicle.trackedCar2,
     size: {
@@ -4533,6 +4707,7 @@ const VEHICLE_DEFINITIONS = {
     name: "RS-1 Blooddrift Hellrunner",
     family: "heavyTracked",
     faction: "redSnow",
+    cargoCapacity: 40,
     renderMode: "full",
     images: ASSETS.vehicle.rs1,
     size: {
@@ -4552,6 +4727,7 @@ const VEHICLE_DEFINITIONS = {
     name: "RS-2 Snowdune Ski-Gunner",
     family: "skiGunner",
     faction: "redSnow",
+    cargoCapacity: 30,
     renderMode: "full",
     images: ASSETS.vehicle.rs2,
     size: {
@@ -4570,6 +4746,7 @@ const VEHICLE_DEFINITIONS = {
     name: "WF Operator Vehicle",
     family: "operator",
     faction: "whiteFang",
+    cargoCapacity: 30,
     renderMode: "full",
     images: ASSETS.vehicle.wfOperator,
     size: {
@@ -4588,6 +4765,7 @@ const VEHICLE_DEFINITIONS = {
     name: "WF Snowmobile",
     family: "snowmobile",
     faction: "whiteFang",
+    cargoCapacity: 20,
     renderMode: "pieces",
     images: ASSETS.vehicle.wfSnowmobile,
     size: {
@@ -4607,6 +4785,7 @@ const VEHICLE_DEFINITIONS = {
     name: "Unrecognizer Snowmobile",
     family: "snowmobile",
     faction: "unrecognizer",
+    cargoCapacity: 20,
     renderMode: "pieces",
     images: ASSETS.vehicle.unrecognizerSnowmobile,
     size: {
@@ -4627,6 +4806,7 @@ const VEHICLE_DEFINITIONS = {
     name: "Snow Bus",
     family: "publicTransit",
     faction: "civilian",
+    cargoCapacity: 70,
     renderMode: "full",
     images: ASSETS.vehicle.snowbus,
     size: {
@@ -4645,6 +4825,7 @@ const VEHICLE_DEFINITIONS = {
     name: "SDA Personnel Transport",
     family: "personnelTransport",
     faction: "sda",
+    cargoCapacity: 60,
     renderMode: "full",
     images: ASSETS.vehicle.sdaTransport,
     size: {
@@ -4713,6 +4894,28 @@ const vehicles = [
   fuel: 120,
   cargo: ["hereoBackpack"]
 },
+
+  {
+    id: "soft-candy-snowcraft-dealership-1",
+    definitionId: "softCandyRide",
+    mapId: "AB",
+    x: 7,
+    y: 18,
+    facing: "down",
+    fuel: 200,
+    ownerId: null
+  },
+
+  {
+    id: "pink-leopard-snowcraft-dealership-1",
+    definitionId: "pinkLeopardRide",
+    mapId: "AB",
+    x: 4,
+    y: 18,
+    facing: "down",
+    fuel: 200,
+    ownerId: null
+  },
 
   {
     id: "driftwagon",
@@ -4969,6 +5172,21 @@ const characters = [
 
 const BUILDING_DEFINITIONS = {
 
+  luxurySnowcraftSales: {
+    name: "Luxury Snowcraft Sales",
+    image: ASSETS.architecture.luxurySnowcraftSales,
+    width: 7,
+    height: 5,
+    collisionMask: [
+      ".XXXXX.",
+      "XXXXXXX",
+      "XXXDXXX",
+      "XXX.XXX",
+      "......."
+    ],
+    blueprintId: "luxurySnowcraftSalesInterior"
+  },
+
   outpost3: {
     name: "Third Building",
     image: ASSETS.architecture.outpost3,
@@ -5066,6 +5284,14 @@ const BUILDING_DEFINITIONS = {
 const buildingStamps = [
 
   {
+    id: "luxury-snowcraft-sales",
+    definitionId: "luxurySnowcraftSales",
+    mapId: "AB",
+    x: 3,
+    y: 12
+  },
+
+  {
   id: "third-building-ag-1",
   definitionId: "outpost3",
   mapId: "AG",
@@ -5087,6 +5313,28 @@ const buildingStamps = [
     mapId: "AA",
     x: 1,
     y: 1
+  },
+
+  {
+    id: "hti-calibration-target-ca",
+    definitionId: "htiCalibrationTarget",
+    mapId: "CA",
+    x: 5,
+    y: 13,
+
+    teleporterName: "CA Calibration Target",
+
+    arrival: {
+      player: {
+        x: 5,
+        y: 19
+      },
+      
+      vehicle: {
+        x: 5,
+        y: 19
+      }
+    }
   },
 
   {
@@ -5271,6 +5519,9 @@ const player = {
     "binoculars",
     "hereoDevice"
   ],
+
+  inventoryCapacity: 20,
+
   equippedWeaponId: null,
 equippedSuitId: null,
 equippedBadgeId: null,
@@ -5449,10 +5700,77 @@ function hasItem(itemId) {
   return player.inventory.includes(itemId);
 }
 
-function addItem(itemId) {
-  if (ITEM_DEFINITIONS[itemId] && !hasItem(itemId)) {
-    player.inventory.push(itemId);
+/* bulk capacity */ 
+
+function getItemBulk(itemId) {
+  const item = ITEM_DEFINITIONS[itemId];
+
+  if (!item) {
+    console.warn(`Unknown item definition: ${itemId}`);
+    return 0;
   }
+
+  return item.bulk ?? 0;
+}
+
+function getInventoryBulk() {
+  return player.inventory.reduce((total, itemId) => {
+    return total + getItemBulk(itemId);
+  }, 0);
+}
+
+function getVehicleCargoBulk(vehicle) {
+  const cargo = ensureVehicleCargo(vehicle);
+
+  return cargo.reduce((total, itemId) => {
+    return total + getItemBulk(itemId);
+  }, 0);
+}
+
+function canPlayerCarryItem(itemId) {
+  const currentBulk = getInventoryBulk();
+  const itemBulk = getItemBulk(itemId);
+
+  return currentBulk + itemBulk <= player.inventoryCapacity;
+}
+
+function canVehicleStoreItem(vehicle, itemId) {
+  const definition = getVehicleDefinition(vehicle);
+  const currentBulk = getVehicleCargoBulk(vehicle);
+  const itemBulk = getItemBulk(itemId);
+
+  return currentBulk + itemBulk <= definition.cargoCapacity;
+}
+
+/*
+  ENGINE RULE
+
+  Every system that gives Yoi an item must call addItem()
+  first and only remove the item from its source or advance
+  quest progress if addItem() succeeds.
+*/
+
+/* add item */
+
+function addItem(itemId) {
+  const item = ITEM_DEFINITIONS[itemId];
+
+  if (!item) {
+    setMessage("That item has no matching item definition.");
+    return false;
+  }
+
+  if (hasItem(itemId)) {
+    return false;
+  }
+
+  if (!canPlayerCarryItem(itemId)) {
+    setMessage("Inventory too full.");
+    return false;
+  }
+
+  player.inventory.push(itemId);
+  return true;
 }
 
 function removeItem(itemId) {
@@ -6801,6 +7119,11 @@ function storeInventoryItemInVehicle(vehicle, itemId) {
     return;
   }
 
+  if (!canVehicleStoreItem(vehicle, itemId)) {
+    setMessage("Vehicle too full.");
+    return;
+  }
+
   unequipItem(itemId);
 
   if (!removeItem(itemId)) {
@@ -6825,6 +7148,11 @@ function takeInventoryItemFromVehicle(vehicle, itemId) {
 
   if (hasItem(itemId)) {
     setMessage(`${item.name} is already in Yoi's inventory.`);
+    return;
+  }
+
+  if (!canPlayerCarryItem(itemId)) {
+    setMessage("Inventory too full.");
     return;
   }
 
@@ -6972,6 +7300,8 @@ function takeBackpackFromVehicle(vehicle) {
 function openVehicleCargoMenu(vehicle) {
   const definition = getVehicleDefinition(vehicle);
   const cargo = ensureVehicleCargo(vehicle);
+  const cargoBulk = getVehicleCargoBulk(vehicle);
+const cargoCapacity = definition.cargoCapacity;
   const options = [];
 
   options.push({
@@ -7068,10 +7398,14 @@ function openVehicleCargoMenu(vehicle) {
     return ITEM_DEFINITIONS[itemId]?.name || itemId;
   });
 
-  const cargoText =
-    cargoNames.length > 0
-      ? `<strong>Currently stored:</strong><br>${cargoNames.join("<br>")}`
-      : "Vehicle cargo is empty.";
+  const cargoListText =
+  cargoNames.length > 0
+    ? `<strong>Currently stored:</strong><br>${cargoNames.join("<br>")}`
+    : "Vehicle cargo is empty.";
+
+const cargoText =
+  `<strong>Cargo:</strong> ${cargoBulk} / ${cargoCapacity} bulk` +
+  `<br><br>${cargoListText}`;
 
   openOverlay({
     title: "VEHICLE CARGO",
@@ -7430,26 +7764,63 @@ function getStorageCrateAt(mapId, x, y) {
 
 function openStorageCrate(crate) {
   if (!crate) {
-    showBubble("STORAGE CRATE", "This storage crate has no registered contents.");
+    showBubble(
+      "STORAGE CRATE",
+      "This storage crate has no registered contents."
+    );
     return;
   }
 
-  if (!Array.isArray(crate.inventory) || crate.inventory.length === 0) {
-    showBubble("STORAGE CRATE", "The storage crate is empty.");
+  if (
+    !Array.isArray(crate.inventory) ||
+    crate.inventory.length === 0
+  ) {
+    showBubble(
+      "STORAGE CRATE",
+      "The storage crate is empty."
+    );
     return;
   }
 
-  const retrievedItemIds = [...crate.inventory];
+  const retrievedItemIds = [];
+  const remainingItemIds = [];
 
-  retrievedItemIds.forEach(itemId => {
-    addItem(itemId);
-  });
+  for (const itemId of crate.inventory) {
+    const itemAdded = addItem(itemId);
 
-  crate.inventory.length = 0;
+    if (itemAdded) {
+      retrievedItemIds.push(itemId);
+    } else {
+      remainingItemIds.push(itemId);
+    }
+  }
+
+  crate.inventory = remainingItemIds;
 
   const retrievedNames = retrievedItemIds.map(itemId => {
     return ITEM_DEFINITIONS[itemId]?.name || itemId;
   });
+
+  const remainingNames = remainingItemIds.map(itemId => {
+    return ITEM_DEFINITIONS[itemId]?.name || itemId;
+  });
+
+  if (retrievedItemIds.length === 0) {
+    showBubble(
+      "INVENTORY TOO FULL",
+      "Make room before retrieving anything from this storage crate."
+    );
+    return;
+  }
+
+  if (remainingItemIds.length > 0) {
+    showBubble(
+      "STORAGE CRATE",
+      `Retrieved: ${retrievedNames.join(", ")}. ` +
+      `Still inside: ${remainingNames.join(", ")}.`
+    );
+    return;
+  }
 
   showBubble(
     "STORAGE CRATE",
@@ -7478,10 +7849,6 @@ function openLocker(locker) {
     const requiredItemId = locker.requiredItemId;
 
     if (!requiredItemId || !hasItem(requiredItemId)) {
-      const requiredItemName =
-        ITEM_DEFINITIONS[requiredItemId]?.name ||
-        "the required access item";
-
       showBubble(
         "LOCKED",
         "The locker is locked."
@@ -7509,17 +7876,45 @@ function openLocker(locker) {
     return;
   }
 
-  const retrievedItemIds = [...locker.inventory];
+  const retrievedItemIds = [];
+  const remainingItemIds = [];
 
-  retrievedItemIds.forEach(itemId => {
-    addItem(itemId);
-  });
+  for (const itemId of locker.inventory) {
+    const itemAdded = addItem(itemId);
 
-  locker.inventory.length = 0;
+    if (itemAdded) {
+      retrievedItemIds.push(itemId);
+    } else {
+      remainingItemIds.push(itemId);
+    }
+  }
+
+  locker.inventory = remainingItemIds;
 
   const retrievedNames = retrievedItemIds.map(itemId => {
     return ITEM_DEFINITIONS[itemId]?.name || itemId;
   });
+
+  const remainingNames = remainingItemIds.map(itemId => {
+    return ITEM_DEFINITIONS[itemId]?.name || itemId;
+  });
+
+  if (retrievedItemIds.length === 0) {
+    showBubble(
+      "INVENTORY TOO FULL",
+      "Make room before retrieving anything from this locker."
+    );
+    return;
+  }
+
+  if (remainingItemIds.length > 0) {
+    showBubble(
+      "LOCKER",
+      `Retrieved: ${retrievedNames.join(", ")}. ` +
+      `Still inside: ${remainingNames.join(", ")}.`
+    );
+    return;
+  }
 
   showBubble(
     "LOCKER",
@@ -7636,6 +8031,11 @@ if (itemId === "heatedMealRation") {
 
 function openInventory(selectedIndex = 0) {
   const options = [];
+  const inventoryBulk = getInventoryBulk();
+  const inventoryCapacity = player.inventoryCapacity;
+  const bulkText =
+  `<strong>Inventory Bulk:</strong> ` +
+  `${inventoryBulk} / ${inventoryCapacity}`;
 
   if (player.carryingHereoBackpack) {
     options.push({
@@ -7643,12 +8043,13 @@ function openInventory(selectedIndex = 0) {
       image: ASSETS.item.hereoBackpack,
 
       text:
-        `<strong>HTI Calibration Backpack</strong><br><br>` +
-        `Heavy HEREO Teleporter Incorporated calibration equipment.` +
-        `<br><br>` +
-        `Yoi is currently carrying it. Movement requires twice as much effort.` +
-        `<br><br>` +
-        `Press E to drop the backpack on the current tile.`,
+  `${bulkText}<br><br>` +
+  `<strong>HTI Calibration Backpack</strong><br><br>` +
+  `Heavy HEREO Teleporter Incorporated calibration equipment.` +
+  `<br><br>` +
+  `Yoi is currently carrying it. Movement requires twice as much effort.` +
+  `<br><br>` +
+  `Press E to drop the backpack on the current tile.`,
 
       action: dropHereoBackpack
     });
@@ -7691,15 +8092,16 @@ function openInventory(selectedIndex = 0) {
       image: itemImage,
 
       text:
-        `<strong>${item.name}</strong><br><br>` +
-        `${item.description || "No description available."}` +
-        extraDetails +
-        `<br><br>` +
-        `${
-  equipped
-    ? "Currently equipped. Press E for item options."
-    : "Currently unequipped. Press E for item options."
-}`,
+  `${bulkText}<br><br>` +
+  `<strong>${item.name}</strong><br><br>` +
+  `${item.description || "No description available."}` +
+  extraDetails +
+  `<br><br>` +
+  `${
+    equipped
+      ? "Currently equipped. Press E for item options."
+      : "Currently unequipped. Press E for item options."
+  }`,
 
       action: () => {
   openInventoryItemMenu(itemId, index);
@@ -7713,17 +8115,19 @@ function openInventory(selectedIndex = 0) {
     options.push({
       label: "Inventory empty",
       image: "",
-      text: "Yoi is not carrying any inventory items.",
+      text:
+  `${bulkText}<br><br>` +
+  `Yoi is not carrying any inventory items.`,
       disabled: true
     });
   }
 
   openOverlay({
-    title: "INVENTORY",
-    text: "",
-    image: "",
-    options,
-    selectedIndex
+   title: "INVENTORY",
+   text: bulkText,
+   image: "",
+   options,
+   selectedIndex
   });
 }
 
@@ -8116,11 +8520,20 @@ function rewardKighSnowmobileReturn() {
     return;
   }
 
-  worldState.questFlags.kighSnowmobileQuestCompleted = true;
+if (!hasItem("snowSuit")) {
+  const rewardAdded = addItem("snowSuit");
 
-  if (!hasItem("snowSuit")) {
-    addItem("snowSuit");
+  if (!rewardAdded) {
+    showBubble(
+      "KIGH",
+      "Your inventory is too full. Make room and talk to me again. I’ll hold onto the Snow Suit."
+    );
+
+    return false;
   }
+}
+
+worldState.questFlags.kighSnowmobileQuestCompleted = true;
 
   const kigh = characters.find(
     character => character.id === "kigh-engine-test-facility"
@@ -8133,6 +8546,8 @@ function rewardKighSnowmobileReturn() {
   kigh.autonomous = true;
   kigh.residentState = "leavingStation";
   kigh.stateTimer = 0;
+
+  return true;
 }
 
 /* =============================================================
@@ -8677,18 +9092,43 @@ food() {
     title: "AUTOMATED FOOD DISPENSER",
     image: ASSETS.props.foodDispenser,
     text: "Menu content can be supplied independently for every machine.",
+
     options: [
       {
         label: "Dispense survival ration",
+
         action: () => {
-          addItem("heatedMealRation");
+          if (hasItem("heatedMealRation")) {
+            closeOverlay();
+
+            showBubble(
+              "FOOD DISPENSER",
+              "Yoi is already carrying a survival ration."
+            );
+
+            return;
+          }
+
+          const itemAdded = addItem("heatedMealRation");
+
           closeOverlay();
+
+          if (!itemAdded) {
+            showBubble(
+              "FOOD DISPENSER",
+              "INVENTORY TOO FULL. Make room before dispensing a survival ration."
+            );
+
+            return;
+          }
+
           showBubble(
             "FOOD DISPENSER",
             "A sealed survival ration drops into the tray."
           );
         }
       },
+
       {
         label: "Leave",
         action: closeOverlay
