@@ -696,6 +696,7 @@ left: "gallery/0-gallery/sprite/yoi.png",
 right: "gallery/0-gallery/sprite/yoi.png"
     },
     badge: {
+  verkos: "gallery/sprite/badge/art-corp/verkos.png",
   yoiUnrecognizer: "gallery/0-gallery/sprite/badge/yoi-unrecognizer.png",
   redSnowGeneric: "gallery/sprite/badge/rs/red-snow-badge.png",
   redSnowDefeated: "gallery/sprite/badge/rs/red-snow-badge-defeated.png",
@@ -3719,8 +3720,176 @@ const TAPE_UNRECOGNIZER_1_TRANSCRIPT = [
   "END OF TAPE"
 ];
 
+function getItemsSellableToBuyer(buyerId) {
+  return player.inventory.filter(itemId => {
+    const item = ITEM_DEFINITIONS[itemId];
+
+    return (
+      item &&
+      item.buyerId === buyerId &&
+      Number.isFinite(item.sellValue)
+    );
+  });
+}
+
+function sellItemToBuyer(itemId, buyerId) {
+  const item = ITEM_DEFINITIONS[itemId];
+
+  if (
+    !item ||
+    item.buyerId !== buyerId ||
+    !Number.isFinite(item.sellValue)
+  ) {
+    showBubble(
+      "SALE FAILED",
+      "That item cannot be sold to this buyer."
+    );
+
+    return false;
+  }
+
+  if (!hasItem(itemId)) {
+    showBubble(
+      "SALE FAILED",
+      `${item.name} is no longer in Yoi's inventory.`
+    );
+
+    return false;
+  }
+
+  if (!removeItem(itemId)) {
+    showBubble(
+      "SALE FAILED",
+      `${item.name} could not be removed from Yoi's inventory.`
+    );
+
+    return false;
+  }
+
+  player.merit += item.sellValue;
+
+  updateHud();
+
+  return true;
+}
+
+function openVerkosArtifactMenu() {
+  const sellableItemIds =
+    getItemsSellableToBuyer("verkos");
+
+  const options = sellableItemIds.map(itemId => {
+    const item = ITEM_DEFINITIONS[itemId];
+
+    return {
+      label: `Sell ${item.name} · ${item.sellValue} Merit`,
+      image: item.image,
+
+      text:
+        `<strong>${item.name}</strong><br><br>` +
+        `${item.description || ""}<br><br>` +
+        `ART CORP offer: ${item.sellValue} Merit.`,
+
+      action: () => {
+        const sold = sellItemToBuyer(
+          itemId,
+          "verkos"
+        );
+
+        if (!sold) {
+          return;
+        }
+
+        closeOverlay();
+
+        showBubble(
+          "VERKOS",
+          `ART CORP accepts the ${item.name}. ` +
+          `${item.sellValue} Merit received.`
+        );
+      }
+    };
+  });
+
+  if (sellableItemIds.length === 0) {
+    options.push({
+      label: "Nothing to sell",
+      disabled: true,
+      text:
+        "Yoi is not carrying any cultural artifacts " +
+        "that Verkos is authorized to purchase."
+    });
+  }
+
+  options.push({
+    label: "Leave",
+    action: closeOverlay
+  });
+
+  openOverlay({
+    title: "ART CORP ACQUISITIONS",
+    image: ASSETS.character.badge.verkos,
+
+    text:
+      `Merit: ${player.merit}<br><br>` +
+      `ART CORP purchases culturally significant objects ` +
+      `associated with contemporary life on Stro.`,
+
+    options
+  });
+}
 
 const DIALOGUE_DEFINITIONS = {
+
+  verkosDialogue: {
+  lines: character => {
+    const sellableItems =
+      getItemsSellableToBuyer("verkos");
+
+    /*
+      Verkos sees at least one ART CORP cultural artifact
+      in Yoi's inventory.
+    */
+    if (sellableItems.length > 0) {
+      return [
+        "Hold on.<br><br>" +
+        "That object you're carrying...",
+
+        "ART CORP documents contemporary cultural artifacts.<br><br>" +
+        "Unofficial symbols. Field-made objects. Things that reveal how people actually live and think.",
+
+        "UNRECOGNIZER material is especially valuable.<br><br>" +
+        "Not because it's old.<br><br>" +
+        "Because it's happening now.",
+
+        {
+          text:
+            "I'll make you an offer for anything ART CORP can preserve.<br><br>" +
+            "Interested?",
+
+          action: () => {
+            openVerkosArtifactMenu();
+          }
+        }
+      ];
+    }
+
+    /*
+      Yoi currently has nothing Verkos purchases.
+    */
+    return [
+      "Verkos. ART CORP acquisitions.",
+
+      "We collect cultural evidence from across Stro.<br><br>" +
+      "Not official monuments. Not government archives.<br><br>" +
+      "The objects people make when nobody is documenting them.",
+
+      "If you find handmade UNRECOGNIZER symbols, camp objects, or field artifacts, bring them to me.",
+
+      "ART CORP pays well for authentic material."
+    ];
+  }
+},
+
   redSnowRenegade: {
     lines: [
       "Keep moving. I don't feel like explaining myself.",
@@ -4099,6 +4268,15 @@ const CHARACTER_DEFINITIONS = {
     faction: "unrecognizer"
   },
 
+  verkos: {
+    name: "VERKOS",
+    image: ASSETS.character.badge.verkos,
+    portrait: ASSETS.character.badge.verkos,
+    faction: "art-corp",
+    maxHealth: 100,
+    dialogueId: "verkosDialogue"
+  },
+
   jegna: {
     name: "JEGNA",
     image: ASSETS.character.badge.jegna,
@@ -4177,7 +4355,7 @@ const ITEM_DEFINITIONS = {
     "Witnesses are left at temporary camps as symbols of presence, " +
     "identity, and devotion.",
 
-  sellValue: 45,
+  sellValue: 450,
   buyerId: "verkos"
 },
 
@@ -4191,7 +4369,7 @@ stakeWitness: {
     "A sharpened pine Witness bound with cord and ornamented by an " +
     "UNRECOGNIZER agent. It appears intended to be driven into the ground.",
 
-  sellValue: 70,
+  sellValue: 700,
   buyerId: "verkos"
 },
 
@@ -5050,6 +5228,20 @@ const characters = [
 },
 
 */
+
+{
+  id: "verkos-outpost-2",
+  definitionId: "verkos",
+  mapId: "outpost2Interior",
+  x: 3,
+  y: 1,
+  facing: "down",
+  health: 100,
+  defeated: false,
+  visible: true,
+  conversationStep: 0,
+  portraitShown: false
+},
 
 {
   id: "cruk-outpost-2",
