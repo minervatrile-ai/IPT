@@ -1449,13 +1449,13 @@ const AE_MAP = [
   "Pp...Pppp...PPPP...PpPPPPPpP",
   "............PP.p.........PpP",
   "..........................PP",
-  "...........P..............pP",
-  "..pPpPpPppP.......PpppP...pP",
-  ".PPPPPPPPpPP.....PPPpPp...Pp",
-  ".PPppPPppPpP.....pPPPPP...pP",
-  "PpPPPpPPPPPPPp.PPppPpPP...Pp",
-  "..................pPPPP...Pp",
-  "...................PPPP...PP",
+  "...........P................",
+  "..pPpPpPppP.......PpppP.....",
+  ".PPPPPPPPpPP.....PPPpPp.....",
+  ".PPppPPppPpP.....pPPPPP.....",
+  "PpPPPpPPPPPPPp.PPppPpPP.....",
+  "..................pPPPP.....",
+  "...................PPPP.....",
   "...................ppPp...pP",
   "PppppPPPPppPpppP...pPPp...PP",
   "PPPPPPppPPPPpPPp...ppPP...PP",
@@ -1480,13 +1480,13 @@ const AF_MAP = [
   "PP.................PPPPPpPPp",
   "pP..........................",
   "PP..........................",
-  "PP..........................",
-  "pp.................PpPP...pP",
-  "Pp.................PpPp...pP",
-  "PP.................pPpP...PP",
-  "pp.................PppP...Pp",
-  "Pp........................pP",
-  "PP.............P..........PP",
+  "............................",
+  "...................PpPP...pP",
+  "...................PpPp...pP",
+  "...................pPpP...PP",
+  "...................PppP...Pp",
+  "..........................pP",
+  "...............P..........PP",
   "Ppp.=====...pPPPP........pPP",
   "PPPP=====...pPpPPPppppppPppP",
   "ppPP=====...pPPPPPpPPpPPpPPP",
@@ -1565,24 +1565,24 @@ const BA_MAP = [
   "Ppp.........................",
   "P...........................",
   "P...........................",
+  "p...........................",
+  "p...........................",
+  "P...........................",
+  "P...........................",
+  "P...........................",
+  "p...........................",
+  "@...........................",
   "............................",
-  "............................",
-  "............................",
-  "............................",
-  "............................",
-  "............................",
-  "............................",
-  "............................",
-  "P..........................P",
-  "P..........................P",
+  "...........................P",
+  "@..........................P",
   "ppp......................PPP",
   "PPp.PpPp....................",
   "p.....PP....................",
   "p.....Pp....................",
-  "............................",
-  "............................",
-  "............................",
-  "............................",
+  "p...........................",
+  "P...........................",
+  "P...........................",
+  "p...........................",
 ];
 
 const BB_MAP = [
@@ -1751,14 +1751,14 @@ const BG_MAP = [
   "pp...PPPppPPPppp...PPPppPppP",
   "Pp...ppppPPppPPP...PPPpPPPpP",
   "pP.........PPPPp...PPPPpPpPP",
-  "pp..........PPPp............",
+  "pp.......o..PPPp............",
   "Ppp........ppPPp...PppPPpPPP",
   "PPpppPppPpPPpPPp...PPPPPPPPP",
   "pPPpPpPpPppPPpPp...PPPPPPPPP",
   "PpPPPpPPPPPppPPP...ppPPppppp",
   "PPPPppppPPPpppPP...PPpPpPPPp",
-  "PPP........pPPPPP.PpPPPppPPP",
-  "PP..........PpPPp...........",
+  "PPP........pPPPP...pPPPppPPP",
+  "............................",
   "............PPPPpPPPPPPPPpPp",
   "PP...pPPp...pPpPpPPppppPPpPP",
   "pP...PPpP....PPPpPPPPPPpPPPP",
@@ -1789,16 +1789,16 @@ const BH_MAP = [
   "PpppPpPpPp.pPPPpP.PPpPPpPPPp",
   "PPPpP.pppp.PPPppP.PpPPPpPPpP",
   "PpP.....PP.PPpppP.ppPPPPPPpP",
-  "...........PPpPpP........PpP",
-  "Pp.......p.PppppPPPpPPPP.PpP",
-  "P..........PPPPPPPppppPP.pPP",
-  "Pp.......P.pppPpPpPpPpPp.PPp",
-  "Pp.......p.PPPPpPpPPpppP.pPP",
-  "PPP.....pp.PpppPPpPppPpP.ppP",
-  "PpPPP.pPPp.PpPPPP.PppppP.Ppp",
-  "PPP........pPPp..........ppp",
-  "PpPPPPPpPPPPPP.......ppP.Ppp",
-  "pppPPpPppPPPPP.......PpP.pPp",
+  "...........PPpPpP...........",
+  "Pp..........................",
+  "P........................pPP",
+  "Pp.......................PPp",
+  "Pp.......................pPP",
+  "PPP......................ppP",
+  "Pp.......................Ppp",
+  "PPP......................ppp",
+  "PpP..................ppP.Ppp",
+  "pppP.................PpP.pPp",
   "PPpPPPPPPPppp.........Pp.PPp",
 ];
 
@@ -5505,6 +5505,50 @@ const buildingStamps = [
     mapId: "AA",
     x: 1,
     y: 1
+  },
+
+  {
+    id: "hti-calibration-target-bh",
+    definitionId: "htiCalibrationTarget",
+    mapId: "BH",
+    x: 9,
+    y: 18,
+
+    teleporterName: "BH Calibration Target",
+
+    arrival: {
+      player: {
+        x: 9,
+        y: 24
+      },
+      
+      vehicle: {
+        x: 9,
+        y: 24
+      }
+    }
+  },
+
+  {
+    id: "hti-calibration-target-af",
+    definitionId: "htiCalibrationTarget",
+    mapId: "AF",
+    x: 12,
+    y: 18,
+
+    teleporterName: "AF Calibration Target",
+
+    arrival: {
+      player: {
+        x: 12,
+        y: 24
+      },
+      
+      vehicle: {
+        x: 12,
+        y: 24
+      }
+    }
   },
 
   {
@@ -9283,7 +9327,7 @@ food() {
   openOverlay({
     title: "AUTOMATED FOOD DISPENSER",
     image: ASSETS.props.foodDispenser,
-    text: "Menu content can be supplied independently for every machine.",
+    text: "Select a ration of your choice.",
 
     options: [
       {
