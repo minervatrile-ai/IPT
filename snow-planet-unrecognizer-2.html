@@ -570,6 +570,7 @@ const ASSETS = {
   },
 
   props: {
+  warehouseDoor: "gallery/0-gallery/props/warehouse-door.png",
   doorBlue: "gallery/0-gallery/props/door-blue.png",
   campfireOut: "gallery/0-gallery/props/campfire-out.png",
   television: "gallery/0-gallery/props/television.png",
@@ -602,6 +603,9 @@ const ASSETS = {
 
 architecture: {
   /* Full outside building stamps */
+
+  abandonedWarehouse:
+  "gallery/0-gallery/architecture/abandoned-warehouse.png",
 
   luxurySnowcraftSales:
   "gallery/0-gallery/architecture/luxury-snowcraft-sales.png",
@@ -968,6 +972,7 @@ const OUTSIDE_TILES = {
   prevents a door image from automatically meaning "exit building."
 */
 const BLUEPRINT_TILE = {
+  "{": ASSETS.props.warehouseDoor,
   "}": ASSETS.props.doorBlue,
   "d": ASSETS.architecture.doubleDoors,
   "W": ASSETS.architecture.wall,
@@ -1486,9 +1491,9 @@ const AF_MAP = [
   "...................pPpP...PP",
   "...................PppP...Pp",
   "..........................pP",
-  "...............P..........PP",
-  "Ppp.=====...pPPPP........pPP",
-  "PPPP=====...pPpPPPppppppPppP",
+  "..........................PP",
+  "Ppp.=====................pPP",
+  "PPPP=====.........ppppppPppP",
   "ppPP=====...pPPPPPpPPpPPpPPP",
 ];
 
@@ -1943,18 +1948,18 @@ const CE_MAP = [
   "pPPPPPPPP...PPpPPpPPpPPPPPPp",
   "PpPPPPpPp...PppPppPPPpPPppPp",
   "PpPppPPPP...pppPPPPPPPPPpPPp",
-  "PPP.........pPPpP........ppP",
-  "pp..........PpPP............",
-  "PP.........pPPPPp...........",
-  "pp...PPPPppPpPPppPppPPp.....",
-  "pp...PpPPPpppPPPppppPpp.....",
-  "pP...pPPPpPpPPpPPpPpPPP.....",
-  "PP...pPPpppPpPPPPPPPPP......",
-  ".....pPPpP..................",
-  ".....pPPp...................",
-  "....PpPpP...................",
-  "PPPpPPPpP...PPPppPpPpPPP....",
-  "PPPppPpPP...PppPPPPPPpPpP...",
+  "PPP.........pP...........ppP",
+  "pp..........................",
+  "PP..........................",
+  "pp..........................",
+  "pp..........................",
+  "pP..........................",
+  "PP..........................",
+  "............................",
+  "............................",
+  "............................",
+  "............PPPppPpPpPPP....",
+  "............PppPPPPPPpPpP...",
 ];
 
 const CF_MAP = [
@@ -3045,10 +3050,10 @@ const GH_MAP = [
 const HA_MAP = [
   "PpP.PpPpPPppPPPPPPPPpppp.PPP",
   "PpP.PPPpPPPPPpPPppPppPPP.PPp",
-  "PPP.pPPpPPpPpPPpPPPPPPpP.P..",
-  "PPp.pPPppp...............P..",
-  "PPP.PppPpp.PPPPPPPPppPPpp...",
-  "PpP.PPPPpp.pPPPPPPPppppppP..",
+  "PPP.pPPpPPpPpPP.....PPpP.P..",
+  "PPp.pPPppp..................",
+  "PPP.PppPpp.PPPP.o....PPpp...",
+  "PpP.PPPPpp.pPPP....ppppppP..",
   "PPP.PpPPpp.PppPPPpPPpPPPpp..",
   "PPP.PpppPP.pPPPPPpPpPPpPpPpp",
   "PPP.PPPpPP.pPPPPPPpPPPPPpPPP",
@@ -3457,6 +3462,32 @@ replaceMapSymbol(ATLAS.AA.tiles, 9, 17, "?");
    ============================================================= */
 
 const BLUEPRINTS = {
+
+  redSnowGangWarehouseInterior: {
+  id: "redSnowGangWarehouseInterior",
+  title: "RED SNOW GANG WAREHOUSE",
+  kind: "interior",
+
+  exits: [
+    { x: 5, y: 7 }
+  ],
+
+  tiles: [
+    "WWWWWWWWWWWW",
+    "W..........W",
+    "W..........W",
+    "W..........W",
+    "W..........W",
+    "W..........W",
+    "W..........W",
+    "WWWWW{WWWWWW"
+  ],
+
+  spawn: {
+    x: 5,
+    y: 6
+  }
+},
 
   luxurySnowcraftSalesInterior: {
   id: "luxurySnowcraftSalesInterior",
@@ -5364,6 +5395,23 @@ const characters = [
 
 const BUILDING_DEFINITIONS = {
 
+  redSnowGangWarehouse: {
+    name: "Red Snow Gang Warehouse",
+    image: ASSETS.architecture.abandonedWarehouse,
+    width: 9,
+    height: 7,
+    collisionMask: [
+      "....XX...",
+      "..XXXXX..",
+      "..XXXXX..",
+      "..DDXD...",
+      ".........",
+      ".........",
+      "........."
+    ],
+    blueprintId: "redSnowGangWarehouseInterior"
+  },
+
   luxurySnowcraftSales: {
     name: "Luxury Snowcraft Sales",
     image: ASSETS.architecture.luxurySnowcraftSales,
@@ -5476,6 +5524,14 @@ const BUILDING_DEFINITIONS = {
 const buildingStamps = [
 
   {
+    id: "red-snow-gang-warehouse",
+    definitionId: "redSnowGangWarehouse",
+    mapId: "CE",
+    x: 14,
+    y: 16
+  },
+
+  {
     id: "luxury-snowcraft-sales",
     definitionId: "luxurySnowcraftSales",
     mapId: "AB",
@@ -5505,6 +5561,28 @@ const buildingStamps = [
     mapId: "AA",
     x: 1,
     y: 1
+  },
+
+  {
+    id: "hti-calibration-target-ce",
+    definitionId: "htiCalibrationTarget",
+    mapId: "CE",
+    x: 5,
+    y: 18,
+
+    teleporterName: "CE Calibration Target",
+
+    arrival: {
+      player: {
+        x: 5,
+        y: 24
+      },
+      
+      vehicle: {
+        x: 5,
+        y: 24
+      }
+    }
   },
 
   {
