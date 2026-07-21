@@ -588,6 +588,7 @@ const ASSETS = {
   cafeteriaTable: "gallery/architecture/scmf/cafeteria-table.png",
   table: "gallery/architecture/outpost/interior/table.png",
   armchair: "gallery/architecture/outpost/interior/armchair.png",
+  armchairRed: "gallery/0-gallery/props/armchair-red.png",
   locker: "gallery/architecture/outpost/interior/locker.png",
   crate: "gallery/architecture/outpost/interior/crate.png",
   keg: "gallery/architecture/bar/interior/keg.png",
@@ -704,6 +705,7 @@ right: "gallery/0-gallery/sprite/yoi.png"
   yoiUnrecognizer: "gallery/0-gallery/sprite/badge/yoi-unrecognizer.png",
   redSnowGeneric: "gallery/sprite/badge/rs/red-snow-badge.png",
   redSnowDefeated: "gallery/sprite/badge/rs/red-snow-badge-defeated.png",
+  strag: "gallery/sprite/badge/rs/strag.png",
   gliv: "gallery/sprite/badge/civilian/gliv.png",
   yord: "gallery/sprite/badge/wf/yord.png",
   kigh: "gallery/sprite/badge/unrecognizer/kigh.png",
@@ -715,6 +717,9 @@ right: "gallery/0-gallery/sprite/yoi.png"
   },
 
   item: {
+
+    unrecognizerWatch:
+  "gallery/0-gallery/item/unrecognizer-watch.png",
 
     pineFaceWitness:
   "gallery/0-gallery/item/totem-1.png",
@@ -972,6 +977,7 @@ const OUTSIDE_TILES = {
   prevents a door image from automatically meaning "exit building."
 */
 const BLUEPRINT_TILE = {
+  "h": ASSETS.props.armchairRed,
   "{": ASSETS.props.warehouseDoor,
   "}": ASSETS.props.doorBlue,
   "d": ASSETS.architecture.doubleDoors,
@@ -3474,11 +3480,11 @@ const BLUEPRINTS = {
 
   tiles: [
     "WWWWWWWWWWWW",
-    "W..........W",
-    "W..........W",
-    "W..........W",
-    "W..........W",
-    "W..........W",
+    "Whhhhh.....W",
+    "Wh...h.....W",
+    "Wh.^.......W",
+    "Wh.........W",
+    "Whh........W",
     "W..........W",
     "WWWWW{WWWWWW"
   ],
@@ -3870,6 +3876,26 @@ function openVerkosArtifactMenu() {
 }
 
 const DIALOGUE_DEFINITIONS = {
+
+  stragObstructionist: {
+  lines: [
+    "Nope.<br><br>Nobody teleporting hereabouts.",
+
+    "You heard me.<br><br>This zone's closed.",
+
+    "Move the RS-1?<br><br>Not interested.",
+
+    "Is there anything that would change my mind?",
+
+    "Well...<br><br>" +
+      "We have a stolen TV in the warehouse.<br><br>" +
+      "But we've never had anything cool to watch.",
+
+    "What would I like?",
+
+    "I'm kind of partial to monster truck shows."
+  ]
+},
 
   verkosDialogue: {
   lines: character => {
@@ -4362,6 +4388,15 @@ cruk: {
   dialogueId: "crukBinoculars"
 },
 
+  strag: {
+  name: "STRAG",
+  image: ASSETS.character.badge.strag,
+  portrait: ASSETS.character.badge.strag,
+  faction: "redSnow",
+  maxHealth: 100,
+  dialogueId: "stragObstructionist"
+},
+
   redSnowRenegade: {
   name: "RED SNOW RENEGADE",
   image: ASSETS.character.badge.redSnowGeneric,
@@ -4374,6 +4409,18 @@ cruk: {
 };
 
 const ITEM_DEFINITIONS = {
+
+  unrecognizerWatch: {
+  name: "UNRECOGNIZER Watch",
+  image: ASSETS.item.unrecognizerWatch,
+  category: "watch",
+  usable: true,
+  bulk: 0,
+
+  description:
+    "A wrist-mounted UNRECOGNIZER receiver. " +
+    "It detects unread Agency transmissions waiting at UNRECOGNIZER phones."
+},
 
   pineFaceWitness: {
   name: "Pine Face Witness",
@@ -4925,7 +4972,6 @@ const VEHICLE_DEFINITIONS = {
       left: { width: 6, height: 3 },
       right: { width: 6, height: 3 }
     },
-    boardable: false,
     fuelCapacity: 160,
     fuelPerStep: 0.5,
     engineSound: "rs1",
@@ -5159,17 +5205,22 @@ const vehicles = [
     ownerId: "verkos"
   },
 
-/*
+
   
   {
     id: "rs-1",
     definitionId: "rs1BlooddriftHellrunner",
-    mapId: "AA",
-    x: 19,
-    y: 2,
+    mapId: "CE",
+    x: 22,
+    y: 17,
     facing: "down",
-    fuel: 150
+    fuel: 150,
+    boardable: false,
+    ownerId: "strag-ce"
   },
+
+/*
+
   {
     id: "rs-2-1",
     definitionId: "rs2SnowduneSkiGunner",
@@ -5259,6 +5310,26 @@ const characters = [
 },
 
 */
+
+{
+  id: "strag-ce",
+  definitionId: "strag",
+  mapId: "CE",
+  x: 5,
+  y: 22,
+  facing: "left",
+  health: 100,
+  defeated: false,
+  visible: false,
+  conversationStep: 0,
+  portraitShown: false,
+
+  autonomous: false,
+  residentState: "stationary",
+  nextResidentState: null,
+  talkGateCompleted: false,
+  vehicleId: "rs-1"
+},
 
 {
   id: "verkos-outpost-2",
@@ -5831,7 +5902,8 @@ const player = {
     "gasJug",
     "basicLaserHandgun",
     "binoculars",
-    "hereoDevice"
+    "hereoDevice",
+    "unrecognizerWatch" 
   ],
 
   inventoryCapacity: 20,
@@ -5842,6 +5914,7 @@ equippedBadgeId: null,
 equippedToolId: null,
 equippedKeyId: null,
 equippedDeviceId: null,
+equippedWatchId: "unrecognizerWatch",
 equippedFuelContainerId: null,
 
 binocularsCondition: "broken",
@@ -5869,6 +5942,7 @@ const worldState = {
 },
 
  questFlags: {
+  stragCEObstructionTriggered: false,
   wylBinocularReferralCompleted: false,
   kighSnowmobileQuestCompleted: false,
 
@@ -5878,7 +5952,9 @@ const worldState = {
 },
 
 transmissionFlags: {
-  readUnrecognizerBulletins: []
+  readUnrecognizerBulletins: [],
+  watchAcknowledgedBulletins: [],
+  lastWatchNotificationAt: 0
 },
 
   /*
@@ -6116,6 +6192,7 @@ function getEquipmentSlot(category) {
     tool: "equippedToolId",
     key: "equippedKeyId",
     device: "equippedDeviceId",
+    watch: "equippedWatchId",
     fuelContainer: "equippedFuelContainerId"
   };
 
@@ -8276,6 +8353,19 @@ function openInventoryItemMenu(itemId, inventoryIndex) {
   });
 }
 
+  if (itemId === "unrecognizerWatch") {
+  options.push({
+    label: "Open Watch",
+    image: item.image,
+
+    text:
+      "View UNRECOGNIZER transmission status " +
+      "and notification controls.",
+
+    action: openUnrecognizerWatch
+  });
+}
+
   if (itemId === "binoculars") {
   options.push({
     label: "Use Binoculars",
@@ -9121,6 +9211,12 @@ function openInformationCard({ title, image = "", text = "" }) {
   });
 }
 
+/* unrecognizer watch rules */
+
+const UNRECOGNIZER_WATCH_RULES = {
+  repeatIntervalMs: 30000
+};
+
 /* =============================================================
    UNRECOGNIZER PHONE TRANSMISSIONS
 
@@ -9146,8 +9242,93 @@ const UNRECOGNIZER_TRANSMISSIONS = [
       "to the wrong station.<br><br>" +
 
       "The kits are currently being held at Outpost 3."
-  }
+  },
+
+  {
+  id: "ceTeleportalObstruction",
+  order: 20,
+
+  isAvailable: () =>
+    worldState.questFlags.stragCEObstructionTriggered,
+
+  title: "TELEPORTAL OBSTRUCTION: SECTOR CE",
+
+  text:
+    "Have you heard?<br><br>" +
+
+    "There's an obstructionist occupying the calibrated " +
+    "HEREO vehicle arrival zone in Sector CE.<br><br>" +
+
+    "Somebody should probably hike there and figure out " +
+    "what's going on."
+}
+
 ];
+
+/* strag obstruction story */
+
+function triggerStragCEObstructionEvent() {
+  if (worldState.questFlags.stragCEObstructionTriggered) {
+    return false;
+  }
+
+  const ceIsCalibrated =
+    worldState.htiNetwork.calibratedTargetIds.includes(
+      "hti-calibration-target-ce"
+    );
+
+  if (!ceIsCalibrated) {
+    return false;
+  }
+
+  const strag = characters.find(
+    character => character.id === "strag-ce"
+  );
+
+  const rs1 = vehicles.find(
+    vehicle => vehicle.id === "rs-1"
+  );
+
+  if (!strag || !rs1) {
+    console.warn(
+      "Strag obstruction event could not find Strag or the RS-1."
+    );
+
+    return false;
+  }
+
+  /*
+    Mark the event first so repeated telephone use
+    can never create or reset the entrance again.
+  */
+  worldState.questFlags.stragCEObstructionTriggered = true;
+
+  /*
+    STRAG ENTERS THE STAGE.
+  */
+  strag.mapId = "CE";
+  strag.x = 5;
+  strag.y = 22;
+  strag.facing = "left";
+  strag.visible = true;
+  strag.defeated = false;
+  strag.conversationStep = 0;
+  strag.portraitShown = false;
+
+  /*
+    Strag parks the RS-1 across the CE arrival zone.
+
+    Facing right is important:
+    the RS-1 is 6 tiles wide and 3 tiles tall in this orientation.
+  */
+  rs1.mapId = "CE";
+  rs1.x = 4;
+  rs1.y = 23;
+  rs1.facing = "right";
+  rs1.reversing = false;
+
+  return true;
+}
 
 function getAvailableUnrecognizerTransmissions() {
   return UNRECOGNIZER_TRANSMISSIONS
@@ -9156,19 +9337,242 @@ function getAvailableUnrecognizerTransmissions() {
     .sort((a, b) => b.order - a.order);
 }
 
+function getUnreadUnrecognizerTransmissions() {
+  return getAvailableUnrecognizerTransmissions()
+    .filter(transmission => {
+      return !hasReadUnrecognizerTransmission(
+        transmission.id
+      );
+    });
+}
+
+function hasWatchAcknowledgedTransmission(
+  transmissionId
+) {
+  return worldState.transmissionFlags
+    .watchAcknowledgedBulletins
+    .includes(transmissionId);
+}
+
+function getPendingWatchTransmissions() {
+  return getUnreadUnrecognizerTransmissions()
+    .filter(transmission => {
+      return !hasWatchAcknowledgedTransmission(
+        transmission.id
+      );
+    });
+}
+
+function acknowledgeCurrentWatchTransmissions() {
+  const unreadTransmissions =
+    getUnreadUnrecognizerTransmissions();
+
+  const acknowledgedBulletins =
+    worldState.transmissionFlags
+      .watchAcknowledgedBulletins;
+
+  if (unreadTransmissions.length === 0) {
+    closeOverlay();
+
+    showBubble(
+      "UNRECOGNIZER WATCH",
+      "No unread transmissions are currently waiting."
+    );
+
+    return;
+  }
+
+  for (const transmission of unreadTransmissions) {
+    if (
+      !acknowledgedBulletins.includes(
+        transmission.id
+      )
+    ) {
+      acknowledgedBulletins.push(
+        transmission.id
+      );
+    }
+  }
+
+  closeOverlay();
+
+  showBubble(
+    "UNRECOGNIZER WATCH",
+    "Notifications acknowledged.<br><br>" +
+    "The transmissions remain unread at UNRECOGNIZER phones, " +
+    "but the watch will not repeat these alerts."
+  );
+}
+
+function resumeCurrentWatchTransmissions() {
+  const unreadTransmissionIds =
+    getUnreadUnrecognizerTransmissions()
+      .map(transmission => transmission.id);
+
+  worldState.transmissionFlags
+    .watchAcknowledgedBulletins =
+      worldState.transmissionFlags
+        .watchAcknowledgedBulletins
+        .filter(transmissionId => {
+          return !unreadTransmissionIds.includes(
+            transmissionId
+          );
+        });
+
+  worldState.transmissionFlags
+    .lastWatchNotificationAt = 0;
+
+  closeOverlay();
+
+  showBubble(
+    "UNRECOGNIZER WATCH",
+    "Repeating notifications resumed."
+  );
+}
+
+function updateUnrecognizerWatch() {
+  if (!hasItem("unrecognizerWatch")) return;
+
+  const pendingTransmissions =
+    getPendingWatchTransmissions();
+
+  if (pendingTransmissions.length === 0) {
+    return;
+  }
+
+  const now = Date.now();
+
+  const elapsed =
+    now -
+    worldState.transmissionFlags
+      .lastWatchNotificationAt;
+
+  if (
+    elapsed <
+    UNRECOGNIZER_WATCH_RULES.repeatIntervalMs
+  ) {
+    return;
+  }
+
+  worldState.transmissionFlags
+    .lastWatchNotificationAt = now;
+
+  const count = pendingTransmissions.length;
+
+  const noun =
+    count === 1
+      ? "transmission is"
+      : "transmissions are";
+
+  setMessage(
+    `The UNRECOGNIZER Watch pulses. ` +
+    `${count} unread ${noun} waiting at an ` +
+    `UNRECOGNIZER phone.`
+  );
+}
+
 function hasReadUnrecognizerTransmission(transmissionId) {
   return worldState.transmissionFlags
     .readUnrecognizerBulletins
     .includes(transmissionId);
 }
 
-function markUnrecognizerTransmissionRead(transmissionId) {
+function markUnrecognizerTransmissionRead(
+  transmissionId
+) {
   const readBulletins =
-    worldState.transmissionFlags.readUnrecognizerBulletins;
+    worldState.transmissionFlags
+      .readUnrecognizerBulletins;
 
   if (!readBulletins.includes(transmissionId)) {
     readBulletins.push(transmissionId);
   }
+
+  worldState.transmissionFlags
+    .watchAcknowledgedBulletins =
+      worldState.transmissionFlags
+        .watchAcknowledgedBulletins
+        .filter(id => id !== transmissionId);
+}
+
+function openUnrecognizerWatch() {
+  const unreadTransmissions =
+    getUnreadUnrecognizerTransmissions();
+
+  const pendingTransmissions =
+    getPendingWatchTransmissions();
+
+  const unreadCount =
+    unreadTransmissions.length;
+
+  const pendingCount =
+    pendingTransmissions.length;
+
+  const options = [];
+
+  if (unreadCount === 0) {
+    options.push({
+      label: "No transmissions detected",
+      disabled: true
+    });
+  } else if (pendingCount > 0) {
+    options.push({
+      label: "ACKNOWLEDGE NOTIFICATIONS",
+      image: ASSETS.item.unrecognizerWatch,
+
+      text:
+        "Silence repeating watch notifications for " +
+        "the transmissions currently waiting.<br><br>" +
+        "The transmissions will remain unread at " +
+        "UNRECOGNIZER phones.",
+
+      action:
+        acknowledgeCurrentWatchTransmissions
+    });
+  } else {
+    options.push({
+      label: "RESUME NOTIFICATIONS",
+      image: ASSETS.item.unrecognizerWatch,
+
+      text:
+        "Resume repeating notifications for the " +
+        "unread transmissions currently waiting.",
+
+      action:
+        resumeCurrentWatchTransmissions
+    });
+  }
+
+  options.push({
+    label: "Close watch",
+    action: closeOverlay
+  });
+
+  let statusText = "";
+
+  if (unreadCount === 0) {
+    statusText =
+      "No unread UNRECOGNIZER transmissions detected.";
+  } else if (pendingCount === 0) {
+    statusText =
+      `${unreadCount} unread transmission` +
+      `${unreadCount === 1 ? "" : "s"} detected.` +
+      "<br><br>" +
+      "Repeating notifications have been acknowledged.";
+  } else {
+    statusText =
+      `${unreadCount} unread transmission` +
+      `${unreadCount === 1 ? "" : "s"} detected.` +
+      "<br><br>" +
+      `${pendingCount} currently producing watch alerts.`;
+  }
+
+  openOverlay({
+    title: "UNRECOGNIZER WATCH",
+    image: ASSETS.item.unrecognizerWatch,
+    text: statusText,
+    options
+  });
 }
 
 function openUnrecognizerTransmissionLog() {
@@ -9544,7 +9948,9 @@ trashChute() {
 },
 
   phone() {
-    openOverlay({
+  triggerStragCEObstructionEvent();
+
+  openOverlay({
       title: "STRO COMMUNICATIONS",
       image: ASSETS.props.phone,
       text: "Select a communications channel.",
@@ -11741,10 +12147,17 @@ function initializeGame() {
   */
   setInterval(updateBodyHeat, 3000);
 
-    /*
-    Autonomous residents update once per second.
-  */
-  setInterval(updateResidents, 1000);
+/*
+  Autonomous residents update once per second.
+*/
+setInterval(updateResidents, 1000);
+
+/*
+  The UNRECOGNIZER Watch checks once per second,
+  but only displays a notification when its own
+  repeat interval has elapsed.
+*/
+setInterval(updateUnrecognizerWatch, 1000);
 
   console.log("UNRECOGNIZER II atlas ready.");
   console.log("Outside atlas sectors:", Object.keys(ATLAS).length);
