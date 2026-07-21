@@ -6804,6 +6804,8 @@ function activateAllHtiCalibrationTargetsCheat() {
 
   worldState.htiNetwork.triangulationEstablished = true;
 
+  triggerStragCEObstructionEvent();
+
   /*
     Make sure the player possesses the handheld during testing.
   */
@@ -7060,6 +7062,8 @@ function transitionWalkingAcrossAtlasEdge(direction) {
   player.y = arrivalY;
 
   nextMap.discovered = true;
+
+  triggerStragCEObstructionEvent();
 
   setMessage(`${nextMapId}: ${nextMap.title}`);
   return true;
@@ -8068,6 +8072,8 @@ function attemptVehicleMove(
     player.y = vehicle.y;
     player.mapId = vehicle.mapId;
     worldState.currentMapId = vehicle.mapId;
+
+    triggerStragCEObstructionEvent();
 
     const action = reversing ? "Reversing" : "Driving";
 
@@ -9281,6 +9287,13 @@ function triggerStragCEObstructionEvent() {
     return false;
   }
 
+  const playerHasLeftCE =
+  worldState.currentMapId !== "CE";
+
+if (!playerHasLeftCE) {
+  return false;
+}
+
   const strag = characters.find(
     character => character.id === "strag-ce"
   );
@@ -9364,43 +9377,43 @@ function getPendingWatchTransmissions() {
 }
 
 function acknowledgeCurrentWatchTransmissions() {
-  const unreadTransmissions =
-    getUnreadUnrecognizerTransmissions();
+  const pendingTransmissions =
+    getPendingWatchTransmissions();
 
-  const acknowledgedBulletins =
-    worldState.transmissionFlags
-      .watchAcknowledgedBulletins;
-
-  if (unreadTransmissions.length === 0) {
+  if (pendingTransmissions.length === 0) {
     closeOverlay();
 
     showBubble(
       "UNRECOGNIZER WATCH",
-      "No unread transmissions are currently waiting."
+      "No repeating notifications are currently active."
     );
 
     return;
   }
 
-  for (const transmission of unreadTransmissions) {
-    if (
-      !acknowledgedBulletins.includes(
-        transmission.id
-      )
-    ) {
-      acknowledgedBulletins.push(
-        transmission.id
-      );
-    }
+  const newestTransmission = pendingTransmissions[0];
+
+  const acknowledgedBulletins =
+    worldState.transmissionFlags
+      .watchAcknowledgedBulletins;
+
+  if (
+    !acknowledgedBulletins.includes(
+      newestTransmission.id
+    )
+  ) {
+    acknowledgedBulletins.push(
+      newestTransmission.id
+    );
   }
 
   closeOverlay();
 
   showBubble(
     "UNRECOGNIZER WATCH",
-    "Notifications acknowledged.<br><br>" +
-    "The transmissions remain unread at UNRECOGNIZER phones, " +
-    "but the watch will not repeat these alerts."
+    "Notification acknowledged.<br><br>" +
+    "The transmission remains unread at UNRECOGNIZER phones, " +
+    "but the watch will not repeat this alert."
   );
 }
 
@@ -9521,10 +9534,9 @@ function openUnrecognizerWatch() {
       image: ASSETS.item.unrecognizerWatch,
 
       text:
-        "Silence repeating watch notifications for " +
-        "the transmissions currently waiting.<br><br>" +
-        "The transmissions will remain unread at " +
-        "UNRECOGNIZER phones.",
+  "Silence the newest repeating watch notification.<br><br>" +
+  "The transmission will remain unread at " +
+  "UNRECOGNIZER phones.",
 
       action:
         acknowledgeCurrentWatchTransmissions
@@ -9948,7 +9960,6 @@ trashChute() {
 },
 
   phone() {
-  triggerStragCEObstructionEvent();
 
   openOverlay({
       title: "STRO COMMUNICATIONS",
