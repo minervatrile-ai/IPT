@@ -6602,48 +6602,116 @@ function teleportToHtiTarget(targetId) {
   closeOverlay();
 
   /*
-    Vehicle teleportation
-  */
-  if (vehicle && player.mode === "driving") {
-    const arrival = target.arrival.vehicle;
+  Vehicle teleportation
+*/
+if (vehicle && player.mode === "driving") {
+  const arrival = target.arrival.vehicle;
 
-    if (!arrival) {
-      showBubble(
-        "HEREO TELEPORTER",
-        "This calibration target cannot receive a vehicle."
-      );
-
-      return;
-    }
-
-    stopAllVehicleSounds();
-
-    vehicle.mapId = target.mapId;
-    vehicle.x = arrival.x;
-    vehicle.y = arrival.y;
-    vehicle.facing =
-      arrival.facing || vehicle.facing;
-    vehicle.reversing = false;
-
-    worldState.currentMapId = target.mapId;
-
-    player.mapId = target.mapId;
-    player.x = vehicle.x;
-    player.y = vehicle.y;
-
-    if (ATLAS[target.mapId]) {
-      ATLAS[target.mapId].discovered = true;
-    }
-
+  if (!arrival) {
     showBubble(
       "HEREO TELEPORTER",
-      `${getVehicleDefinition(vehicle).name} transferred to ` +
-      `${target.teleporterName || target.mapId}.`
+      "This calibration target cannot receive a vehicle."
     );
 
-    drawGame();
     return;
   }
+
+  const arrivalFacing =
+    arrival.facing || vehicle.facing;
+
+  /*
+    Test the complete vehicle footprint against the destination
+    map before changing any permanent vehicle or player state.
+
+    canVehicleOccupy() reads worldState.currentMapId, so temporarily
+    point the collision system at the target map.
+  */
+  const previousWorldMapId =
+    worldState.currentMapId;
+
+  const previousVehicleMapId =
+    vehicle.mapId;
+
+  worldState.currentMapId =
+    target.mapId;
+
+  vehicle.mapId =
+    target.mapId;
+
+  const destinationIsClear =
+    canVehicleOccupy(
+      vehicle,
+      arrival.x,
+      arrival.y,
+      arrivalFacing
+    );
+
+  /*
+    Restore the original state before deciding whether the
+    teleport succeeds.
+  */
+  worldState.currentMapId =
+    previousWorldMapId;
+
+  vehicle.mapId =
+    previousVehicleMapId;
+
+  if (!destinationIsClear) {
+    showBubble(
+      "HEREO TELEPORTER",
+      "TRANSFER ABORTED.<br><br>" +
+      "The registered vehicle arrival zone is obstructed."
+    );
+
+    return;
+  }
+
+  /*
+    The complete destination footprint is clear.
+    Teleportation may now proceed.
+  */
+  stopAllVehicleSounds();
+
+  vehicle.mapId =
+    target.mapId;
+
+  vehicle.x =
+    arrival.x;
+
+  vehicle.y =
+    arrival.y;
+
+  vehicle.facing =
+    arrivalFacing;
+
+  vehicle.reversing =
+    false;
+
+  worldState.currentMapId =
+    target.mapId;
+
+  player.mapId =
+    target.mapId;
+
+  player.x =
+    vehicle.x;
+
+  player.y =
+    vehicle.y;
+
+  if (ATLAS[target.mapId]) {
+    ATLAS[target.mapId].discovered = true;
+  }
+
+  showBubble(
+    "HEREO TELEPORTER",
+    `${getVehicleDefinition(vehicle).name} transferred to ` +
+    `${target.teleporterName || target.mapId}.`
+  );
+
+  drawGame();
+  return;
+}
 
   /*
     On-foot teleportation
@@ -6668,7 +6736,8 @@ function teleportToHtiTarget(targetId) {
 if (!safeArrival) {
   showBubble(
     "HEREO TELEPORTER",
-    "Transfer aborted. The destination arrival area is obstructed."
+    "TRANSFER ABORTED.<br><br>" +
+    "No safe personnel arrival position could be located."
   );
 
   return;
