@@ -4472,7 +4472,9 @@ stakeWitness: {
   image: ASSETS.item.heatedMealRation,
   category: "food",
   usable: true,
+  stackable: true,
   bulk: 1,
+
   description:
     "A self-heating expedition meal. Restores health and body heat."
 },
@@ -6086,6 +6088,10 @@ function getTileSymbol(x, y, map = getCurrentMap()) {
   return map.tiles[y]?.[x] ?? null;
 }
 
+function isItemStackable(itemId) {
+  return ITEM_DEFINITIONS[itemId]?.stackable === true;
+}
+
 function hasItem(itemId) {
   return player.inventory.includes(itemId);
 }
@@ -6150,7 +6156,14 @@ function addItem(itemId) {
     return false;
   }
 
-  if (hasItem(itemId)) {
+  /*
+    Non-stackable items remain unique.
+
+    Stackable items, such as heated meal rations, may appear
+    multiple times in the inventory. Each copy still contributes
+    its normal bulk.
+  */
+  if (!isItemStackable(itemId) && hasItem(itemId)) {
     return false;
   }
 
@@ -7610,7 +7623,13 @@ function takeInventoryItemFromVehicle(vehicle, itemId) {
     return;
   }
 
-  if (hasItem(itemId)) {
+  /*
+    Unique equipment cannot be duplicated in Yoi's inventory.
+
+    Stackable supplies may be removed one unit at a time even when
+    Yoi already possesses another copy.
+  */
+  if (!isItemStackable(itemId) && hasItem(itemId)) {
     setMessage(`${item.name} is already in Yoi's inventory.`);
     return;
   }
@@ -7620,12 +7639,28 @@ function takeInventoryItemFromVehicle(vehicle, itemId) {
     return;
   }
 
-  if (!removeCargoFromVehicle(vehicle, itemId)) {
-    setMessage(`${item.name} is no longer inside this vehicle.`);
+  /*
+    Add the item first.
+
+    Only remove it from the vehicle after the inventory transfer
+    has definitely succeeded. This prevents cargo from vanishing
+    if another inventory rule rejects the transfer.
+  */
+  if (!addItem(itemId)) {
+    setMessage(`${item.name} could not be added to Yoi's inventory.`);
     return;
   }
 
-  addItem(itemId);
+  if (!removeCargoFromVehicle(vehicle, itemId)) {
+    /*
+      Extremely defensive rollback. This should rarely occur, but
+      it keeps the item from being duplicated if the cargo changed.
+    */
+    removeItem(itemId);
+
+    setMessage(`${item.name} is no longer inside this vehicle.`);
+    return;
+  }
 
   setMessage(`${item.name} removed from vehicle cargo.`);
   drawGame();
@@ -9897,17 +9932,6 @@ food() {
         label: "Dispense survival ration",
 
         action: () => {
-          if (hasItem("heatedMealRation")) {
-            closeOverlay();
-
-            showBubble(
-              "FOOD DISPENSER",
-              "Yoi is already carrying a survival ration."
-            );
-
-            return;
-          }
-
           const itemAdded = addItem("heatedMealRation");
 
           closeOverlay();
