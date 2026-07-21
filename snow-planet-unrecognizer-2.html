@@ -605,6 +605,9 @@ const ASSETS = {
 architecture: {
   /* Full outside building stamps */
 
+  hangarGate: 
+  "gallery/0-gallery/architecture/hangar-gate.png",
+
   abandonedWarehouse:
   "gallery/0-gallery/architecture/abandoned-warehouse.png",
 
@@ -2572,19 +2575,19 @@ const FA_MAP = [
   "pPP.........ppppP...........",
   "PpPPPPPpP...ppPPpppPPPPPPpPP",
   "PPPPpPPPp...ppPpPpppPppppppp",
-  "pPPPpPpPP...PPpppPPPPppPpPPp",
-  "PPPpPPPpP...ppPPpPpPpPPPPPPp",
-  "PPP.pPPpP...PpPPP...........",
-  "Pp...PPpP...PPPP............",
-  "Pp...PPpp...pPpP............",
-  "Pp...pp.....pPPp...pppP...Pp",
-  "PP...p.......PPp...PPpp...Pp",
-  "pP...P.......pPp...PPPP...pp",
-  "PP............PP...pPPp...Pp",
-  "Pp...p.......pPp...PpPP.....",
-  "pP...P.......PPP...pPPP.....",
-  "Pp...Pp.....PPPp...PPppP....",
-  "PP...PPPP...PpPP...PPPPPPpPp",
+  "p...........PPpppPPPPppPpPPp",
+  "P..............p.........PPp",
+  "P...........................",
+  "P.............P.............",
+  "P...........................",
+  "P.............p....pppP...Pp",
+  "P....p..P....PPp...PPpp...Pp",
+  "pP...........pPp...PPPP...pp",
+  "PP....P.......PP...pPPp...Pp",
+  "Pp.......p...pPp...PpPP.....",
+  "pP...........PPP...pPPP.....",
+  "Pp..........PPPp...PPppP....",
+  "PP..........PpPP...PPPPPPpPp",
   "pP...ppPP...PPPP...pPpPPpPPP",
 ];
 
@@ -5468,6 +5471,25 @@ const characters = [
 
 const BUILDING_DEFINITIONS = {
 
+  hangarGate: {
+  name: "Red Snow Hangar Gate",
+  image: ASSETS.architecture.hangarGate,
+
+  width: 9,
+  height: 6,
+
+  collisionMask: [
+    "XXXXXXXXX",
+    "XXXXXXXXX",
+    "XXXXXXXXX",
+    "XXXDDDXXX",
+    ".........",
+    "........."
+  ],
+
+  entranceInteraction: "lockedHangarGate"
+},
+
   redSnowGangWarehouse: {
     name: "Red Snow Gang Warehouse",
     image: ASSETS.architecture.abandonedWarehouse,
@@ -5595,6 +5617,20 @@ const BUILDING_DEFINITIONS = {
 };
 
 const buildingStamps = [
+
+  {
+  id: "hangar-gate-fa",
+  definitionId: "hangarGate",
+  mapId: "FA",
+  x: 1,
+  y: 13,
+
+  ambush: {
+    triggered: false,
+    renegades: 4,
+    radius: 8
+  }
+},
 
   {
     id: "red-snow-gang-warehouse",
@@ -9817,6 +9853,13 @@ function playNewsTape1(pageIndex = 0) {
 /* Standard object interactions demonstrate varied menus. */
 const INTERACTIONS = {
 
+  lockedHangarGate() {
+  showBubble(
+    "RED SNOW TUNNEL ENTRANCE",
+    "The outer gate is open, but the inner door mechanism is latched and locked."
+  );
+},
+
   campfire(interaction) {
   const mapId = worldState.currentMapId;
   const { x, y } = interaction;
@@ -10719,9 +10762,9 @@ function moveResidentOneStepToward(
     character.y = nextY;
     character.facing = direction;
 
-    if (character.mapId === worldState.currentMapId) {
-      drawGame();
-    }
+    /*
+  Redrawing is handled once after all residents update.
+*/
 
     return true;
   }
@@ -10902,12 +10945,57 @@ function driveResidentVehicle(character) {
 }
 
 function updateResidents() {
+  let currentMapChanged = false;
+
   for (const character of characters) {
     if (!character.autonomous) {
       continue;
     }
 
+    /*
+      Attackers do not need updates while the player
+      is somewhere else.
+    */
+    if (
+      character.residentState === "attackingPlayer" &&
+      character.mapId !== player.mapId
+    ) {
+      continue;
+    }
+
+    /*
+      Stationary residents require no update tick.
+    */
+    if (character.residentState === "stationary") {
+      continue;
+    }
+
+    const oldMapId = character.mapId;
+    const oldX = character.x;
+    const oldY = character.y;
+    const oldVisible = character.visible;
+    const oldDefeated = character.defeated;
+
     updateResident(character);
+
+    const affectedCurrentMap =
+      oldMapId === worldState.currentMapId ||
+      character.mapId === worldState.currentMapId;
+
+    const changed =
+      oldMapId !== character.mapId ||
+      oldX !== character.x ||
+      oldY !== character.y ||
+      oldVisible !== character.visible ||
+      oldDefeated !== character.defeated;
+
+    if (affectedCurrentMap && changed) {
+      currentMapChanged = true;
+    }
+  }
+
+  if (currentMapChanged) {
+    redrawCharacterLayer();
   }
 }
 
@@ -10915,6 +11003,50 @@ function updateResident(character) {
   switch (character.residentState) {
     case "stationary":
       break;
+
+      case "attackingPlayer": {
+  if (
+    character.defeated ||
+    !character.visible ||
+    character.mapId !== player.mapId
+  ) {
+    break;
+  }
+
+  const distance =
+    Math.abs(character.x - player.x) +
+    Math.abs(character.y - player.y);
+
+  if (distance <= 1) {
+    player.health = Math.max(
+      0,
+      player.health - 10
+    );
+
+    setMessage(
+      `RED SNOW ATTACK · Yoi health: ${player.health}/${player.maxHealth}`
+    );
+
+    if (player.health <= 0) {
+      showBubble(
+        "YOI",
+        "Yoi collapses beneath the Red Snow assault."
+      );
+
+      character.residentState = "stationary";
+    }
+
+    break;
+  }
+
+  moveResidentOneStepToward(
+    character,
+    player.x,
+    player.y
+  );
+
+  break;
+}
 
       case "leavingBuilding": {
   const exit =
@@ -11214,10 +11346,20 @@ if (htiTarget) {
 }
 
   const entrance = getAdjacentBuildingEntrance();
-  if (entrance) {
+
+if (entrance) {
+  const interactionId =
+    entrance.stamp.entranceInteraction ||
+    entrance.definition.entranceInteraction;
+
+  if (interactionId && INTERACTIONS[interactionId]) {
+    INTERACTIONS[interactionId](entrance);
+  } else {
     enterBuilding(entrance.stamp, entrance.definition);
-    return;
   }
+
+  return;
+}
 
   const outsideInteraction =
   getAdjacentOutsideInteraction();
@@ -11709,7 +11851,131 @@ function updateBodyHeat() {
   updateHud();
 }
 
+function findHangarRenegadeSpawnTiles(hangar, count) {
+  const definition =
+    BUILDING_DEFINITIONS[hangar.definitionId];
+
+  const centerX =
+    hangar.x + Math.floor(definition.width / 2);
+
+  const centerY =
+    hangar.y + Math.floor(definition.height / 2);
+
+  const candidates = [];
+
+  for (
+    let y = Math.max(0, centerY - hangar.ambush.radius);
+    y <= Math.min(OUTSIDE_MAP_SIZE - 1, centerY + hangar.ambush.radius);
+    y++
+  ) {
+    for (
+      let x = Math.max(0, centerX - hangar.ambush.radius);
+      x <= Math.min(OUTSIDE_MAP_SIZE - 1, centerX + hangar.ambush.radius);
+      x++
+    ) {
+      const distanceFromPlayer =
+        Math.abs(player.x - x) +
+        Math.abs(player.y - y);
+
+      if (distanceFromPlayer < 3) continue;
+
+      const testCharacter = {
+        id: "temporary-renegade-spawn-test",
+        mapId: hangar.mapId
+      };
+
+      if (!canResidentWalkTo(testCharacter, x, y)) {
+        continue;
+      }
+
+      candidates.push({ x, y });
+    }
+  }
+
+  candidates.sort(
+    () => Math.random() - 0.5
+  );
+
+  return candidates.slice(0, count);
+}
+
+function spawnHangarRenegades(hangar) {
+  const spawnTiles =
+    findHangarRenegadeSpawnTiles(
+      hangar,
+      hangar.ambush.renegades
+    );
+
+  spawnTiles.forEach((tile, index) => {
+    characters.push({
+      id:
+        `${hangar.id}-renegade-${index + 1}`,
+
+      definitionId: "redSnowRenegade",
+      mapId: hangar.mapId,
+
+      x: tile.x,
+      y: tile.y,
+      facing: "down",
+
+      health: 75,
+      defeated: false,
+      visible: true,
+      conversationStep: 0,
+      portraitShown: false,
+
+      autonomous: true,
+      residentState: "attackingPlayer",
+
+      sourceHangarId: hangar.id
+    });
+  });
+}
+
+function checkHangarAmbushes() {
+  if (worldState.currentMapId !== "FA") return;
+
+  const hangar = buildingStamps.find(
+    stamp => stamp.id === "hangar-gate-fa"
+  );
+
+  if (
+    !hangar ||
+    !hangar.ambush ||
+    hangar.ambush.triggered
+  ) {
+    return;
+  }
+
+  const definition =
+    BUILDING_DEFINITIONS[hangar.definitionId];
+
+  if (!definition) return;
+
+  const centerX =
+    hangar.x + Math.floor(definition.width / 2);
+
+  const centerY =
+    hangar.y + Math.floor(definition.height / 2);
+
+  const distance =
+    Math.abs(player.x - centerX) +
+    Math.abs(player.y - centerY);
+
+  if (distance > hangar.ambush.radius) return;
+
+  hangar.ambush.triggered = true;
+
+spawnHangarRenegades(hangar);
+
+showBubble(
+  "RED SNOW RENEGADES",
+  "Movement stirs among the trees surrounding the tunnel entrance."
+);
+}
+
 function updateWorldAfterMovement() {
+  checkHangarAmbushes();
   updateWeatherDisplay();
   updateHud();
 }
@@ -11891,6 +12157,20 @@ function drawPlayer() {
   sprite.style.backgroundImage = `url("${playerImage}")`;
 
   placeEntity(sprite, player.x, player.y);
+}
+
+function redrawCharacterLayer() {
+  /*
+    Remove only existing NPC sprites.
+  */
+  game
+    .querySelectorAll(".npcSprite")
+    .forEach(sprite => sprite.remove());
+
+  /*
+    Recreate only the characters currently visible.
+  */
+  drawCharacters();
 }
 
 function drawCharacters() {
