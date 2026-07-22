@@ -3906,6 +3906,14 @@ const DIALOGUE_DEFINITIONS = {
       getItemsSellableToBuyer("verkos");
 
     /*
+      After Yoi has completed Verkos's explanation once,
+      a later conversation plants the deeper reflection.
+    */
+    if (character.cultureConversationCompleted) {
+      plantThought("people_verkos_culture");
+    }
+
+    /*
       Verkos sees at least one ART CORP cultural artifact
       in Yoi's inventory.
     */
@@ -3927,6 +3935,7 @@ const DIALOGUE_DEFINITIONS = {
             "Interested?",
 
           action: () => {
+            character.cultureConversationCompleted = true;
             openVerkosArtifactMenu();
           }
         }
@@ -3945,7 +3954,14 @@ const DIALOGUE_DEFINITIONS = {
 
       "If you find handmade UNRECOGNIZER symbols, camp objects, or field artifacts, bring them to me.",
 
-      "ART CORP pays well for authentic material."
+      {
+        text:
+          "ART CORP pays well for authentic material.",
+
+        action: () => {
+          character.cultureConversationCompleted = true;
+        }
+      }
     ];
   }
 },
@@ -4334,7 +4350,8 @@ const CHARACTER_DEFINITIONS = {
     portrait: ASSETS.character.badge.verkos,
     faction: "art-corp",
     maxHealth: 100,
-    dialogueId: "verkosDialogue"
+    dialogueId: "verkosDialogue",
+    firstMeetingThoughtId: "people_verkos_first_impression"
   },
 
   jegna: {
@@ -4363,8 +4380,9 @@ const CHARACTER_DEFINITIONS = {
   portrait: ASSETS.character.badge.yord,
   faction: "white-fang",
   maxHealth: 100,
-  dialogueId: "yordDialogue"
-  },
+  dialogueId: "yordDialogue",
+  firstMeetingThoughtId: "people_yord_first_impression"
+},
 
   kigh: {
   name: "KIGH",
@@ -4392,7 +4410,8 @@ cruk: {
   portrait: ASSETS.character.badge.cruk,
   faction: "unrecognizer",
   maxHealth: 100,
-  dialogueId: "crukBinoculars"
+  dialogueId: "crukBinoculars",
+  firstMeetingThoughtId: "people_cruk_first_impression"
 },
 
   strag: {
@@ -4401,7 +4420,8 @@ cruk: {
   portrait: ASSETS.character.badge.strag,
   faction: "redSnow",
   maxHealth: 100,
-  dialogueId: "stragObstructionist"
+  dialogueId: "stragObstructionist",
+  firstMeetingThoughtId: "people_strag_first_impression"
 },
 
   redSnowRenegade: {
@@ -5352,7 +5372,9 @@ const characters = [
   defeated: false,
   visible: true,
   conversationStep: 0,
-  portraitShown: false
+  portraitShown: false,
+
+  cultureConversationCompleted: false
 },
 
 {
@@ -6045,7 +6067,53 @@ people_jegna_first_impression: {
   text:
     "Jegna survived a distant hike because she carried heated meal rations. " +
     "She understands how quickly hunger, weather, and distance can combine against someone."
-}
+},
+
+people_yord_first_impression: {
+  id: "people_yord_first_impression",
+  category: "People",
+  title: "Yord",
+  text:
+    "Yord distrusts HEREO, but he does not seem hostile toward me personally. " +
+    "He knows more about Stro and the Subfrost Rail shutdown than I do."
+},
+
+people_cruk_first_impression: {
+  id: "people_cruk_first_impression",
+  category: "People",
+  title: "Cruk",
+  text:
+    "Cruk understands machines by attending to what is actually wrong with them. " +
+    "He seems practical, capable, and uninterested in making a simple repair more complicated than it needs to be."
+},
+
+people_strag_first_impression: {
+  id: "people_strag_first_impression",
+  category: "People",
+  title: "Strag",
+  text:
+    "Strag has deliberately blocked the teleporter and seems completely comfortable doing it. " +
+    "He is obstructive, but not mindless. He acts like someone protecting a purpose he has not explained yet."
+},
+
+people_verkos_first_impression: {
+  id: "people_verkos_first_impression",
+  category: "People",
+  title: "Verkos",
+  text:
+    "Verkos works for Art Corp and places unusual value on objects that others might overlook. " +
+    "He seems to believe that even ordinary things can become culturally significant."
+},
+
+people_verkos_culture: {
+  id: "people_verkos_culture",
+  category: "People",
+  title: "Verkos and cultural evidence",
+  text:
+    "Verkos is not merely collecting valuable objects. " +
+    "He is preserving evidence of how people live, what they make, and what they choose to leave behind. " +
+    "Perhaps culture is partly composed of the things someone decides are worth remembering."
+},
 
 };
 
