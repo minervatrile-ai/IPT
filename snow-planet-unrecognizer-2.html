@@ -1663,17 +1663,17 @@ const BC_MAP = [
 
 const BD_MAP = [
   "PPPppPP.......PpPPPPPPP...pP",
-  "..PPpp.........PppPPpPP.....",
+  "..PPpp..p..p.p.PppPPpPP.....",
   "..................PPPpP.....",
-  "...................PPp......",
-  "..................PPPpp.....",
-  ".................PPPPPP.....",
-  "PP..............PPpPpPp...PP",
-  "pp..............PPpPppP...Pp",
-  "PP..............PpPPPpP...pP",
-  "pP...P......................",
-  "pP...PP.....................",
-  "PP...PPPP...................",
+  "............................",
+  "............................",
+  "............................",
+  "PP........................PP",
+  "pp........................Pp",
+  "PP........................pP",
+  "pP...P...p..p.p...p.........",
+  "pP...PP.........p....p..pp..",
+  "PP...PPPP.P.................",
   "Pp...PpPp...pPPP...pPpPPPPpP",
   "PP...PpPP...pPPP...PPPpPpPPp",
   "PP...pppP...PpPP...pPPPpppPp",
@@ -5617,6 +5617,21 @@ const BUILDING_DEFINITIONS = {
 };
 
 const buildingStamps = [
+
+  {
+  id: "hangar-gate-bd",
+  definitionId: "hangarGate",
+  mapId: "BD",
+  x: 7,
+  y: 3,
+
+  ambush: {
+    triggered: false,
+    renegades: 4,
+    radius: 8
+  }
+},
+
 
   {
   id: "hangar-gate-fa",
@@ -11933,10 +11948,18 @@ function spawnHangarRenegades(hangar) {
 }
 
 function checkHangarAmbushes() {
-  if (worldState.currentMapId !== "FA") return;
+  let hangarId = null;
+
+  if (worldState.currentMapId === "FA") {
+    hangarId = "hangar-gate-fa";
+  } else if (worldState.currentMapId === "BD") {
+    hangarId = "hangar-gate-bd";
+  } else {
+    return;
+  }
 
   const hangar = buildingStamps.find(
-    stamp => stamp.id === "hangar-gate-fa"
+    stamp => stamp.id === hangarId
   );
 
   if (
@@ -11966,12 +11989,12 @@ function checkHangarAmbushes() {
 
   hangar.ambush.triggered = true;
 
-spawnHangarRenegades(hangar);
+  spawnHangarRenegades(hangar);
 
-showBubble(
-  "RED SNOW RENEGADES",
-  "Movement stirs among the trees surrounding the tunnel entrance."
-);
+  showBubble(
+    "RED SNOW RENEGADES",
+    "Movement stirs among the trees surrounding the tunnel entrance."
+  );
 }
 
 function updateWorldAfterMovement() {
