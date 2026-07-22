@@ -502,7 +502,7 @@
 
   <div class="instructions">
     Arrow keys: move / drive · E: interact / enter / exit · B or Escape: back ·
-    F: fire equipped weapon · I: inventory · M: atlas information
+    F: fire equipped weapon · I: inventory · M: atlas · T: thinking mode
   </div>
 
   <!-- One overlay shell serves phones, computers, merchants, machines,
@@ -4338,22 +4338,24 @@ const CHARACTER_DEFINITIONS = {
   },
 
   jegna: {
-    name: "JEGNA",
-    image: ASSETS.character.badge.jegna,
-    portrait: ASSETS.character.badge.jegna,
-    faction: "unrecognizer",
-    maxHealth: 100,
-    dialogueId: "jegnaDialogue"
-  },
+  name: "JEGNA",
+  image: ASSETS.character.badge.jegna,
+  portrait: ASSETS.character.badge.jegna,
+  faction: "unrecognizer",
+  maxHealth: 100,
+  dialogueId: "jegnaDialogue",
+  firstMeetingThoughtId: "people_jegna_first_impression"
+},
 
   zyr: {
-    name: "ZYR",
-    image: ASSETS.character.badge.zyr,
-    portrait: ASSETS.character.badge.zyr,
-    faction: "unrecognizer",
-    maxHealth: 100,
-    dialogueId: "zyrDialogue"
-  },
+  name: "ZYR",
+  image: ASSETS.character.badge.zyr,
+  portrait: ASSETS.character.badge.zyr,
+  faction: "unrecognizer",
+  maxHealth: 100,
+  dialogueId: "zyrDialogue",
+  firstMeetingThoughtId: "people_zyr_first_impression"
+},
 
   yord: {
   name: "YORD",
@@ -4370,8 +4372,9 @@ const CHARACTER_DEFINITIONS = {
   portrait: ASSETS.character.badge.kigh,
   faction: "unrecognizer",
   maxHealth: 100,
-  dialogueId: "kighDialogue"
-  },
+  dialogueId: "kighDialogue",
+  firstMeetingThoughtId: "people_kigh_first_impression"
+},
 
   wyl: {
   name: "WYL",
@@ -4379,7 +4382,8 @@ const CHARACTER_DEFINITIONS = {
   portrait: ASSETS.character.badge.wyl,
   faction: "unrecognizer",
   maxHealth: 100,
-  dialogueId: "wylBinoculars"
+  dialogueId: "wylBinoculars",
+  firstMeetingThoughtId: "people_wyl_first_impression"
 },
 
 cruk: {
@@ -4409,6 +4413,7 @@ cruk: {
   weaponId: "basicLaserHandgun",
   dialogueId: "redSnowRenegade"
 }
+
 };
 
 const ITEM_DEFINITIONS = {
@@ -5923,6 +5928,138 @@ const buildingStamps = [
 ];
 
 /* =============================================================
+   THINKING MODE DEFINITIONS
+
+   Each thought has a permanent ID.
+
+   The player stores only thought IDs. The writing, category,
+   title, and future branching information remain here.
+   ============================================================= */
+
+const THOUGHT_CATEGORIES = [
+  "Immediate",
+  "Work",
+  "People",
+  "Stro",
+  "Questions",
+  "Principles",
+  "Myself"
+];
+
+const THOUGHT_DEFINITIONS = {
+
+  initial_backpack_location: {
+    id: "initial_backpack_location",
+    category: "Immediate",
+    title: "The calibration backpack",
+    text:
+      "I left the HTI Calibration Backpack in the HTI vehicle. " +
+      "I need to get back to it before I can begin the work."
+  },
+
+  initial_return_to_vehicle: {
+    id: "initial_return_to_vehicle",
+    category: "Immediate",
+    title: "Return to the vehicle",
+    text:
+      "The vehicle is my starting point. The calibration equipment " +
+      "should still be stored there."
+  },
+
+  initial_first_three_targets: {
+    id: "initial_first_three_targets",
+    category: "Work",
+    title: "The first three targets",
+    text:
+      "My first assignment is to configure the HTI calibration targets " +
+      "in sectors AA, AC, and BB."
+  },
+
+  initial_triangulation: {
+    id: "initial_triangulation",
+    category: "Work",
+    title: "Establish triangulation",
+    text:
+      "Once the first three targets are synchronized, HTI should have " +
+      "enough information to establish the initial triangulation network on Stro."
+  },
+
+  initial_stro_assignment: {
+    id: "initial_stro_assignment",
+    category: "Stro",
+    title: "Stro",
+    text:
+      "I have been sent to Stro as an HTI Teleportation Surveyor and " +
+      "Field Operative. I don't know this planet yet."
+  },
+
+  initial_truth_compatible: {
+    id: "initial_truth_compatible",
+    category: "Principles",
+    title: "All truth is compatible",
+    text:
+      "All truth must be compatible. A contradiction may mean that " +
+      "something is missing from my understanding."
+  },
+
+  initial_how_to_life: {
+    id: "initial_how_to_life",
+    category: "Principles",
+    title: "howToLife",
+    text:
+      "The active question is how to live: continue, understand, help, " +
+      "build, and survive."
+  },
+
+  people_zyr_first_impression: {
+  id: "people_zyr_first_impression",
+  category: "People",
+  title: "Zyr",
+  text:
+    "Zyr keeps the beer kegs moving. He seems content to explain " +
+    "the machinery of an ordinary routine."
+},
+
+people_kigh_first_impression: {
+  id: "people_kigh_first_impression",
+  category: "People",
+  title: "Kigh",
+  text:
+    "Kigh nearly froze after abandoning a snowmobile south of the station. " +
+    "He talks about it casually, but Stro came close to killing him."
+},
+
+people_wyl_first_impression: {
+  id: "people_wyl_first_impression",
+  category: "People",
+  title: "Wyl",
+  text:
+    "Wyl noticed something was wrong with my binoculars immediately. " +
+    "He cannot repair them himself, but he knows who might."
+},
+
+people_jegna_first_impression: {
+  id: "people_jegna_first_impression",
+  category: "People",
+  title: "Jegna",
+  text:
+    "Jegna survived a distant hike because she carried heated meal rations. " +
+    "She understands how quickly hunger, weather, and distance can combine against someone."
+}
+
+};
+
+const INITIAL_THOUGHT_IDS = [
+  "initial_backpack_location",
+  "initial_return_to_vehicle",
+  "initial_first_three_targets",
+  "initial_triangulation",
+  "initial_stro_assignment",
+  "initial_truth_compatible",
+  "initial_how_to_life"
+];
+
+/* =============================================================
    10. PLAYER AND GAME STATE
    ============================================================= */
 
@@ -5960,6 +6097,8 @@ const player = {
   ],
 
   inventoryCapacity: 20,
+
+  thoughts: [...INITIAL_THOUGHT_IDS],
 
   equippedWeaponId: null,
 equippedSuitId: null,
@@ -6040,6 +6179,42 @@ droppedItems: [],
     onClose: null
   }
 };
+
+/* =============================================================
+   THINKING MODE SYSTEM
+   ============================================================= */
+
+function hasThought(thoughtId) {
+  return player.thoughts.includes(thoughtId);
+}
+
+function plantThought(thoughtId) {
+  const thought = THOUGHT_DEFINITIONS[thoughtId];
+
+  if (!thought) {
+    console.warn(`Unknown thought ID: ${thoughtId}`);
+    return false;
+  }
+
+  if (hasThought(thoughtId)) {
+    return false;
+  }
+
+  player.thoughts.push(thoughtId);
+  return true;
+}
+
+function getPlantedThoughts() {
+  return player.thoughts
+    .map(thoughtId => THOUGHT_DEFINITIONS[thoughtId])
+    .filter(Boolean);
+}
+
+function getThoughtsByCategory(category) {
+  return getPlantedThoughts().filter(
+    thought => thought.category === category
+  );
+}
 
 const RECOVERY_LOCATION = {
   mapId: "engineTestInterior",
@@ -11476,6 +11651,15 @@ function runCharacterDialogue(character, dialogueId) {
   const lineIndex = Math.min(step, lines.length - 1);
   const dialogueLine = lines[lineIndex];
 
+if (
+  step === 0 &&
+  definition.firstMeetingThoughtId
+) {
+  plantThought(
+    definition.firstMeetingThoughtId
+  );
+}
+
   const text =
   typeof dialogueLine === "string"
     ? dialogueLine
@@ -12375,6 +12559,124 @@ function updateHud() {
     `Merit ${player.merit} | Serpentine ${player.serpentine}`;
 }
 
+function openThinkingMode(selectedIndex = 0) {
+  const availableCategories = THOUGHT_CATEGORIES.filter(
+    category => getThoughtsByCategory(category).length > 0
+  );
+
+  const options = availableCategories.map(category => {
+    const thoughts = getThoughtsByCategory(category);
+
+    return {
+      label: `${category} [${thoughts.length}]`,
+
+      text:
+        `<strong>${category}</strong><br><br>` +
+        `${thoughts.length} thought${thoughts.length === 1 ? "" : "s"} ` +
+        `currently formed.`,
+
+      action: () => {
+        openThoughtCategory(category);
+      }
+    };
+  });
+
+  options.push({
+    label: "Close Thinking Mode",
+    text:
+      "Leave Yoi's current thoughts and return to the world.",
+    action: closeOverlay
+  });
+
+  openOverlay({
+    title: "YOI ZIMEK: THINK MODE",
+    image: ASSETS.character.badge.yoiUnrecognizer,
+    text:
+      "Yoi's thoughts are not objectives or instructions. " +
+      "They are the developing structure of his understanding.",
+    options,
+    selectedIndex: Math.min(
+      selectedIndex,
+      Math.max(0, options.length - 1)
+    )
+  });
+}
+
+function openThoughtCategory(category, selectedIndex = 0) {
+  const thoughts = getThoughtsByCategory(category);
+
+  const options = thoughts.map(thought => ({
+    label: thought.title,
+
+    text:
+      `<strong>${thought.title}</strong><br><br>` +
+      `${thought.text}`,
+
+    action: () => {
+      openThought(thought.id, category);
+    }
+  }));
+
+  options.push({
+    label: "Back to Thinking Mode",
+    text: "Return to the categories.",
+    action: openThinkingMode
+  });
+
+  openOverlay({
+    title: category.toUpperCase(),
+    image: ASSETS.character.badge.yoiUnrecognizer,
+    text:
+      thoughts.length > 0
+        ? "Choose a thought."
+        : "No thoughts have formed here yet.",
+    options,
+    selectedIndex: Math.min(
+      selectedIndex,
+      Math.max(0, options.length - 1)
+    )
+  });
+}
+
+function openThought(thoughtId, category) {
+  const thought = THOUGHT_DEFINITIONS[thoughtId];
+
+  if (!thought || !hasThought(thoughtId)) {
+    openThinkingMode();
+    return;
+  }
+
+  openOverlay({
+    title: thought.title.toUpperCase(),
+    image: ASSETS.character.badge.yoiUnrecognizer,
+
+    text:
+      `<span style="color:#9cff00;">${thought.category}</span>` +
+      `<br><br>` +
+      `${thought.text}`,
+
+    options: [
+      {
+        label: `Back to ${category}`,
+        action: () => {
+          const thoughtIndex = getThoughtsByCategory(category)
+            .findIndex(entry => entry.id === thoughtId);
+
+          openThoughtCategory(
+            category,
+            Math.max(0, thoughtIndex)
+          );
+        }
+      },
+
+      {
+        label: "Close Thinking Mode",
+        action: closeOverlay
+      }
+    ]
+  });
+}
+
 /* =============================================================
    23. ATLAS INFORMATION OVERLAY
    ============================================================= */
@@ -12535,6 +12837,12 @@ moveBinocularCamera(direction);
     event.preventDefault();
     return;
   }
+
+  if (key === "t") {
+  openThinkingMode();
+  event.preventDefault();
+  return;
+}
 });
 
 /* =============================================================
