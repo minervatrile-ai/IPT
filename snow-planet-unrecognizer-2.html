@@ -3943,7 +3943,7 @@ const DIALOGUE_DEFINITIONS = {
     }
 
     /*
-      Yoi currently has nothing Verkos purchases.
+      Yoi currently has nothing Verkos purchases. 
     */
     return [
       "Verkos. ART CORP acquisitions.",
@@ -6113,6 +6113,15 @@ people_verkos_culture: {
     "Verkos is not merely collecting valuable objects. " +
     "He is preserving evidence of how people live, what they make, and what they choose to leave behind. " +
     "Perhaps culture is partly composed of the things someone decides are worth remembering."
+},
+
+stro_red_snow_tunnel_entrance: {
+  id: "stro_red_snow_tunnel_entrance",
+  category: "Stro",
+  title: "Red Snow underground",
+  text:
+    "The Red Snow Gang has constructed or occupied a fortified entrance beneath the wilderness. " +
+    "They are not merely roaming the surface. Whatever they are protecting, part of their organization exists underground."
 },
 
 };
@@ -12239,9 +12248,13 @@ function checkHangarAmbushes() {
 
   if (distance > hangar.ambush.radius) return;
 
-  hangar.ambush.triggered = true;
+hangar.ambush.triggered = true;
 
-  spawnHangarRenegades(hangar);
+plantThought(
+  "stro_red_snow_tunnel_entrance"
+);
+
+spawnHangarRenegades(hangar);
 
   showBubble(
     "RED SNOW RENEGADES",
