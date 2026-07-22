@@ -570,6 +570,19 @@ const ASSETS = {
   },
 
   props: {
+
+  campfireDead:
+  "gallery/0-gallery/props/campfire-dead.png",
+
+campfireCooking:
+  "gallery/0-gallery/props/campfire-cooking.png",
+
+campfireBlazing:
+  "gallery/0-gallery/props/campfire-blazing.png",
+
+campfireSmoldering:
+  "gallery/0-gallery/props/campfire-smoldering.png",
+
   warehouseDoor: "gallery/0-gallery/props/warehouse-door.png",
   doorBlue: "gallery/0-gallery/props/door-blue.png",
   campfireOut: "gallery/0-gallery/props/campfire-out.png",
@@ -4674,6 +4687,13 @@ binoculars: {
    meaning it can no longer appear at another campfire.
    ============================================================= */
 
+const CAMPFIRE_IMAGES = [
+  ASSETS.props.campfireDead,
+  ASSETS.props.campfireCooking,
+  ASSETS.props.campfireBlazing,
+  ASSETS.props.campfireSmoldering
+];
+
 const COMMUNAL_CAMPFIRE_ITEMS = [
   "pineFaceWitness",
   "pineFaceWitness",
@@ -4698,6 +4718,9 @@ const COMMUNAL_CAMPFIRE_ITEMS = [
   The actual items remain inside COMMUNAL_CAMPFIRE_ITEMS until taken.
 */
 let currentCampfireSelection = [];
+
+let currentCampfireImage =
+  ASSETS.props.campfireDead;
 
 function getRandomCampfireSelection() {
   if (COMMUNAL_CAMPFIRE_ITEMS.length === 0) {
@@ -4756,6 +4779,15 @@ function getRandomCampfireSelection() {
 }
 
 function searchCampfire() {
+
+  currentCampfireImage =
+    CAMPFIRE_IMAGES[
+      Math.floor(
+        Math.random() *
+        CAMPFIRE_IMAGES.length
+      )
+    ];
+
   currentCampfireSelection =
     getRandomCampfireSelection();
 
@@ -4766,7 +4798,7 @@ function openCampfireContents() {
   if (currentCampfireSelection.length === 0) {
     openOverlay({
       title: "THE COMMUNAL FIRE",
-      image: ASSETS.props.campfireOut,
+      image: currentCampfireImage,
 
       text:
         COMMUNAL_CAMPFIRE_ITEMS.length === 0
@@ -4805,8 +4837,8 @@ function openCampfireContents() {
     );
 
   openOverlay({
-    title: "THE COMMUNAL FIRE",
-    image: ASSETS.props.campfireOut,
+  title: "THE COMMUNAL FIRE",
+  image: currentCampfireImage,
 
     text:
       "Among the remains of the campsite, a few objects seem to have surfaced from the wider circulation of Stro's abandoned fires.",
