@@ -4664,65 +4664,114 @@ binoculars: {
   }
 };
 
-/* campfire contents */
+/* =============================================================
+   COMMUNAL CAMPFIRE SYSTEM
 
-const CAMPFIRE_CONTENTS = {
-  /*
-    Format:
-    "MAP_ID:X:Y": ["itemId", "itemId"]
-  */
+   Every campfire on Stro draws from the same planetary collection.
 
-  "AH:21:15": [
-    "pineFaceWitness",
-    "stakeWitness"
-  ]
-};
+   Each campfire visit reveals a random portion of that collection.
+   Taking an item removes one copy from the shared collection,
+   meaning it can no longer appear at another campfire.
+   ============================================================= */
 
-const campfireStates = {};
+const COMMUNAL_CAMPFIRE_ITEMS = [
+  "pineFaceWitness",
+  "pineFaceWitness",
 
-function getCampfireKey(mapId, x, y) {
-  return `${mapId}:${x}:${y}`;
-}
+  "stakeWitness",
 
-function getCampfireState(mapId, x, y) {
-  const key = getCampfireKey(mapId, x, y);
+  "heatedMealRation",
+  "heatedMealRation",
+  "heatedMealRation",
+  "heatedMealRation",
 
-  if (!campfireStates[key]) {
-    campfireStates[key] = {
-      searched: false,
-      items: []
-    };
+  "gasJugEmpty",
+  "gasJugEmpty",
+
+  "binocularsBroken"
+];
+
+/*
+  The currently visible handful is temporary.
+
+  It changes whenever the player begins a new campfire search.
+  The actual items remain inside COMMUNAL_CAMPFIRE_ITEMS until taken.
+*/
+let currentCampfireSelection = [];
+
+function getRandomCampfireSelection() {
+  if (COMMUNAL_CAMPFIRE_ITEMS.length === 0) {
+    return [];
   }
 
-  return campfireStates[key];
-}
+  /*
+    Reveal between one and three items.
 
-function searchCampfire(mapId, x, y) {
-  const key = getCampfireKey(mapId, x, y);
-  const state = getCampfireState(mapId, x, y);
+    Never attempt to reveal more items than remain in
+    the communal collection.
+  */
+  const maximumVisible = Math.min(
+    3,
+    COMMUNAL_CAMPFIRE_ITEMS.length
+  );
 
-  if (!state.searched) {
-    state.searched = true;
+  const visibleCount =
+    1 + Math.floor(
+      Math.random() * maximumVisible
+    );
 
-    state.items = [
-      ...(CAMPFIRE_CONTENTS[key] || [])
+  /*
+    Shuffle a copy of the communal collection.
+
+    The original collection remains untouched until
+    the player actually takes something.
+  */
+  const shuffledItems = [
+    ...COMMUNAL_CAMPFIRE_ITEMS
+  ];
+
+  for (
+    let index = shuffledItems.length - 1;
+    index > 0;
+    index -= 1
+  ) {
+    const randomIndex =
+      Math.floor(
+        Math.random() * (index + 1)
+      );
+
+    [
+      shuffledItems[index],
+      shuffledItems[randomIndex]
+    ] = [
+      shuffledItems[randomIndex],
+      shuffledItems[index]
     ];
   }
 
-  openCampfireContents(mapId, x, y);
+  return shuffledItems.slice(
+    0,
+    visibleCount
+  );
 }
 
-function openCampfireContents(mapId, x, y) {
-  const state = getCampfireState(mapId, x, y);
+function searchCampfire() {
+  currentCampfireSelection =
+    getRandomCampfireSelection();
 
-  if (state.items.length === 0) {
+  openCampfireContents();
+}
+
+function openCampfireContents() {
+  if (currentCampfireSelection.length === 0) {
     openOverlay({
-      title: "ABANDONED CAMP",
+      title: "THE COMMUNAL FIRE",
       image: ASSETS.props.campfireOut,
 
       text:
-        "You search around the cold firepit, but find nothing " +
-        "worth carrying.",
+        COMMUNAL_CAMPFIRE_ITEMS.length === 0
+          ? "The fire offers nothing. Whatever once circulated among the camps has been carried away."
+          : "You search around the cold firepit, but nothing reveals itself this time.",
 
       options: [
         {
@@ -4735,30 +4784,32 @@ function openCampfireContents(mapId, x, y) {
     return;
   }
 
-  const itemOptions = state.items.map((itemId, index) => {
-    const item = ITEM_DEFINITIONS[itemId];
+  const itemOptions =
+    currentCampfireSelection.map(
+      (itemId, itemIndex) => {
+        const item =
+          ITEM_DEFINITIONS[itemId];
 
-    return {
-      label: item?.name || itemId,
+        return {
+          label:
+            item?.name ||
+            itemId,
 
-      action: () => {
-        openCampfireItemMenu(
-          mapId,
-          x,
-          y,
-          index
-        );
+          action: () => {
+            openCampfireItemMenu(
+              itemIndex
+            );
+          }
+        };
       }
-    };
-  });
+    );
 
   openOverlay({
-    title: "ITEMS AROUND CAMPFIRE",
+    title: "THE COMMUNAL FIRE",
     image: ASSETS.props.campfireOut,
 
     text:
-      "You search through the remains of the campsite. " +
-      "These items are still here.",
+      "Among the remains of the campsite, a few objects seem to have surfaced from the wider circulation of Stro's abandoned fires.",
 
     options: [
       ...itemOptions,
@@ -4772,17 +4823,16 @@ function openCampfireContents(mapId, x, y) {
 }
 
 function openCampfireItemMenu(
-  mapId,
-  x,
-  y,
   itemIndex
 ) {
-  const state = getCampfireState(mapId, x, y);
-  const itemId = state.items[itemIndex];
-  const item = ITEM_DEFINITIONS[itemId];
+  const itemId =
+    currentCampfireSelection[itemIndex];
+
+  const item =
+    ITEM_DEFINITIONS[itemId];
 
   if (!itemId || !item) {
-    openCampfireContents(mapId, x, y);
+    openCampfireContents();
     return;
   }
 
@@ -4792,16 +4842,13 @@ function openCampfireItemMenu(
 
     text:
       item.description ||
-      "An item found near the abandoned campfire.",
+      "An object circulating among the abandoned campfires of Stro.",
 
     options: [
       {
         label: "Take",
         action: () => {
           takeCampfireItem(
-            mapId,
-            x,
-            y,
             itemIndex
           );
         }
@@ -4809,49 +4856,70 @@ function openCampfireItemMenu(
 
       {
         label: "Leave it",
-        action: () => {
-          openCampfireContents(mapId, x, y);
-        }
+        action: openCampfireContents
       }
     ]
   });
 }
 
 function takeCampfireItem(
-  mapId,
-  x,
-  y,
   itemIndex
 ) {
-  const state = getCampfireState(mapId, x, y);
-  const itemId = state.items[itemIndex];
-  const item = ITEM_DEFINITIONS[itemId];
+  const itemId =
+    currentCampfireSelection[itemIndex];
 
-  if (!itemId) {
-    openCampfireContents(mapId, x, y);
+  const item =
+    ITEM_DEFINITIONS[itemId];
+
+  if (!itemId || !item) {
+    openCampfireContents();
     return;
   }
 
-  const itemAdded = addItem(itemId);
+  const itemAdded =
+    addItem(itemId);
 
   if (!itemAdded) {
     closeOverlay();
 
     showBubble(
       "INVENTORY TOO FULL",
-      `Make room before taking ${item?.name || itemId}.`
+      `Make room before taking ${item.name}.`
     );
 
     return;
   }
 
-  state.items.splice(itemIndex, 1);
+  /*
+    Remove one matching copy from the planetary collection.
+
+    If several copies of an item exist, only one is removed.
+  */
+  const communalIndex =
+    COMMUNAL_CAMPFIRE_ITEMS.indexOf(
+      itemId
+    );
+
+  if (communalIndex !== -1) {
+    COMMUNAL_CAMPFIRE_ITEMS.splice(
+      communalIndex,
+      1
+    );
+  }
+
+  /*
+    Also remove it from the handful currently being viewed.
+  */
+  currentCampfireSelection.splice(
+    itemIndex,
+    1
+  );
 
   closeOverlay();
 
   showBubble(
     "ITEM TAKEN",
-    `${item?.name || itemId} added to inventory.`
+    `${item.name} removed from the communal fire and added to inventory.`
   );
 
   updateHud();
@@ -10127,65 +10195,21 @@ const INTERACTIONS = {
   );
 },
 
-  campfire(interaction) {
-  const mapId = worldState.currentMapId;
-  const { x, y } = interaction;
-
-  const state = getCampfireState(
-    mapId,
-    x,
-    y
-  );
-
+  campfire() {
   openOverlay({
     title: "ABANDONED CAMP",
     image: ASSETS.props.campfireOut,
 
-    text: state.searched
-      ? "You have already searched this campsite. " +
-        "Anything you left behind may still be here."
-      : "A cold ring of stones rests in the snow. " +
-        "The people who camped here have moved on.",
-
-    options: [
-      {
-        label: state.searched
-          ? "Check remaining items"
-          : "Search area",
-
-        action: () => {
-          searchCampfire(mapId, x, y);
-        }
-      },
-
-      {
-        label: "Leave",
-        action: closeOverlay
-      }
-    ]
-  });
-},
-
-  noEntry() {
-  openOverlay({
-    title: "NO ENTRY",
-    image: ASSETS.props.subfrostNoEntry,
     text:
-      "A heavy barrier blocks access to the lower Subfrost Rail platforms.",
+      "A cold ring of stones rests in the snow. " +
+      "Objects left beside fires across Stro seem to pass into a loose, communal circulation.",
 
     options: [
       {
-        label: "Inspect barrier",
-        action: () => {
-          closeOverlay();
-
-          showBubble(
-  "OBSERVATION",
-  "The gate is sealed from the station side. Beyond it, the stairwell continues down " +
-  "toward the abandoned Subfrost Rail platforms."
-);
-        }
+        label: "Search the communal fire",
+        action: searchCampfire
       },
+
       {
         label: "Leave",
         action: closeOverlay
