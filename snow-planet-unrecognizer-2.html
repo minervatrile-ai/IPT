@@ -934,7 +934,32 @@ right: "gallery/0-gallery/sprite/yoi.png"
 }
   },
 
-  item: {
+  machinery: {
+  redglassGrinder:
+    "gallery/0-gallery/machinery/redglass-grinder.png",
+
+  redglassProcessor:
+    "gallery/0-gallery/machinery/redglass-processor.png",
+
+  pillEncapsulator:
+    "gallery/0-gallery/machinery/pill-encapsulator.png",
+},
+
+item: {
+  redglassRock:
+    "gallery/0-gallery/item/redglass-rock.png",
+
+  redglassPowder:
+    "gallery/0-gallery/item/redglass-powder.png",
+
+  unrecognizerDust:
+    "gallery/0-gallery/item/unrecognizer-dust.png",
+
+  emptyPillBottle:
+    "gallery/0-gallery/item/pill-bottle-empty.png",
+
+  fullPillBottle:
+    "gallery/0-gallery/item/pill-bottle-full.png",
 
     unrecognizerWatch:
   "gallery/0-gallery/item/unrecognizer-watch.png",
@@ -1195,6 +1220,9 @@ const OUTSIDE_TILES = {
   prevents a door image from automatically meaning "exit building."
 */
 const BLUEPRINT_TILE = {
+  "y": ASSETS.machinery.redglassGrinder,
+  "Y": ASSETS.machinery.redglassProcessor,
+  "!": ASSETS.machinery.pillEncapsulator,
   "h": ASSETS.props.armchairRed,
   "{": ASSETS.props.warehouseDoor,
   "}": ASSETS.props.doorBlue,
@@ -1397,6 +1425,24 @@ const BLUEPRINT_TILE_RULES = {
     interaction: "food"
   },
 
+  "y": {
+  name: "Redglass grinder",
+  walkable: false,
+  interaction: "machinery"
+},
+
+  "Y": {
+  name: "Redglass powder processor",
+  walkable: false,
+  interaction: "machinery"
+},
+
+  "!": {
+  name: "UNRECOGNIZER pill encapsulator",
+  walkable: false,
+  interaction: "machinery"
+},
+
   "U": {
     name: "trash chute",
     walkable: false,
@@ -1536,13 +1582,13 @@ AA_MAP and AB_MAP are preserved exactly from the supplied file.
 
 
 const AA_MAP = [
-  "pppp............@.@.........",
-  "@PPPPPPP....................",
-  "@==pPP......................",
-  "==..........................",
-  "@=..=.......................",
-  "p=..=...........ppp.......pp",
-  "@=..=.g..............ppp....",
+  "pppp............@=====@.....",
+  "@PPPPPPP.........=====......",
+  "@==pPP...........=====......",
+  "==...............=====......",
+  "@=..=............=====......",
+  "p=..=...........p=====PP..pp",
+  "@=..=.g..........=====p.....",
   "@===========================",
   "@===========================",
   "@===========================",
@@ -3151,7 +3197,7 @@ const GE_MAP = [
   "ppP.PpPPPPpPppPPP.PPPPPpppPp",
   "PPP.pPpPpPPpppPpp.PPPPpPPPpP",
   "ppP.PPPpPpPPpPpPp.pPPPPppPPP",
-  "....PppPPP........pPpPpP.ppP",
+  "....PppPPP........pPpPpP....",
   "PpPpPPpPPP.ppPPpp.pPpPPP.Ppp",
   "PPPpPpPPPP.pPPppP.ppPppp.PpP",
   "PPPPppppPP.pPpPPP.PPpPpp.PPP",
@@ -3169,7 +3215,7 @@ const GE_MAP = [
   "pPP.PPpPPPPpPppPp.ppppPP.pPP",
   "ppP.pPPPpppPpppPp.PPPpPP.pPP",
   "pPP.pPPpPPPppPpPP.PpPPpP.ppP",
-  "Ppp.PPPPPPPpppPPP.PpPpPP.ppP",
+  "Ppp.PPPPPPPpppPPP........ppP",
   "PPP.PpppPpppPpPpP.pPPPPp.ppP",
   "pPp.PPPPpPppPPPPP.PpppPp.ppP",
   "..................pppPPP.PpP",
@@ -3182,7 +3228,7 @@ const GF_MAP = [
   "Ppp.PpPpPpPPPPPpP.pPpppPPPpP",
   "Ppp.PPpPPpPpPPPPP.PPPpPPpPPP",
   "Ppp.PPPPPPpPPPpPP.pPPpPPPPpp",
-  "PPP........PpPPPp...........",
+  "...........PpPPPp...........",
   "pPP.PPpppP.PPpppPpPPPPPPPPpP",
   "PPp.pPPPPp.pPPPPpppppppPppPP",
   "PpP.PPPpPp.PpppPpPPPPpPPPPPp",
@@ -3197,12 +3243,12 @@ const GF_MAP = [
   "PpP.ppPPpP.PpPPpPppPpppP....",
   "ppp.PPpppp.ppPppPPPPPppp....",
   "....PppPPP.ppPPPP........P.P",
-  "PPPPpPpPPP.PPPPPp.ppPpPPPPpP",
-  "PPPPPPpPpP.pPPpPp.PppPPPPPpp",
-  "pPPPPPPpPP.PpPPPP.PpPppPPpPP",
-  "PPPPPPpPPP.PPppPp.pPPPPpPPpP",
-  "pPPPPppPPP.pppppP.ppPPPpPppp",
-  "PpPPPPpPpP.pPPPpp.PpPpPPpPpP",
+  "PPP.pPpPPP.PPPPPp.ppPpPPPPpP",
+  "PPP.PPpPpP.pPPpPp.PppPPPPPpp",
+  "pPP.PPPpPP.PpPPPP.PpPppPPpPP",
+  "PPP.PPpPPP.PPppPp.pPPPPpPPpP",
+  "pPP.PppPPP.pppppP.ppPPPpPppp",
+  "PpP.PPpPpP.pPPPpp.PpPpPPpPpP",
   "PPp.PppPpP........PPpPPp.PPP",
   "pPP.pppPpPPPpPpPPPPpPPPP.PpP",
   "PpP.pPPPpP.PpPPppPpPPpPp.ppP",
@@ -3281,25 +3327,25 @@ const HA_MAP = [
   "PPP.PpPPpp.PppPPPpPPpPPPpp..",
   "PPP.PpppPP.pPPPPPpPpPPpPpPpp",
   "PPP.PPPpPP.pPPPPPPpPPPPPpPPP",
-  "pPP.ppPpPP.PPPpPPpppppPpPPpp",
-  "PPp.PPPppP.PpPpPp...........",
-  "PpP.PPpppP.PppPpP.PPpppPpPPp",
-  "PPP.PPPPPP.PppPPP.ppPPppPpPP",
-  "pPP.PPpPPP.pppppp.PPppPPPpPP",
-  "ppp.PPpPPp.PpPppP.ppPPPPPppP",
-  "PpP.PPPpPP.PPpPPP.pPPPpPppPP",
-  "PPP.pPPPpp.pPPPpP.pppPpPPpPp",
-  "pPP........pPpPPP.PPPpPP....",
-  "pPP.PpPPPpppPpppP.PpPPPp.PPp",
-  "PPp.PPpppPPPPPPPp.PPPPpP.PpP",
-  "PPp.PppppPPpPPpPp.PPpppP.PpP",
-  "Ppp.PPPppPPPppPpP.PppPpP.Ppp",
-  "ppP.pPpPPPPppPPPP.PPPPpP.Ppp",
-  "ppp.P.....PpPpPPP.pPPPPP.pPp",
-  "pPp....o....................",
-  "PppPp......PPPppp.pPPPPPPpPP",
-  "PPPPPPP.PPpPpPPpP.PPppPpPPPp",
-  "pPPPpPP.PpPPPpPPp.PppPpPPppP",
+  "======================PpPPpp",
+  "======================......",
+  "======================pPpPPp",
+  "======================ppPpPP",
+  "======================PPPpPP",
+  "ppp.PPpPPp.PpPppP=====PPPppP",
+  "PpP.PPPpPP.PPpPPP=====pPppPP",
+  "PPP.pPPPpp.pPPPpP=====pPPpPp",
+  "pPP........pPpPPP=====PP....",
+  "pPP.PpPPPpppPpppP=====Pp.PPp",
+  "PPp.PPpppPPPPPPPp=====pP.PpP",
+  "PPp.PppppPPpPPpPp=====pP.PpP",
+  "Ppp.PPPppPPPppPpP=====pP.Ppp",
+  "ppP.pPpPPPPppPPPP=====pP.Ppp",
+  "ppp.P.....PpPpPPP=====PP.pPp",
+  "pPp....o.........=====......",
+  "PppPp......PPPppp=====PPPpPP",
+  "PPPPPPP.PPpPpPPpP=====PpPPPp",
+  "pPPPpPP.PpPPPpPP@=====@PPppP",
 ];
 
 const HB_MAP = [
@@ -3465,13 +3511,13 @@ const HG_MAP = [
   "PPp.P................PPp.PPp",
   "pPp.p................ppp.ppp",
   "PPp.P................ppp.PPp",
-  "pPp.p.............PpPPPP.PPP",
-  "Ppp.P.............PpppPP.PPP",
-  "PPP.p.............PPpPpP.PPP",
-  "PpP...............PPPppp.PPP",
-  "PPp.PpPppPPPPPPPPPpPPPPP.PPp",
-  "PPP.PppPPPPpPpPPpPpPpPPP.PPp",
-  "ppP..............PPpPPPP.ppp",
+  "pPp.p.............=====P.PPP",
+  "Ppp.P.............=====P.PPP",
+  "PPP.p.............==========",
+  "PpP...............==========",
+  "PPp.PpPppPPPPPPPPP==========",
+  "PPP.PppPPPPpPpPPpP==========",
+  "ppP..............P==========",
   "PPP..............ppPPpPP.Ppp",
   "PPP..............pPPPPPP.PpP",
   "pPP..............PPpPPPP.ppP",
@@ -3498,11 +3544,11 @@ const HH_MAP = [
   "PPP.PPPPPPpPPPPPPPPPPPPP.PPP",
   "ppP.PPPPPPPpPpPpPPpPppPP.PPP",
   "PPP.PPPPpPPPPPPpPPPPpPPP.PPp",
-  "PPP.PPPPPPPPPpPPPPPPPPPP.PpP",
-  "pPP.ppPPPP...............PPP",
-  "Ppp.PPPPPP.PpPpPPPPPPPPP.PPP",
-  "Ppp.PPPPPP.PPPpPPPPpPPpP.PPP",
-  "pPp.PPPPPP.pPPPPPPPPPPPP.PPP",
+  "============================",
+  "============================",
+  "============================",
+  "============================",
+  "============================",
   "PPP.pPPPPP.PPPPPPPPPPpPp.PPP",
   "PPP.PpPPPP.PPppPPPPppPPP.PPP",
   "PPP.PPPPpP.PpPPppPPpPPpp.PPp",
@@ -3693,25 +3739,25 @@ const BLUEPRINTS = {
   kind: "interior",
 
   exits: [
-    { x: 3, y: 8 },
-    { x: 4, y: 8 }
+    { x: 7, y: 8 },
+    { x: 8, y: 8 }
   ],
 
   spawn: {
-    x: 4,
+    x: 8,
     y: 7
   },
 
   tiles: [
-    "WWWWWWWW",
-    "W.C..C.W",
-    "W......W",
-    "W.____.W",
-    "W......W",
-    "W.T..T.W",
-    "W......W",
-    "W..==..W",
-    "WWWddWWW"
+    "WWWWWWWWWWWWWWWW",
+    "W.y...Y....!...W",
+    "W..............W",
+    "WW___WWWWW___WWW",
+    "W..............W",
+    "W.T........T...W",
+    "W..............W",
+    "W......==......W",
+    "WWWWWWWddWWWWWWW"
   ]
 },
 
@@ -4734,6 +4780,56 @@ cruk: {
 
 const ITEM_DEFINITIONS = {
 
+  redglassRock: {
+  id: "redglassRock",
+  name: "REDGLASS ROCK",
+  image: ASSETS.item.redglassRock,
+  description:
+    "A naturally occurring chunk of Redglass. It can be crushed into Redglass Powder using an industrial grinder.",
+  bulk: 1,
+  stackable: true
+},
+
+redglassPowder: {
+  id: "redglassPowder",
+  name: "REDGLASS POWDER",
+  image: ASSETS.item.redglassPowder,
+  description:
+    "Finely crushed Redglass. It can be refined into UNRECOGNIZER DUST.",
+  bulk: 1,
+  stackable: true
+},
+
+unrecognizerDust: {
+  id: "unrecognizerDust",
+  name: "UNRECOGNIZER DUST",
+  image: ASSETS.item.unrecognizerDust,
+  description:
+    "A proprietary pharmaceutical compound produced from Redglass Powder. Used to manufacture UNRECOGNIZER pills.",
+  bulk: 1,
+  stackable: true
+},
+
+emptyPillBottle: {
+  id: "emptyPillBottle",
+  name: "EMPTY PILL BOTTLE",
+  image: ASSETS.item.emptyPillBottle,
+  description:
+    "An empty UNRECOGNIZER pill bottle awaiting encapsulation.",
+  bulk: 1,
+  stackable: true
+},
+
+fullPillBottle: {
+  id: "fullPillBottle",
+  name: "UNRECOGNIZER PILLS",
+  image: ASSETS.item.fullPillBottle,
+  description:
+    "A sealed bottle of UNRECOGNIZER capsules manufactured by an industrial pill encapsulator.",
+  bulk: 1,
+  stackable: true
+},
+
   unrecognizerWatch: {
   name: "UNRECOGNIZER Watch",
   image: ASSETS.item.unrecognizerWatch,
@@ -4957,6 +5053,87 @@ binoculars: {
     damage: 35,
     range: 8,
     projectileImage: ASSETS.effect.basicLaser
+  }
+};
+
+const MACHINERY_DEFINITIONS = {
+  "y": {
+    id: "redglassGrinder",
+    title: "REDGLASS ROCK GRINDER",
+
+    description:
+      "An industrial crushing machine that converts REDGLASS ROCK into REDGLASS POWDER.",
+
+    requirements: [
+      {
+        itemId: "redglassRock",
+        quantity: 1
+      }
+    ],
+
+    outputs: [
+      {
+        itemId: "redglassPowder",
+        quantity: 1
+      }
+    ],
+
+    processMessage:
+      "The grinder roars to life. REDGLASS POWDER pours into the output tray."
+  },
+
+  "Y": {
+    id: "redglassProcessor",
+    title: "REDGLASS POWDER PROCESSOR",
+
+    description:
+      "A proprietary refinement machine that converts REDGLASS POWDER into UNRECOGNIZER DUST.",
+
+    requirements: [
+      {
+        itemId: "redglassPowder",
+        quantity: 1
+      }
+    ],
+
+    outputs: [
+      {
+        itemId: "unrecognizerDust",
+        quantity: 1
+      }
+    ],
+
+    processMessage:
+      "The processor emits a rising mechanical whine. UNRECOGNIZER DUST collects in the output chamber."
+  },
+
+  "!": {
+    id: "pillEncapsulator",
+    title: "UNRECOGNIZER PILL ENCAPSULATOR",
+
+    description:
+      "An automated pharmaceutical machine that fills and seals bottles of UNRECOGNIZER capsules.",
+
+    requirements: [
+      {
+        itemId: "unrecognizerDust",
+        quantity: 1
+      },
+      {
+        itemId: "emptyPillBottle",
+        quantity: 1
+      }
+    ],
+
+    outputs: [
+      {
+        itemId: "fullPillBottle",
+        quantity: 1
+      }
+    ],
+
+    processMessage:
+      "Capsules rattle through the mechanism. A sealed bottle drops into the collection bin."
   }
 };
 
@@ -6643,7 +6820,9 @@ const player = {
     "basicLaserHandgun",
     "binoculars",
     "hereoDevice",
-    "unrecognizerWatch" 
+    "unrecognizerWatch",
+    "redglassRock",
+    "emptyPillBottle"
   ],
 
   inventoryCapacity: 20,
@@ -9426,13 +9605,6 @@ openOverlay({
   selectedIndex
 });
 
-  openOverlay({
-   title: "INVENTORY",
-   text: bulkText,
-   image: "",
-   options,
-   selectedIndex
-  });
 }
 
 function openFuelOverlay() {
@@ -10765,6 +10937,122 @@ trashChute() {
   openTrashChuteOverlay();
 },
 
+  machinery(interaction) {
+  const machine =
+    MACHINERY_DEFINITIONS[interaction.symbol];
+
+  if (!machine) {
+    setMessage("This machine has no matching definition.");
+    return;
+  }
+
+  const hasRequirements =
+    machine.requirements.every(requirement => {
+      const quantityCarried =
+        player.inventory.filter(
+          itemId => itemId === requirement.itemId
+        ).length;
+
+      return quantityCarried >= requirement.quantity;
+    });
+
+  const requirementText =
+    machine.requirements
+      .map(requirement => {
+        const item =
+          ITEM_DEFINITIONS[requirement.itemId];
+
+        return `${requirement.quantity} × ${
+          item?.name || requirement.itemId
+        }`;
+      })
+      .join("<br>");
+
+  openOverlay({
+    title: machine.title,
+
+    text:
+      `${machine.description}` +
+      `<br><br><strong>Required:</strong><br>` +
+      requirementText,
+
+    options: [
+      {
+        label: "Process Materials",
+
+        disabled: !hasRequirements,
+
+        text: hasRequirements
+          ? "Place the required materials into the machine."
+          : "Yoi is not carrying all required materials.",
+
+        action: () => {
+          /*
+            Remove the required inputs.
+          */
+          for (const requirement of machine.requirements) {
+            for (
+              let count = 0;
+              count < requirement.quantity;
+              count += 1
+            ) {
+              removeItem(requirement.itemId);
+            }
+          }
+
+          /*
+            Add the finished outputs.
+          */
+          for (const output of machine.outputs) {
+            for (
+              let count = 0;
+              count < output.quantity;
+              count += 1
+            ) {
+              const added = addItem(output.itemId);
+
+              if (!added) {
+                /*
+                  Restore the inputs if the output cannot fit.
+                */
+                for (const requirement of machine.requirements) {
+                  for (
+                    let restoreCount = 0;
+                    restoreCount < requirement.quantity;
+                    restoreCount += 1
+                  ) {
+                    addItem(requirement.itemId);
+                  }
+                }
+
+                closeOverlay();
+
+                showBubble(
+                  machine.title,
+                  "INVENTORY TOO FULL. The materials were not processed."
+                );
+
+                return;
+              }
+            }
+          }
+
+          closeOverlay();
+
+          showBubble(
+            machine.title,
+            machine.processMessage
+          );
+        }
+      },
+
+      {
+        label: "Leave",
+        action: closeOverlay
+      }
+    ]
+  });
+},
 
   bed() {
     openOverlay({
@@ -11148,10 +11436,11 @@ if (blueprintExit) {
 
     if (tile?.interaction) {
       return {
-        interaction: tile.interaction,
-        x,
-        y
-      };
+  interaction: tile.interaction,
+  symbol,
+  x,
+  y
+};
     }
   }
 
