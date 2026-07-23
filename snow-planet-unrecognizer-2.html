@@ -369,12 +369,22 @@
     }
 
     .menuOption {
-      padding: 10px;
-      margin: 8px 0;
-      border: 2px solid #333;
-      background: var(--panel-2);
-      color: var(--amber);
-    }
+  padding: 10px;
+  margin: 8px 0;
+  border: 2px solid #333;
+  background: var(--panel-2);
+  color: var(--amber);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.menuOption:active {
+  border-color: var(--green);
+  background: #263800;
+  color: white;
+}
 
     .menuOption.selected {
       border-color: var(--green);
@@ -9887,7 +9897,12 @@ overlayImage.style.backgroundImage =
 
 state.options.forEach((option, index) => {
   const row = document.createElement("div");
+
   row.className = "menuOption";
+  row.textContent = option.label;
+
+  row.setAttribute("role", "button");
+  row.setAttribute("tabindex", option.disabled ? "-1" : "0");
 
   if (index === state.selectedIndex) {
     row.classList.add("selected");
@@ -9896,9 +9911,16 @@ state.options.forEach((option, index) => {
 
   if (option.disabled) {
     row.style.opacity = "0.45";
+    row.setAttribute("aria-disabled", "true");
+  } else {
+    row.addEventListener("pointerup", event => {
+      event.preventDefault();
+
+      worldState.overlay.selectedIndex = index;
+      confirmOverlaySelection();
+    });
   }
 
-  row.textContent = option.label;
   overlayOptions.appendChild(row);
 });
 
