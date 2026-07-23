@@ -13047,16 +13047,57 @@ function drawProjectiles() {
 }
 
 function updateCamera() {
-  const focusTileX = player.binocularMode
-    ? player.binocularCameraX
-    : player.x;
+  let focusTileX;
+  let focusTileY;
 
-  const focusTileY = player.binocularMode
-    ? player.binocularCameraY
-    : player.y;
+  if (player.binocularMode) {
+    focusTileX = player.binocularCameraX;
+    focusTileY = player.binocularCameraY;
+  } else if (player.mode === "driving") {
+    const vehicle = getCurrentVehicle();
 
-  const focusX = focusTileX * TILE_SIZE + TILE_SIZE / 2;
-  const focusY = focusTileY * TILE_SIZE + TILE_SIZE / 2;
+    if (vehicle) {
+      const size = getVehicleSize(vehicle, vehicle.facing);
+
+      /*
+        Center the camera on the complete vehicle footprint,
+        rather than its top-left coordinate.
+      */
+      focusTileX = vehicle.x + size.width / 2;
+      focusTileY = vehicle.y + size.height / 2;
+
+      /*
+        Push the camera view ahead of the vehicle so the driver
+        can see the route they are approaching.
+      */
+      const lookAheadTiles = 2;
+
+      if (vehicle.facing === "left") {
+        focusTileX -= lookAheadTiles;
+      }
+
+      if (vehicle.facing === "right") {
+        focusTileX += lookAheadTiles;
+      }
+
+      if (vehicle.facing === "up") {
+        focusTileY -= lookAheadTiles;
+      }
+
+      if (vehicle.facing === "down") {
+        focusTileY += lookAheadTiles;
+      }
+    } else {
+      focusTileX = player.x;
+      focusTileY = player.y;
+    }
+  } else {
+    focusTileX = player.x;
+    focusTileY = player.y;
+  }
+
+  const focusX = focusTileX * TILE_SIZE;
+  const focusY = focusTileY * TILE_SIZE;
 
   const map = getViewedMap();
   const { width, height } = getMapDimensions(map);
