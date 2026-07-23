@@ -618,6 +618,9 @@ campfireSmoldering:
 architecture: {
   /* Full outside building stamps */
 
+  unrecognizerDepot:
+  "gallery/0-gallery/architecture/unrecognizer-depot.png",
+
   hangarGate: 
   "gallery/0-gallery/architecture/hangar-gate.png",
 
@@ -1335,10 +1338,10 @@ AA_MAP and AB_MAP are preserved exactly from the supplied file.
 
 const AA_MAP = [
   "pppp............@.@.........",
-  "pPPPPPPP....................",
-  "p==pPP......................",
-  "p=..........................",
-  "P=..=.......................",
+  "@PPPPPPP....................",
+  "@==pPP......................",
+  "==..........................",
+  "@=..=.......................",
   "p=..=...........ppp.......pp",
   "@=..=.g..............ppp....",
   "@===========================",
@@ -1440,9 +1443,9 @@ const AD_MAP = [
   ".......P.....ppP............",
   "......pp.....Ppp............",
   "......PP.....Ppp...........p",
-  "....PPpP.....PP.............",
-  "....PPpP.....PP.............",
-  "......pp.....PP.............",
+  "....PPpP.....PP............P",
+  "....PPpP.....PP............P",
+  "......pp.....PP............p",
   "......Pp.....P..............",
   ".......p.....Pp.............",
   "......PP.....PP.............",
@@ -1460,40 +1463,40 @@ const AD_MAP = [
 const AE_MAP = [
   "PpPppPpPpPpPpPpPPPPPPpppppPP",
   "pPPPppPPpPpPpPpPPPPpPPPpPPPP",
-  ".........................PpP",
-  "..........................PP",
-  "..........................PP",
+  "............................",
+  "............................",
+  "............................",
   "PPPpPPPPPppPPPPPPPPPPPP...PP",
   "PpPpPPPpPPPppPpppPPppPP...pP",
   "ppPppPPppPPPpPpPPPpPppp...pp",
   "PPPpPpPppPpPpPPPPPPPPPp...Pp",
-  "...........PpPppP.........PP",
-  "............PpPP..........PP",
-  "............pPPp.........pPP",
-  "Pp...pppp...PPpp...PPPpPPPPP",
-  "PP...PPpP...PPPP...PpPPPPPpP",
-  "pp...pPPP...PpPp...pPpppPpPP",
-  "Pp...Pppp...PPPP...PpPPPPPpP",
-  "............PP.p.........PpP",
   "..........................PP",
-  "...........P................",
-  "..pPpPpPppP.......PpppP.....",
-  ".PPPPPPPPpPP.....PPPpPp.....",
-  ".PPppPPppPpP.....pPPPPP.....",
-  "PpPPPpPPPPPPPp.PPppPpPP.....",
-  "..................pPPPP.....",
-  "...................PPPP.....",
-  "...................ppPp...pP",
-  "PppppPPPPppPpppP...pPPp...PP",
-  "PPPPPPppPPPPpPPp...ppPP...PP",
+  "..........................PP",
+  "...........................P",
+  "Pp.........................P",
+  "PP.........................P",
+  "pp.........................P",
+  "Pp........=======..........P",
+  "............=====..g.......P",
+  "............========.......P",
+  "............========........",
+  "............=====...........",
+  "............=====...........",
+  "............=====...........",
+  "............=====...........",
+  "............=====...........",
+  "............===.............",
+  "===============....ppPp...pP",
+  "PppppPPPPppPppp....pPPp...PP",
+  "PPPPPPppPPPPpPP....PpPP...PP",
 ];
 
 const AF_MAP = [
   "pPPPPPpPPpPPpPpPppPPPPppPPPP",
   "PPPPPpppppPppPPPPppPPPpppPPP",
-  "PPp.PpPPPP..................",
-  "PP...ppPp...................",
-  "Pp...PPPP...................",
+  "....PpPPPP..................",
+  ".....ppPp...................",
+  ".....PPPP...................",
   "pP...PPPP...pPpP...pPpp...Pp",
   "pp...PppP...PPpp...pPPP...PP",
   "pP...pppp...pppP...pPPP...pp",
@@ -1554,13 +1557,13 @@ const AH_MAP = [
   "pPPppPpPpppPPPPpPPPPPPPPPPPp",
   "pPpPPpPPPPpPPpPPPpppPPPPPppP",
   "PPPpPPpPPPpPpPPpPPPPPPppPpPP",
-  ".........................ppP",
+  "............................",
   "PpPPppPpPP.PpPPPPpPpPPPPPPPp",
   "pPpPppppPP.pPPPpPPpPPPPPPPPp",
   "pPPPPPPpPp.PPPpPpPppPppPpPPp",
   "PPpPPPPPPp.PPpPPPppPpPPpPPPP",
-  "PpppppppPP.PPPpppPpppPPPPpPP",
-  "pPPpPPpPpP.PppppppPPpppPppPP",
+  "Ppppp...PP.PPPpppPpppPPPPpPP",
+  "pPPpP.o.pP.PppppppPPpppPppPP",
   "PPp........PPPPpp........PPP",
   "ppp.ppPPPP.pPPPPP.pPPPpp.PPP",
   "PpP.PpPPPP.pPPPPp.ppPPPp....",
@@ -1706,16 +1709,16 @@ const BD_MAP = [
 ];
 
 const BE_MAP = [
-  "PpPPPpPppPpppPPP...pPPP...PP",
-  "ppPPPPPPPPPpppPP...PpPP...pP",
-  "...........ppPpP..........Pp",
-  "............PPPp..........pp",
-  "............PpppP........pPp",
-  "PPPPPPppP...PpPPPP.ppPPPPPPP",
+  "PpPPPpPppPpppPP....pPPP...PP",
+  "ppPPPPPPPPPpppP....PpPP...pP",
+  "...........ppPp...........Pp",
+  "............PPP...........pp",
+  "............Ppp..........pPp",
+  "PPPPPPppP...PpP....ppPPPPPPP",
   "PPpppPPpP...pPP.......PPpPPP",
   "pPpPPPPPp...pP.........ppPPP",
-  "pppPPPPPP...p...........pPp.",
-  "....pPpPp................p..",
+  "pppPPPPPP...p...........pPpP",
+  "....pPpPp................pPP",
   ".....PPPP...................",
   ".....PpPPP..................",
   "Pp...PPPPPpPp...............",
@@ -1724,7 +1727,7 @@ const BE_MAP = [
   "pp...PPppPpppP..............",
   ".....pPpPP..................",
   ".....PPPp...................",
-  ".....PpPP................PP.",
+  ".....PpPP................PPp",
   "PP...PPPp...PPpPPPPppPPPPppP",
   "pp...PPpp...PPppppPPppPpPPPP",
   "PP...PPpP...PpPPpPPp.pPpPPpP",
@@ -1745,8 +1748,8 @@ const BF_MAP = [
   "pP..=====...ppp....ppPPPppPP",
   "PP..=====...Pp.....PPPPPpPpp",
   "PP..=====..........pPPPPPpPp",
-  "....=====..........pppPPPPpP",
-  "....=====................PpP",
+  "p...=====..........pppPPPPpP",
+  "p...=====................PpP",
   "....=====.................pP",
   "....=====.................pP",
   "....=====.................pp",
@@ -1755,7 +1758,7 @@ const BF_MAP = [
   "....=====.................pP",
   "....=====.................PP",
   "....=====...................",
-  "....=====..................P",
+  "p...=====..................P",
   "P...==================.....p",
   "pP..==================.....P",
   "pP..==================....pp",
@@ -1908,9 +1911,9 @@ const CC_MAP = [
   "PP...pPpPppPPPpP...pPPp...Pp",
   "PP...ppPpPPPPPpP...PppP...PP",
   "pp...PPPPppPPPPp...PPPP...PP",
-  "PP.........Ppppp..........Pp",
-  "Pp..........PpPP..........PP",
-  "pPP.........pPpPP........pPP",
+  "...........Ppppp..........Pp",
+  "............PpPP..........PP",
+  "............pPpPP........pPP",
   "pPPPpPppp...Ppp.pPPppPPPPPPp",
   "PPPPPPPpP..........PPpPPPppP",
   "PpPppPppP...........pPPppPpP",
@@ -1928,17 +1931,17 @@ const CD_MAP = [
   "...........pppPp...pPPP...PP",
   "............PppP...PPPP...pp",
   "............pppPP.PpPpp...pp",
-  "PppPPPPpP...pPPPppPPppp...PP",
-  "pPpPPpPPP...pPPpPPppppP...PP",
-  "PPPPpPpPP...pPPPppPppPP...PP",
-  "PpPPPPppp...PPpppPPpPpP...Pp",
-  "....PpPPP.........pPPPP...Pp",
-  ".....PpPp..........PPPP...Pp",
-  ".....Ppppp.........pppP...pP",
-  "PP...PPppPPPPpPp...PPpp...PP",
-  "pP...PppPPpppPPp...PPPP...PP",
-  "pP...pppPPpPpPpP...pPpp...PP",
-  "PP...PpPpPppPPPp...PPpP...pP",
+  "PppPPPP.....pPPPppPPppp...PP",
+  "pPpPPpP.....pPPpPPppppP...PP",
+  "PPPPpPp.....pPPPppPppPP...PP",
+  "PpPPPPp.....PPpppPPpPpP...Pp",
+  "....PpP...........pPPPP...Pp",
+  ".....Pp............PPPP...Pp",
+  ".....Ppp...........pppP...pP",
+  "PP...PPppPPPPpP....PPpp...PP",
+  "pP...PppPPpppPP....PPPP...PP",
+  "pP...pppPPpPpPp....pPpp...PP",
+  "PP...PpPpPppPPP....PPpP...pP",
   "Pp...ppPPP................PP",
   "Pp...Pppp.................pP",
   "Pp...PPPPP................Pp",
@@ -2186,19 +2189,19 @@ const DD_MAP = [
   "pp...PPpPpP........pPPPpPpPp",
   "PP...PpPPP.........PPPPPPPPp",
   "PP...PppPpp........PpPPPPpPp",
-  "PP...PppPPp........PpPPpPpPP",
-  "...........p.......PPPPP....",
-  "............Pp.P...ppPp.....",
-  "...........PppPp...PPPp.....",
-  "PP...PPPpPPppppP...PPpP...PP",
-  "PP...PPPppPPPpPP...pPPP...Pp",
-  "PP...ppPpPPPPpPP...PpPP...PP",
-  "pp...PPPpPpppPPP...PPPP...Pp",
+  "PP.................PpPPpPpPP",
+  "...................PPPPP....",
+  "...................ppPp.....",
+  "...........Ppp.....PPPp.....",
+  "PP...PPPpPPppp.....PPpP...PP",
+  "PP...PPPppPPPp.....pPPP...Pp",
+  "PP...ppPpPPPPp.....PpPP...PP",
+  "pp...PPPpPpppP.....PPPP...Pp",
   "PP...PPPpp.........pPpP.....",
   "PP...PPPp..........P.pP.....",
   "pPP.PppPP..............P....",
   "PPPpPPPPP...PPPP........pPPP",
-  "PPPPpPPPP...PPPP........PPPP",
+  "PPPPpPPPP...PPPPpppPpPppPPPP",
 ];
 
 const DE_MAP = [
@@ -2312,14 +2315,14 @@ const DH_MAP = [
   "PpP.pPpPPpPPpPPPP.PPPpPP.PPp",
   "PpP.pPppPPpppPpPp.pPpPPp.PPp",
   "PPP.PpPPPpPPpPpPP.ppPpPp.PpP",
-  "...........pppPpP.PPPPPp.PpP",
-  "pPPpPPPPpPppPPpPP.PppPpp.pPP",
-  "PPPpPPpPPpPPpPpPP.PPPppp.Ppp",
-  "pPPPPPPPppPPPPpPp.pPPPPP.ppP",
-  "PPpPpPPPPpPpPPP.....PpPP.PPP",
-  "ppPPPPPPpppPpP.......PPP.PpP",
-  "ppPPpPPpPPPPPp.......PPP.PpP",
-  "....PpPPPP............pP.Ppp",
+  ".........................PpP",
+  "p........................pPP",
+  "P........................Ppp",
+  "p........................ppP",
+  "P........................PPP",
+  "p........................PpP",
+  "p........................PpP",
+  ".........................Ppp",
   "PPPPPpPPPP.PPP.......PpPPPPp",
   "PPPpPppPPp.PpP.......PPPPPpp",
   "PPPPppPpPP.ppPp.....PppPppPP",
@@ -2676,9 +2679,9 @@ const FD_MAP = [
   "pPPPpppPp...PPpP...PPppppPPp",
   "pPPPPPPPP...PPPp...PpPpPPPpP",
   "ppPpPPPpP...PPpP...ppPPPpPpP",
-  "............pppP.........pPP",
-  "............PPPP..........PP",
-  "............PPPPp.........p.",
+  "............pppP............",
+  "............PPPP............",
+  "............PPPPp...........",
   "pPPPPPppP...PpPpPppPpPp...pP",
   "pPpPPPPPp...pPpPpppPPpP...pP",
   "PPPPpPPPp...ppppppPPppp...PP",
@@ -3029,13 +3032,13 @@ const GG_MAP = [
   "PPP.pPPpPp.PpPPPp.pPppPP.pPP",
   "PPP.PPPpPP.PPPPpp.pPPPPP.ppP",
   "pPP.ppPPPp.PPPPPp.PPpPpp.pPP",
-  "Ppp.PPpPpP.PPpppP.PPPPPp.Ppp",
-  "PPp.PPpPpp.PPpPPP.pPpPPp.PpP",
-  "PPP.pppPPP.PPppPP.ppPpPP.ppp",
-  "PpP........PpPPpP........pPP",
-  "ppPPpPppPPPPPpppPpPPppppPPpp",
-  "pPPPPPPPpPPppPPPPppppppppPPP",
-  "ppPPpppPpppPPPPPPPppPpPpPPPP",
+  "Ppp.PPpPpP.P....P.PPPPPp.Ppp",
+  "PPp.PPpPpp.P.o..P.pPpPPp.PpP",
+  "PPP.pppPPP.P....P.ppPpPP.ppp",
+  "PpP......................pPP",
+  "ppPPpPppPPPP....PpPPppppPPpp",
+  "pPPPPPPPpPPp....PppppppppPPP",
+  "ppPPpppPpppP....PPppPpPpPPPP",
 ];
 
 const GH_MAP = [
@@ -3256,23 +3259,23 @@ const HF_MAP = [
 ];
 
 const HG_MAP = [
-  "PPpppPPppPPppPPPppPPPpPPPPPP",
-  "PpPPpPPppPppPPppPPPPPpPPpPpP",
-  "pPPPPppppppPPPPpPpPPPPPPpPPp",
-  "....pPPpPP..................",
-  "PPp.PpppPp.PPPpPp.PpPPPp.PPp",
-  "pPp.pPpppP.PPPppp.PPpppp.ppp",
-  "PPp.PPpppP.PPPppP.PpPppp.PPp",
-  "pPp.ppPPPP.PPPPPP.PpPPPP.PPP",
-  "Ppp.PPPppp.PPpPpp.PpppPP.PPP",
-  "PPP.pppPPp.ppppPP.PPpPpP.PPP",
+  "PPpppPPppPPp....ppPPPpPPPPPP",
+  "PpPPpPPppPpp....PPPPPpPPpPpP",
+  "pPPPP................PPPpPPp",
+  "....p.......................",
+  "PPp.P................PPp.PPp",
+  "pPp.p................ppp.ppp",
+  "PPp.P................ppp.PPp",
+  "pPp.p.............PpPPPP.PPP",
+  "Ppp.P.............PpppPP.PPP",
+  "PPP.p.............PPpPpP.PPP",
   "PpP...............PPPppp.PPP",
   "PPp.PpPppPPPPPPPPPpPPPPP.PPp",
   "PPP.PppPPPPpPpPPpPpPpPPP.PPp",
-  "ppP.pPpPPPPpPPPppPPpPPPP.ppp",
-  "PPP.PpPPPpPPpPpPpppPPpPP.Ppp",
-  "PPP.pPPPpPPpppppPpPPPPPP.PpP",
-  "pPP.ppPPPPPppPppPPPpPPPP.ppP",
+  "ppP..............PPpPPPP.ppp",
+  "PPP..............ppPPpPP.Ppp",
+  "PPP..............pPPPPPP.PpP",
+  "pPP..............PPpPPPP.ppP",
   "pPP...............pPpPpp.Ppp",
   "pPppPPpPppPpPppPP.PPPPpp.pPP",
   "PPppppPPPPPPPPPPP.pppPPP.pPp",
@@ -3485,6 +3488,61 @@ replaceMapSymbol(ATLAS.AA.tiles, 9, 17, "?");
 
 const BLUEPRINTS = {
 
+  unrecognizerDepotInterior: {
+  id: "unrecognizerDepotInterior",
+  title: "UNRECOGNIZER DEPOT",
+  kind: "interior",
+
+  exits: [
+    { x: 3, y: 8 },
+    { x: 4, y: 8 }
+  ],
+
+  spawn: {
+    x: 4,
+    y: 7
+  },
+
+  tiles: [
+    "WWWWWWWW",
+    "W.C..C.W",
+    "W......W",
+    "W.____.W",
+    "W......W",
+    "W.T..T.W",
+    "W......W",
+    "W..==..W",
+    "WWWddWWW"
+  ]
+},
+
+  sdaHeadquarters: {
+  id: "sdaHeadquarters",
+  title: "SDA HEADQUARTERS",
+  kind: "interior",
+
+  exits: [
+    { x: 4, y: 8 }
+  ],
+
+  spawn: {
+    x: 4,
+    y: 7
+  },
+
+  tiles: [
+    "WWWWWWWWW",
+    "W.C...C.W",
+    "W.......W",
+    "W.ttttt.W",
+    "W.......W",
+    "W..T....W",
+    "W.......W",
+    "W...=...W",
+    "WWWWDWWWW"
+  ]
+},
+
   redSnowGangWarehouseInterior: {
   id: "redSnowGangWarehouseInterior",
   title: "RED SNOW GANG WAREHOUSE",
@@ -3529,6 +3587,32 @@ const BLUEPRINTS = {
     "WCtt.......W",
     "W..........W",
     "WWWWW}WWWWWW"
+  ],
+
+  spawn: { x: 5, y: 6 }
+},
+
+  subfrostRailStationAE: {
+  id: "subfrostRailStationAE",
+  title: "SUBFROST RAIL STATION",
+  kind: "interior",
+
+  exits: [
+    { x: 4, y: 7 },
+    { x: 5, y: 7 },
+    { x: 6, y: 7 },
+    { x: 7, y: 7 }
+  ],
+
+  tiles: [
+    "WWWWWWWWWWWW",
+    "W.......F..#",
+    "W.TTTTT....W",
+    "W.........%E",
+    "W.TTTTT...%E",
+    "W..........W",
+    "W...____...#",
+    "WWWWPPPPWWWW"
   ],
 
   spawn: { x: 5, y: 6 }
@@ -5404,13 +5488,16 @@ const vehicles = [
     facing: "right",
     fuel: 175
   },
+
+  */
+
   {
     id: "sda-transport-1",
     definitionId: "sdaPersonnelTransport",
-    mapId: "AB",
-    x: 4,
-    y: 12,
-    facing: "right",
+    mapId: "AE",
+    x: 16,
+    y: 19,
+    facing: "left",
     fuel: 165,
     passengers: [
       "sda-peacekeeper-1",
@@ -5419,7 +5506,6 @@ const vehicles = [
     ]
   }
 
-  */
 ];
 
 const characters = [
@@ -5598,6 +5684,22 @@ const characters = [
 
 const BUILDING_DEFINITIONS = {
 
+  unrecognizerDepot: {
+  image: ASSETS.architecture.unrecognizerDepot,
+
+  width: 8,
+  height: 4,
+
+  collisionMask: [
+    "XXXXXXXX",
+    "XXXXXXXX",
+    "...DD...",
+    "........"
+  ],
+
+  blueprintId: "unrecognizerDepotInterior"
+},
+
   hangarGate: {
   name: "Red Snow Hangar Gate",
   image: ASSETS.architecture.hangarGate,
@@ -5740,10 +5842,50 @@ const BUILDING_DEFINITIONS = {
       "......."
     ],
     blueprintId: "beerMineInterior"
-  }
+  },
+ 
+  sdaHq: {
+  image: ASSETS.architecture.sdaHq,
+
+  width: 9,
+  height: 5,
+
+  collisionMask: [
+    "XXXXXXXXX",
+    "XXXXXXXXX",
+    "XXXXDXXXX",
+    "...XDX...",
+    "........."
+
+  ],
+
+  entrance: {
+    x: 4,
+    y: 4
+  },
+
+  blueprintId: "sdaHeadquarters"
+}
+
 };
 
 const buildingStamps = [
+
+  {
+  id: "unrecognizer-depot-hg",
+  definitionId: "unrecognizerDepot",
+  mapId: "HG",
+  x: 4,
+  y: 13
+},
+
+  {
+  id: "sda-hq-ae",
+  definitionId: "sdaHq",
+  mapId: "AE",
+  x: 3,
+  y: 20
+},
 
   {
   id: "hangar-gate-bd",
@@ -5813,6 +5955,29 @@ const buildingStamps = [
     x: 1,
     y: 1
   },
+
+  {
+    id: "hti-calibration-target-hg",
+    definitionId: "htiCalibrationTarget",
+    mapId: "HG",
+    x: 5,
+    y: 2,
+
+    teleporterName: "HG Calibration Target",
+
+    arrival: {
+      player: {
+        x: 5,
+        y: 8
+      },
+      
+      vehicle: {
+        x: 5,
+        y: 8
+      }
+    }
+  },
+
 
   {
     id: "hti-calibration-target-ce",
@@ -6020,6 +6185,15 @@ const buildingStamps = [
       facing: "right"
     }
   }
+},
+
+  {
+  id: "subfrost-rail-station-AE",
+  definitionId: "scmfMain",
+  blueprintId: "subfrostRailStationAE",
+  mapId: "AE",
+  x: 6,
+  y: 9
 },
 
   {
