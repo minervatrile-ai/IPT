@@ -9976,17 +9976,31 @@ function confirmOverlaySelection() {
   if (typeof option.action === "function") option.action();
 }
 
+let bubbleTouchLockedUntil = 0;
+
 function showBubble(speaker, text) {
   bubbleSpeaker.textContent = speaker;
   bubbleText.innerHTML = text;
   bubbleOverlay.style.display = "block";
+
+  // Prevent the same tap that opened the bubble
+  // from immediately closing it.
+  bubbleTouchLockedUntil = Date.now() + 350;
 }
 
 function hideBubble() {
   bubbleOverlay.style.display = "none";
 }
 
-bubbleOverlay.addEventListener("click", hideBubble);
+bubbleOverlay.addEventListener("click", event => {
+  event.preventDefault();
+
+  if (Date.now() < bubbleTouchLockedUntil) {
+    return;
+  }
+
+  hideBubble();
+});
 
 function openTrashChuteOverlay() {
   const disposableItems = player.inventory
