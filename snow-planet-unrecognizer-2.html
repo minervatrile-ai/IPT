@@ -5060,6 +5060,7 @@ const MACHINERY_DEFINITIONS = {
   "y": {
     id: "redglassGrinder",
     title: "REDGLASS ROCK GRINDER",
+    image: ASSETS.machinery.redglassGrinder,
 
     description:
       "An industrial crushing machine that converts REDGLASS ROCK into REDGLASS POWDER.",
@@ -5085,6 +5086,7 @@ const MACHINERY_DEFINITIONS = {
   "Y": {
     id: "redglassProcessor",
     title: "REDGLASS POWDER PROCESSOR",
+    image: ASSETS.machinery.redglassProcessor,
 
     description:
       "A proprietary refinement machine that converts REDGLASS POWDER into UNRECOGNIZER DUST.",
@@ -5110,6 +5112,7 @@ const MACHINERY_DEFINITIONS = {
   "!": {
     id: "pillEncapsulator",
     title: "UNRECOGNIZER PILL ENCAPSULATOR",
+    image: ASSETS.machinery.pillEncapsulator,
 
     description:
       "An automated pharmaceutical machine that fills and seals bottles of UNRECOGNIZER capsules.",
@@ -10969,9 +10972,10 @@ trashChute() {
       .join("<br>");
 
   openOverlay({
-    title: machine.title,
+  title: machine.title,
+  image: machine.image,
 
-    text:
+  text:
       `${machine.description}` +
       `<br><br><strong>Required:</strong><br>` +
       requirementText,
