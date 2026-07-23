@@ -738,6 +738,12 @@ const bubbleOverlay = document.getElementById("bubbleOverlay");
 const bubbleSpeaker = document.getElementById("bubbleSpeaker");
 const bubbleText = document.getElementById("bubbleText");
 
+const mobileControls = document.getElementById("mobileControls");
+const mobileUp = document.getElementById("mobileUp");
+const mobileDown = document.getElementById("mobileDown");
+const mobileLeft = document.getElementById("mobileLeft");
+const mobileRight = document.getElementById("mobileRight");
+
 /* =============================================================
    02. ASSET REGISTRY
 
@@ -13218,6 +13224,57 @@ function openAtlasInformation() {
       { label: "Close atlas", action: closeOverlay }
     ]
   });
+}
+
+/* =============================================================
+   MOBILE DIRECTIONAL INPUT
+
+   One tap equals one directional action.
+
+   The same existing movement functions are used for:
+   - walking
+   - driving
+   - binocular movement
+   ============================================================= */
+
+function handleMobileDirection(direction) {
+  if (worldState.overlay.open) {
+    return;
+  }
+
+  if (bubbleOverlay.style.display === "block") {
+    return;
+  }
+
+  if (player.binocularMode) {
+    moveBinocularCamera(direction);
+    return;
+  }
+
+  if (player.mode === "driving") {
+    moveVehicle(direction);
+    return;
+  }
+
+  movePlayer(direction);
+}
+
+function connectMobileDirectionButton(button, direction) {
+  if (!button) return;
+
+  button.addEventListener("pointerdown", event => {
+    event.preventDefault();
+    handleMobileDirection(direction);
+  });
+}
+
+connectMobileDirectionButton(mobileUp, "up");
+connectMobileDirectionButton(mobileDown, "down");
+connectMobileDirectionButton(mobileLeft, "left");
+connectMobileDirectionButton(mobileRight, "right");
+
+if (mobileControls) {
+  mobileControls.classList.remove("mobileControlsDisabled");
 }
 
 /* =============================================================
