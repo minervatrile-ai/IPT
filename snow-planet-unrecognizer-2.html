@@ -9984,6 +9984,11 @@ function hideBubble() {
   bubbleOverlay.style.display = "none";
 }
 
+bubbleOverlay.addEventListener("pointerup", event => {
+  event.preventDefault();
+  hideBubble();
+});
+
 function openTrashChuteOverlay() {
   const disposableItems = player.inventory
     .map(itemId => ({
