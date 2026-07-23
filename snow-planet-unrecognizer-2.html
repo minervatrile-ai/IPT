@@ -748,6 +748,8 @@ const mobileInteract = document.getElementById("mobileInteract");
 
 const mobileMenu = document.getElementById("mobileMenu");
 
+const mobileFire = document.getElementById("mobileFire");
+
 /* =============================================================
    02. ASSET REGISTRY
 
@@ -13330,6 +13332,26 @@ if (mobileInteract) {
   mobileInteract.addEventListener("pointerdown", event => {
     event.preventDefault();
     handleMobileInteract();
+  });
+}
+
+if (mobileFire) {
+  mobileFire.addEventListener("pointerdown", event => {
+    event.preventDefault();
+
+    if (worldState.overlay.open) {
+      return;
+    }
+
+    if (bubbleOverlay.style.display === "block") {
+      return;
+    }
+
+    if (player.binocularMode) {
+      return;
+    }
+
+    fireEquippedWeapon();
   });
 }
 
