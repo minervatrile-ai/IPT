@@ -5157,6 +5157,187 @@ const MACHINERY_DEFINITIONS = {
    meaning it can no longer appear at another campfire.
    ============================================================= */
 
+function openCampfireDepositMenu() {
+  if (player.inventory.length === 0) {
+    openOverlay({
+      title: "THE COMMUNAL FIRE",
+      image: ASSETS.props.campfireOut,
+
+      text:
+        "Yoi is carrying nothing that can be left beside the fire.",
+
+      options: [
+        {
+          label: "Back",
+          action: INTERACTIONS.campfire
+        },
+
+        {
+          label: "Leave",
+          action: closeOverlay
+        }
+      ]
+    });
+
+    return;
+  }
+
+  const inventoryOptions =
+    player.inventory.map(
+      (itemId, inventoryIndex) => {
+        const item =
+          ITEM_DEFINITIONS[itemId];
+
+        return {
+          label:
+            item?.name ||
+            itemId,
+
+          action: () => {
+            openCampfireDepositConfirmation(
+              itemId,
+              inventoryIndex
+            );
+          }
+        };
+      }
+    );
+
+  openOverlay({
+    title: "LEAVE AN ITEM",
+    image: ASSETS.props.campfireOut,
+
+    text:
+      "Choose an item to leave in the communal circulation of Stro's abandoned campfires.",
+
+    options: [
+      ...inventoryOptions,
+
+      {
+        label: "Back",
+        action: INTERACTIONS.campfire
+      },
+
+      {
+        label: "Leave",
+        action: closeOverlay
+      }
+    ]
+  });
+}
+
+function openCampfireDepositConfirmation(
+  itemId,
+  inventoryIndex
+) {
+  const item =
+    ITEM_DEFINITIONS[itemId];
+
+  if (
+    !item ||
+    player.inventory[inventoryIndex] !== itemId
+  ) {
+    openCampfireDepositMenu();
+    return;
+  }
+
+  openOverlay({
+    title: item.name,
+    image: item.image,
+
+    text:
+      isItemEquipped(itemId)
+        ? "This item is currently equipped. Leaving it here will unequip it and place it into the communal fire circulation."
+        : "Leave this item beside the fire and place it into the communal circulation?",
+
+    options: [
+      {
+        label: "Leave item",
+        action: () => {
+          depositCampfireItem(
+            itemId,
+            inventoryIndex
+          );
+        }
+      },
+
+      {
+        label: "Keep it",
+        action: openCampfireDepositMenu
+      }
+    ]
+  });
+}
+
+function depositCampfireItem(
+  itemId,
+  inventoryIndex
+) {
+  const item =
+    ITEM_DEFINITIONS[itemId];
+
+  /*
+    Verify that the exact inventory position selected
+    still contains the expected item.
+
+    This protects against stale menu selections.
+  */
+  if (
+    !item ||
+    player.inventory[inventoryIndex] !== itemId
+  ) {
+    closeOverlay();
+
+    showBubble(
+      "ITEM UNAVAILABLE",
+      "That item is no longer in Yoi's inventory."
+    );
+
+    return;
+  }
+
+  /*
+    Equipped items must be unequipped before removal.
+
+    Otherwise the equipment slot would continue pointing
+    to an item Yoi no longer possesses.
+  */
+  if (isItemEquipped(itemId)) {
+    unequipItem(itemId);
+  }
+
+  const itemRemoved =
+    removeItem(itemId);
+
+  if (!itemRemoved) {
+    closeOverlay();
+
+    showBubble(
+      "ITEM UNAVAILABLE",
+      "That item could not be removed from inventory."
+    );
+
+    return;
+  }
+
+  /*
+    Add one physical copy to the same planetary collection
+    already used by the campfire shuffle.
+  */
+  COMMUNAL_CAMPFIRE_ITEMS.push(
+    itemId
+  );
+
+  closeOverlay();
+
+  showBubble(
+    "ITEM LEFT",
+    `${item.name} was left in the communal fire circulation.`
+  );
+
+  updateHud();
+}
+
 const CAMPFIRE_IMAGES = [
   ASSETS.props.campfireDead,
   ASSETS.props.campfireCooking,
@@ -5178,7 +5359,18 @@ const COMMUNAL_CAMPFIRE_ITEMS = [
   "gasJugEmpty",
   "gasJugEmpty",
 
-  "binocularsBroken"
+  "binocularsBroken",
+
+  "redglassRock",
+  "redglassRock",
+  "redglassRock",
+  "redglassRock",
+
+  "emptyPillBottle",
+  "emptyPillBottle",
+  "emptyPillBottle",
+  "emptyPillBottle",
+  "emptyPillBottle",
 ];
 
 /*
@@ -6827,12 +7019,9 @@ const player = {
     "keycard1",
     "yoiUnrecognizerBadge",
     "gasJug",
-    "basicLaserHandgun",
     "binoculars",
     "hereoDevice",
     "unrecognizerWatch",
-    "redglassRock",
-    "emptyPillBottle"
   ],
 
   inventoryCapacity: 20,
@@ -10834,16 +11023,21 @@ const INTERACTIONS = {
       "Objects left beside fires across Stro seem to pass into a loose, communal circulation.",
 
     options: [
-      {
-        label: "Search the communal fire",
-        action: searchCampfire
-      },
+  {
+    label: "Search the communal fire",
+    action: searchCampfire
+  },
 
-      {
-        label: "Leave",
-        action: closeOverlay
-      }
-    ]
+  {
+    label: "Leave an item in the communal fire",
+    action: openCampfireDepositMenu
+  },
+
+  {
+    label: "Leave",
+    action: closeOverlay
+  }
+]
   });
 },
 
