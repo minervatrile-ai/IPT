@@ -1292,6 +1292,12 @@ const BLUEPRINT_TILE = {
 */
 const BLUEPRINT_TILE_RULES = {
 
+  "h": {
+  name: "red armchair",
+  walkable: false,
+  interaction: "bed"
+},
+
   "}": { name: "door blue", walkable: false },
 
   " ": { name: "empty", walkable: false },
@@ -1483,9 +1489,10 @@ const BLUEPRINT_TILE_RULES = {
   },
 
   "A": {
-    name: "armchair",
-    walkable: false
-  },
+  name: "armchair",
+  walkable: false,
+  interaction: "bed"
+},
 
   "L": {
     name: "locker",
@@ -11058,31 +11065,54 @@ trashChute() {
   });
 },
 
-  bed() {
-    openOverlay({
-      title: "BED",
-      image: "gallery/architecture/outpost/interior/bed.png",
-      text: "Rest until the opposite time period?",
-      options: [
-        {
-          label:
-            worldState.timeOfDay === "day"
-              ? "Sleep until night"
-              : "Sleep until day",
+  bed(interaction) {
+  const isRedArmchair = interaction.symbol === "h";
+  const isArmchair = interaction.symbol === "A";
 
-          action: () => {
-            closeOverlay();
-            toggleDayNight();
-          }
-        },
+  const title =
+    isRedArmchair
+      ? "RED ARMCHAIR"
+      : isArmchair
+        ? "ARMCHAIR"
+        : "BED";
 
-        {
-          label: "Do not rest",
-          action: closeOverlay
+  const image =
+    isRedArmchair
+      ? ASSETS.props.armchairRed
+      : isArmchair
+        ? ASSETS.props.armchair
+        : ASSETS.architecture.bed;
+
+  const restText =
+    isRedArmchair || isArmchair
+      ? "Settle into the armchair and rest until the opposite time period?"
+      : "Rest until the current day or night is over?";
+
+  openOverlay({
+    title,
+    image,
+    text: restText,
+
+    options: [
+      {
+        label:
+          worldState.timeOfDay === "day"
+            ? "Sleep until night"
+            : "Sleep until day",
+
+        action: () => {
+          closeOverlay();
+          toggleDayNight();
         }
-      ]
-    });
-  },
+      },
+
+      {
+        label: "Do not rest",
+        action: closeOverlay
+      }
+    ]
+  });
+},
 
   television() {
   const hasUnrecognizerTape1 =
