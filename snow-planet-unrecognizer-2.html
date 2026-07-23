@@ -744,6 +744,8 @@ const mobileDown = document.getElementById("mobileDown");
 const mobileLeft = document.getElementById("mobileLeft");
 const mobileRight = document.getElementById("mobileRight");
 
+const mobileInteract = document.getElementById("mobileInteract");
+
 /* =============================================================
    02. ASSET REGISTRY
 
@@ -13274,6 +13276,32 @@ connectMobileDirectionButton(mobileUp, "up");
 connectMobileDirectionButton(mobileDown, "down");
 connectMobileDirectionButton(mobileLeft, "left");
 connectMobileDirectionButton(mobileRight, "right");
+
+function handleMobileInteract() {
+  if (worldState.overlay.open) {
+    confirmOverlaySelection();
+    return;
+  }
+
+  if (bubbleOverlay.style.display === "block") {
+    hideBubble();
+    return;
+  }
+
+  if (player.binocularMode) {
+    exitBinocularMode();
+    return;
+  }
+
+  interact();
+}
+
+if (mobileInteract) {
+  mobileInteract.addEventListener("pointerdown", event => {
+    event.preventDefault();
+    handleMobileInteract();
+  });
+}
 
 if (mobileControls) {
   mobileControls.classList.remove("mobileControlsDisabled");
