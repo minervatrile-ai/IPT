@@ -746,6 +746,8 @@ const mobileRight = document.getElementById("mobileRight");
 
 const mobileInteract = document.getElementById("mobileInteract");
 
+const mobileMenu = document.getElementById("mobileMenu");
+
 /* =============================================================
    02. ASSET REGISTRY
 
@@ -13317,8 +13319,61 @@ if (mobileInteract) {
   });
 }
 
+if (mobileMenu) {
+  mobileMenu.addEventListener("pointerdown", event => {
+    event.preventDefault();
+
+    if (bubbleOverlay.style.display === "block") {
+      return;
+    }
+
+    if (player.binocularMode) {
+      return;
+    }
+
+    if (worldState.overlay.open) {
+      closeOverlay();
+      return;
+    }
+
+    openMobileSystemMenu();
+  });
+}
+
 if (mobileControls) {
   mobileControls.classList.remove("mobileControlsDisabled");
+}
+
+function openMobileSystemMenu() {
+  openOverlay({
+    title: "YOI SYSTEM MENU",
+    image: ASSETS.character.badge.yoiUnrecognizer,
+
+    text:
+      "Select a system interface.",
+
+    options: [
+      {
+        label: "Inventory",
+        action: () => openInventory()
+      },
+
+      {
+        label: "Stro Atlas",
+        action: openAtlasInformation
+      },
+
+      {
+        label: "Thinking Mode",
+        action: () => openThinkingMode()
+      },
+
+      {
+        label: "Close Menu",
+        action: closeOverlay
+      }
+    ]
+  });
 }
 
 /* =============================================================
