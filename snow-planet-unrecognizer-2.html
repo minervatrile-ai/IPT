@@ -5907,17 +5907,35 @@ const STORAGE_CRATES = [
 
 const LOCKERS = [
   {
-    id: "outpost3-unrecognizer-tape-locker",
+    id: "outpost3-locker-1",
     mapId: "outpost3Interior",
     x: 9,
     y: 1,
+    locked: false
+  },
 
-    locked: true,
-    requiredItemId: "keycard1",
+  {
+    id: "outpost3-locker-2",
+    mapId: "outpost3Interior",
+    x: 10,
+    y: 1,
+    locked: false
+  },
 
-    inventory: [
-      "tapeUnrecognizer1"
-    ]
+  {
+    id: "outpost2-locker-1",
+    mapId: "outpost2Interior",
+    x: 9,
+    y: 1,
+    locked: false
+  },
+
+  {
+    id: "outpost2-locker-2",
+    mapId: "outpost2Interior",
+    x: 10,
+    y: 1,
+    locked: false
   }
 ];
 
@@ -7016,7 +7034,6 @@ const player = {
   bodyHeatActive: true,
 
   inventory: [
-    "keycard1",
     "yoiUnrecognizerBadge",
     "gasJug",
     "binoculars",
@@ -9483,6 +9500,52 @@ function openStorageCrate(crate) {
   );
 }
 
+/* =============================================================
+   STRO LOCKER NETWORK
+
+   MAIN CACHE
+   ----------
+   Reliable storage controlled by Yoi.
+   Items deposited here remain visible from every locker.
+
+   UNCLAIMED ITEMS
+   ---------------
+   A shared planetary collection of forgotten locker contents.
+   Each search reveals a random portion of this collection.
+   Taking an item removes one copy from circulation.
+   ============================================================= */
+
+const LOCKER_MAIN_CACHE = [
+
+  "tapeUnrecognizer1",
+  "binocularsBroken"
+];
+
+const COMMUNAL_LOCKER_ITEMS = [
+  "heatedMealRation",
+  "heatedMealRation",
+  "heatedMealRation",
+  "emptyPillBottle",
+  "emptyPillBottle",
+  "fullPillBottle",
+  "emptyPillBottle",
+  "redglassRock",
+  "unrecognizerDust",
+  "redglassPowder",
+
+  "basicLaserHandgun",
+
+  "redglassRock",
+
+  "emptyPillBottle"
+];
+
+/*
+  The random handful currently revealed during an
+  unclaimed-locker search.
+*/
+let currentLockerSelection = [];
+
 function getLockerAt(mapId, x, y) {
   return LOCKERS.find(locker =>
     locker.mapId === mapId &&
@@ -9495,19 +9558,31 @@ function openLocker(locker) {
   if (!locker) {
     showBubble(
       "LOCKER",
-      "This locker has no registered contents."
+      "This locker is not connected to the registered locker network."
     );
+
     return;
   }
 
-  if (locker.locked) {
-    const requiredItemId = locker.requiredItemId;
+  /*
+    Preserve the existing individual lock and keycard behavior.
 
-    if (!requiredItemId || !hasItem(requiredItemId)) {
+    A locked locker must still be opened before it can access
+    either part of the shared locker network.
+  */
+  if (locker.locked) {
+    const requiredItemId =
+      locker.requiredItemId;
+
+    if (
+      !requiredItemId ||
+      !hasItem(requiredItemId)
+    ) {
       showBubble(
         "LOCKED",
         "The locker is locked."
       );
+
       return;
     }
 
@@ -9517,64 +9592,614 @@ function openLocker(locker) {
       "LOCKER UNLOCKED",
       "The lock disengages."
     );
+
     return;
   }
 
-  if (
-    !Array.isArray(locker.inventory) ||
-    locker.inventory.length === 0
-  ) {
-    showBubble(
-      "LOCKER",
-      "The locker is empty."
-    );
-    return;
-  }
+  openOverlay({
+    title: "STRO LOCKER NETWORK",
+    image: ASSETS.props.locker,
 
-  const retrievedItemIds = [];
-  const remainingItemIds = [];
+    text:
+      "This locker provides access to Yoi's dependable shared storage, " +
+      "along with unclaimed objects circulating through abandoned lockers across Stro.",
 
-  for (const itemId of locker.inventory) {
-    const itemAdded = addItem(itemId);
+    options: [
+      {
+        label: "Access main cache",
+        action: openLockerMainCache
+      },
 
-    if (itemAdded) {
-      retrievedItemIds.push(itemId);
-    } else {
-      remainingItemIds.push(itemId);
-    }
-  }
+      {
+        label: "Deposit an item",
+        action: openLockerDepositMenu
+      },
 
-  locker.inventory = remainingItemIds;
+      {
+        label: "Search unclaimed contents",
+        action: searchUnclaimedLockerContents
+      },
 
-  const retrievedNames = retrievedItemIds.map(itemId => {
-    return ITEM_DEFINITIONS[itemId]?.name || itemId;
+      {
+        label: "Leave",
+        action: closeOverlay
+      }
+    ]
   });
+}
 
-  const remainingNames = remainingItemIds.map(itemId => {
-    return ITEM_DEFINITIONS[itemId]?.name || itemId;
+function openLockerMainCache() {
+  if (LOCKER_MAIN_CACHE.length === 0) {
+    openOverlay({
+      title: "MAIN LOCKER CACHE",
+      image: ASSETS.props.locker,
+
+      text:
+        "Yoi's shared locker cache is empty.",
+
+      options: [
+  {
+    label: "Deposit an item",
+    action: openLockerDepositMenu
+  },
+
+  {
+    label: "Leave",
+    action: closeOverlay
+  }
+]
+    });
+
+    return;
+  }
+
+  const itemOptions =
+    LOCKER_MAIN_CACHE.map(
+      (itemId, cacheIndex) => {
+        const item =
+          ITEM_DEFINITIONS[itemId];
+
+        return {
+          label:
+            item?.name ||
+            itemId,
+
+          action: () => {
+            openMainLockerItemMenu(
+              cacheIndex
+            );
+          }
+        };
+      }
+    );
+
+  openOverlay({
+    title: "MAIN LOCKER CACHE",
+    image: ASSETS.props.locker,
+
+    text:
+      "Items deliberately stored by Yoi. Every connected locker accesses this same cache.",
+
+    options: [
+      ...itemOptions,
+
+      {
+        label: "Deposit an item",
+        action: openLockerDepositMenu
+      },
+
+      {
+        label: "Leave",
+        action: closeOverlay
+      }
+    ]
   });
+}
 
-  if (retrievedItemIds.length === 0) {
-    showBubble(
-      "INVENTORY TOO FULL",
-      "Make room before retrieving anything from this locker."
-    );
+function openMainLockerItemMenu(
+  cacheIndex
+) {
+  const itemId =
+    LOCKER_MAIN_CACHE[cacheIndex];
+
+  const item =
+    ITEM_DEFINITIONS[itemId];
+
+  if (!itemId || !item) {
+    openLockerMainCache();
     return;
   }
 
-  if (remainingItemIds.length > 0) {
-    showBubble(
-      "LOCKER",
-      `Retrieved: ${retrievedNames.join(", ")}. ` +
-      `Still inside: ${remainingNames.join(", ")}.`
-    );
+  openOverlay({
+    title: item.name,
+    image: item.image,
+
+    text:
+      item.description ||
+      "An item stored in Yoi's shared locker cache.",
+
+    options: [
+      {
+        label: "Take",
+        action: () => {
+          takeMainLockerItem(
+            cacheIndex
+          );
+        }
+      },
+
+      {
+        label: "Keep stored",
+        action: openLockerMainCache
+      }
+    ]
+  });
+}
+
+function takeMainLockerItem(
+  cacheIndex
+) {
+  const itemId =
+    LOCKER_MAIN_CACHE[cacheIndex];
+
+  const item =
+    ITEM_DEFINITIONS[itemId];
+
+  if (!itemId || !item) {
+    openLockerMainCache();
     return;
   }
+
+  /*
+    addItem() checks uniqueness and inventory bulk before
+    anything is removed from the locker cache.
+  */
+  const itemAdded =
+    addItem(itemId);
+
+  if (!itemAdded) {
+    closeOverlay();
+
+    showBubble(
+      "ITEM NOT RETRIEVED",
+      `Make room before taking ${item.name}.`
+    );
+
+    return;
+  }
+
+  /*
+    Remove exactly the selected copy from dependable storage.
+  */
+  LOCKER_MAIN_CACHE.splice(
+    cacheIndex,
+    1
+  );
+
+  closeOverlay();
 
   showBubble(
-    "LOCKER",
-    `Retrieved: ${retrievedNames.join(", ")}.`
+    "ITEM RETRIEVED",
+    `${item.name} was removed from the main locker cache.`
   );
+
+  updateHud();
+}
+
+function openLockerDepositMenu() {
+  if (player.inventory.length === 0) {
+    openOverlay({
+      title: "DEPOSIT ITEM",
+      image: ASSETS.props.locker,
+
+      text:
+        "Yoi is carrying nothing that can be stored.",
+
+      options: [
+        {
+          label: "View main cache",
+          action: openLockerMainCache
+        },
+
+        {
+          label: "Leave",
+          action: closeOverlay
+        }
+      ]
+    });
+
+    return;
+  }
+
+  const inventoryOptions =
+    player.inventory.map(
+      (itemId, inventoryIndex) => {
+        const item =
+          ITEM_DEFINITIONS[itemId];
+
+        return {
+          label:
+            item?.name ||
+            itemId,
+
+          action: () => {
+            openLockerDepositConfirmation(
+              itemId,
+              inventoryIndex
+            );
+          }
+        };
+      }
+    );
+
+  openOverlay({
+    title: "DEPOSIT ITEM",
+    image: ASSETS.props.locker,
+
+    text:
+      "Choose an item to place in Yoi's dependable main locker cache.",
+
+    options: [
+      ...inventoryOptions,
+
+      {
+        label: "View main cache",
+        action: openLockerMainCache
+      },
+
+      {
+        label: "Leave",
+        action: closeOverlay
+      }
+    ]
+  });
+}
+
+function openLockerDepositConfirmation(
+  itemId,
+  inventoryIndex
+) {
+  const item =
+    ITEM_DEFINITIONS[itemId];
+
+  if (
+    !item ||
+    player.inventory[inventoryIndex] !== itemId
+  ) {
+    openLockerDepositMenu();
+    return;
+  }
+
+  const equipped =
+    isItemEquipped(itemId);
+
+  openOverlay({
+    title: item.name,
+    image: item.image,
+
+    text:
+      equipped
+        ? "This item is currently equipped. Storing it will unequip it and place it in Yoi's main locker cache."
+        : "Place this item in Yoi's shared main locker cache?",
+
+    options: [
+      {
+        label: "Store item",
+        action: () => {
+          depositMainLockerItem(
+            itemId,
+            inventoryIndex
+          );
+        }
+      },
+
+      {
+        label: "Keep it",
+        action: openLockerDepositMenu
+      }
+    ]
+  });
+}
+
+function depositMainLockerItem(
+  itemId,
+  inventoryIndex
+) {
+  const item =
+    ITEM_DEFINITIONS[itemId];
+
+  /*
+    Confirm that the selected inventory position still
+    contains the expected item.
+  */
+  if (
+    !item ||
+    player.inventory[inventoryIndex] !== itemId
+  ) {
+    closeOverlay();
+
+    showBubble(
+      "ITEM UNAVAILABLE",
+      "That item is no longer in Yoi's inventory."
+    );
+
+    return;
+  }
+
+  /*
+    Prevent an equipment slot from pointing toward an
+    item that has been moved into storage.
+  */
+  if (isItemEquipped(itemId)) {
+    unequipItem(itemId);
+  }
+
+  const itemRemoved =
+    removeItem(itemId);
+
+  if (!itemRemoved) {
+    closeOverlay();
+
+    showBubble(
+      "ITEM UNAVAILABLE",
+      "That item could not be removed from inventory."
+    );
+
+    return;
+  }
+
+  LOCKER_MAIN_CACHE.push(
+    itemId
+  );
+
+  closeOverlay();
+
+  showBubble(
+    "ITEM STORED",
+    `${item.name} was placed in Yoi's main locker cache.`
+  );
+
+  updateHud();
+}
+
+function getRandomLockerSelection() {
+  if (
+    COMMUNAL_LOCKER_ITEMS.length === 0
+  ) {
+    return [];
+  }
+
+  const maximumVisible =
+    Math.min(
+      3,
+      COMMUNAL_LOCKER_ITEMS.length
+    );
+
+  const visibleCount =
+    1 +
+    Math.floor(
+      Math.random() *
+      maximumVisible
+    );
+
+  /*
+    Shuffle a copy.
+
+    The real communal collection is untouched until
+    Yoi actually takes an item.
+  */
+  const shuffledItems = [
+    ...COMMUNAL_LOCKER_ITEMS
+  ];
+
+  for (
+    let index =
+      shuffledItems.length - 1;
+
+    index > 0;
+
+    index -= 1
+  ) {
+    const randomIndex =
+      Math.floor(
+        Math.random() *
+        (index + 1)
+      );
+
+    [
+      shuffledItems[index],
+      shuffledItems[randomIndex]
+    ] = [
+      shuffledItems[randomIndex],
+      shuffledItems[index]
+    ];
+  }
+
+  return shuffledItems.slice(
+    0,
+    visibleCount
+  );
+}
+
+function searchUnclaimedLockerContents() {
+  currentLockerSelection =
+    getRandomLockerSelection();
+
+  openUnclaimedLockerContents();
+}
+
+function openUnclaimedLockerContents() {
+  if (
+    currentLockerSelection.length === 0
+  ) {
+    openOverlay({
+      title: "UNCLAIMED LOCKER CONTENTS",
+      image: ASSETS.props.locker,
+
+      text:
+        COMMUNAL_LOCKER_ITEMS.length === 0
+          ? "Nothing remains in the circulation of abandoned lockers."
+          : "You search the locker network, but nothing useful surfaces this time.",
+
+      options: [
+        {
+          label: "Search again",
+          action: searchUnclaimedLockerContents
+        },
+
+        {
+          label: "Leave",
+          action: closeOverlay
+        }
+      ]
+    });
+
+    return;
+  }
+
+  const itemOptions =
+    currentLockerSelection.map(
+      (itemId, itemIndex) => {
+        const item =
+          ITEM_DEFINITIONS[itemId];
+
+        return {
+          label:
+            item?.name ||
+            itemId,
+
+          action: () => {
+            openUnclaimedLockerItemMenu(
+              itemIndex
+            );
+          }
+        };
+      }
+    );
+
+  openOverlay({
+    title: "UNCLAIMED LOCKER CONTENTS",
+    image: ASSETS.props.locker,
+
+    text:
+      "A few unclaimed objects surface from lockers scattered across Stro.",
+
+    options: [
+      ...itemOptions,
+
+      {
+        label: "Search again",
+        action: searchUnclaimedLockerContents
+      },
+
+      {
+        label: "Leave",
+        action: closeOverlay
+      }
+    ]
+  });
+}
+
+function openUnclaimedLockerItemMenu(
+  itemIndex
+) {
+  const itemId =
+    currentLockerSelection[itemIndex];
+
+  const item =
+    ITEM_DEFINITIONS[itemId];
+
+  if (!itemId || !item) {
+    openUnclaimedLockerContents();
+    return;
+  }
+
+  openOverlay({
+    title: item.name,
+    image: item.image,
+
+    text:
+      item.description ||
+      "An unclaimed object circulating through Stro's abandoned lockers.",
+
+    options: [
+      {
+        label: "Take",
+        action: () => {
+          takeUnclaimedLockerItem(
+            itemIndex
+          );
+        }
+      },
+
+      {
+        label: "Leave it",
+        action: openUnclaimedLockerContents
+      }
+    ]
+  });
+}
+
+function takeUnclaimedLockerItem(
+  itemIndex
+) {
+  const itemId =
+    currentLockerSelection[itemIndex];
+
+  const item =
+    ITEM_DEFINITIONS[itemId];
+
+  if (!itemId || !item) {
+    openUnclaimedLockerContents();
+    return;
+  }
+
+  const itemAdded =
+    addItem(itemId);
+
+  if (!itemAdded) {
+    closeOverlay();
+
+    showBubble(
+      "ITEM NOT RETRIEVED",
+      `Make room before taking ${item.name}.`
+    );
+
+    return;
+  }
+
+  /*
+    Remove one matching physical copy from the
+    planetary unclaimed collection.
+  */
+  const communalIndex =
+    COMMUNAL_LOCKER_ITEMS.indexOf(
+      itemId
+    );
+
+  if (communalIndex !== -1) {
+    COMMUNAL_LOCKER_ITEMS.splice(
+      communalIndex,
+      1
+    );
+  }
+
+  /*
+    Remove it from the visible search results too.
+  */
+  currentLockerSelection.splice(
+    itemIndex,
+    1
+  );
+
+  closeOverlay();
+
+  showBubble(
+    "UNCLAIMED ITEM RETRIEVED",
+    `${item.name} was removed from the abandoned locker circulation.`
+  );
+
+  updateHud();
 }
 
 function openInventoryItemMenu(itemId, inventoryIndex) {
