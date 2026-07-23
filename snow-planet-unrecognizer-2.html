@@ -9399,16 +9399,30 @@ function openInventory(selectedIndex = 0) {
 
   options.push(...inventoryOptions);
 
-  if (options.length === 0) {
-    options.push({
-      label: "Inventory empty",
-      image: "",
-      text:
-  `${bulkText}<br><br>` +
-  `Yoi is not carrying any inventory items.`,
-      disabled: true
-    });
-  }
+if (options.length === 0) {
+  options.push({
+    label: "Inventory empty",
+    image: "",
+    text:
+      `${bulkText}<br><br>` +
+      `Yoi is not carrying any inventory items.`,
+    disabled: true
+  });
+}
+
+options.push({
+  label: "Close Inventory",
+  text: "Return to the game.",
+  action: closeOverlay
+});
+
+openOverlay({
+  title: "INVENTORY",
+  text: bulkText,
+  image: "",
+  options,
+  selectedIndex
+});
 
   openOverlay({
    title: "INVENTORY",
