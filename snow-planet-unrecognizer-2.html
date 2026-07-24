@@ -7801,7 +7801,15 @@ function checkBeerMineNet() {
     );
   }
 
-  net.relocated = true;
+    net.relocated = true;
+
+  /*
+    Allow the newly available Beer Mine transmission
+    to trigger the UNRECOGNIZER Watch immediately.
+  */
+  worldState.transmissionFlags.lastWatchNotificationAt = 0;
+
+  updateUnrecognizerWatch();
 
   return true;
 }
@@ -11765,6 +11773,7 @@ const UNRECOGNIZER_WATCH_RULES = {
    ============================================================= */
 
 const UNRECOGNIZER_TRANSMISSIONS = [
+
   {
     id: "sorceryTechBinocularShipment",
     order: 10,
@@ -11782,6 +11791,26 @@ const UNRECOGNIZER_TRANSMISSIONS = [
 
       "The kits are currently being held at Outpost 3."
   },
+
+  {
+  id: "beerMineSocialCall",
+  order: 11,
+
+  isAvailable: () => {
+    return !!worldState.beerMineNet?.relocated;
+  },
+
+  title: "CALL TO THE BEER MINE",
+
+  text:
+    "ALL UNRECOGNIZERS:<br><br>" +
+
+    "A social gathering is now underway at the Beer Mine.<br><br>" +
+
+    "All Unrecognizers are invited to attend.<br><br>" +
+
+    "Come drink, visit, and spend some time together."
+},
 
   {
   id: "ceTeleportalObstruction",
