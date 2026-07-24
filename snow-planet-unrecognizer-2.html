@@ -923,6 +923,7 @@ right: "gallery/0-gallery/sprite/yoi.png"
   yoiUnrecognizer: "gallery/0-gallery/sprite/badge/yoi-unrecognizer.png",
   redSnowGeneric: "gallery/sprite/badge/rs/red-snow-badge.png",
   redSnowDefeated: "gallery/sprite/badge/rs/red-snow-badge-defeated.png",
+  eshi: "gallery/sprite/badge/rs/eshi.png",
   strag: "gallery/sprite/badge/rs/strag.png",
   gliv: "gallery/sprite/badge/civilian/gliv.png",
   yord: "gallery/sprite/badge/wf/yord.png",
@@ -4236,6 +4237,19 @@ function openVerkosArtifactMenu() {
 
 const DIALOGUE_DEFINITIONS = {
 
+  eshiClosedDepot: {
+    lines: [
+      "I came way over here from SECTOR CE to pick up my usual Unrecognizer supply.",
+
+      "But they don't have it.",
+
+      "When I heard the Unrecognizer Subfactory had been shut down by the SDA, I raced through the pines in my RS-3 Scorch Cat.<br><br> Yeah, it's a personnel transport, but sometimes a Red Snow gangster has to have some playtime.",
+
+      "I'm thinking about driving to the Beer Mine.<br><br>It's a great bar, if you've never been to Stro.<br><br> But BEER is BEER. I might just hang out here for a while..."
+
+    ]
+  },
+
   stragObstructionist: {
   lines: [
     "Nope.<br><br>Nobody teleporting hereabouts.",
@@ -4769,6 +4783,16 @@ cruk: {
   dialogueId: "crukBinoculars",
   firstMeetingThoughtId: "people_cruk_first_impression"
 },
+
+  eshi: {
+    name: "ESHI",
+    image: ASSETS.character.badge.eshi,
+    portrait: ASSETS.character.badge.eshi,
+    faction: "redSnow",
+    maxHealth: 100,
+    dialogueId: "eshiClosedDepot",
+    firstMeetingThoughtId: "people_eshi_first_impression"
+  },
 
   strag: {
   name: "STRAG",
@@ -6285,6 +6309,20 @@ const characters = [
   visible: true,
   conversationStep: 0,
   portraitShown: false
+},
+
+{ id: "eshi-engine-test-facility",
+  definitionId: "eshi",
+  mapId: "engineTestInterior",
+  x: 2,
+  y: 4,
+  facing: "up",
+  health: 100,
+  defeated: false,
+  visible: true,
+  conversationStep: 0,
+  portraitShown: false,
+  vehicleId: "rs3ScorchCat"
 },
 
 {
