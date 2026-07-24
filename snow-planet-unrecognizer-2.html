@@ -921,6 +921,7 @@ right: "gallery/0-gallery/sprite/yoi.png"
     badge: {
   verkos: "gallery/sprite/badge/art-corp/verkos.png",
   yoiUnrecognizer: "gallery/0-gallery/sprite/badge/yoi-unrecognizer.png",
+  redSnowOperative: "gallery/0-gallery/sprite/rs-operative.png",
   redSnowGeneric: "gallery/sprite/badge/rs/red-snow-badge.png",
   redSnowDefeated: "gallery/sprite/badge/rs/red-snow-badge-defeated.png",
   eshi: "gallery/sprite/badge/rs/eshi.png",
@@ -3748,6 +3749,100 @@ replaceMapSymbol(ATLAS.AA.tiles, 9, 17, "?");
 
 const BLUEPRINTS = {
 
+  hangarGateFaInterior: {
+  id: "hangarGateFaInterior",
+  title: "FA HANGAR GATE CATACOMBS",
+  kind: "interior",
+
+  exits: [
+    { x: 14, y: 28 }
+  ],
+
+  spawn: {
+    x: 14,
+    y: 27
+  },
+
+  tiles: [
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+    "W.W.W.......W...W.......W...W",
+    "W.W.W.W.WWW.W.W.W.WWW.W.WWW.W",
+    "W.W.......W.W.W...........W.W",
+    "W.W..W..W.WWW.WWW.........W.W",
+    "W.............W....W..W.....W",
+    "WWW.W..W..WWWWW.W.........W.W",
+    "W.............W.W.......W...W",
+    "W.W.W.W.WWW.W.W.W.W.......W.W",
+    "W.W.W.W...W.W.W.W.........W.W",
+    "W.W.W.WWW.WWW.W.W.WWWWW.W.WWW",
+    "W.W...W.......W.W.....W.W...W",
+    "W.WWWWWWW.WWWWW.WWWWWWW.WWW.W",
+    "W.W.....W.W...W.........W...W",
+    "W.WWW.W.WWW.W.WWWWWWWWWWW.W.W",
+    "W.....W.....W.W...........W.W",
+    "WWWWWWWWWWWWW.W.WWWWWWWWWWW.W",
+    "W.W...........W...........W.W",
+    "W.W.W.........WWW.........W.W",
+    "W...W..W..W........W..W.....W",
+    "W.WWW.........WWW.........WWW",
+    "W.W...........W.........W...W",
+    "W.W.W.W..W....W.W.........W.W",
+    "W.W.W.........W...W.......W.W",
+    "W.W.W.......W.WWW....W....WWW",
+    "W.W.W.......................W",
+    "W.W.W.WWWWWWWW.WWWWWWWWWWWW.W",
+    "W.W.........................W",
+    "WWWWWWWWWWWWWWdWWWWWWWWWWWWWW"
+  ]
+},
+
+hangarGateBdInterior: {
+  id: "hangarGateBdInterior",
+  title: "BD HANGAR GATE CATACOMBS",
+  kind: "interior",
+
+  exits: [
+    { x: 14, y: 28 }
+  ],
+
+  spawn: {
+    x: 14,
+    y: 27
+  },
+
+  tiles: [
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+    "W.W.....W...........W.......W",
+    "W.W.WWW.WWWWW.WWWWW.WWW.WWW.W",
+    "W.W...........W.............W",
+    "W.W..W...W..WWW.W..W..W...W.W",
+    "W....WW..WW...W.W.......W.W.W",
+    "WWW..W...W..W.W.W.W..W..W.WWW",
+    "W.W..WW..W..W.W.............W",
+    "W.W..W......W.WWW.WWWWW.WWW.W",
+    "W...........W.W.W...W.....W.W",
+    "WWW.........W.W.WWW.W.WWWWW.W",
+    "W.............W.W...W...W...W",
+    "W.W.W.W.W.WWWWW.W.WWWWWWW.W.W",
+    "W.W...W.W.W.....W...W.....W.W",
+    "W.WWWWW.W.W.WWWWWWW.W.WWWWW.W",
+    "W...W...W...W.............W.W",
+    "WWW.W.WWW.WWW.W...........W.W",
+    "W...W.....W...W..W....W.....W",
+    "W.WWW.WWWWW.WWW..WW...WW..WWW",
+    "W.W.........W....W....W...W.W",
+    "W.W.........W.W..WW...W...W.W",
+    "W....W..W.....W..W........W.W",
+    "W.W.......W.WWW...........W.W",
+    "W.W...........W.............W",
+    "W.W.W..W..W.W.W...........W.W",
+    "W.W.........W...............W",
+    "W.WWW.WWWWWWWW.WWWWWW.W.WWW.W",
+    "W...W...................W...W",
+    "WWWWWWWWWWWWWWdWWWWWWWWWWWWWW"
+  ]
+},
+
   unrecognizerDepotInterior: {
   id: "unrecognizerDepotInterior",
   title: "UNRECOGNIZER DEPOT",
@@ -4825,14 +4920,21 @@ cruk: {
   firstMeetingThoughtId: "people_strag_first_impression"
 },
 
+  redSnowOperative: {
+    name: "RED SNOW OPERATIVE",
+    image: ASSETS.character.badge.redSnowOperative,
+    faction: "redSnow",
+    maxHealth: 75,
+    weaponId: "sdaServiceLaser"
+  },
+
   redSnowRenegade: {
   name: "RED SNOW RENEGADE",
   image: ASSETS.character.badge.redSnowGeneric,
   defeatedImage: ASSETS.character.badge.redSnowDefeated,
   faction: "redSnow",
   maxHealth: 75,
-  weaponId: "basicLaserHandgun",
-  dialogueId: "redSnowRenegade"
+  weaponId: "basicLaserHandgun"
 }
 
 };
@@ -6189,6 +6291,143 @@ const vehicles = [
 
 const characters = [
 
+/* =============================================================
+   FA HANGAR GATE OPERATIVES
+   ============================================================= */
+
+{
+  id: "fa-operative-1",
+  definitionId: "redSnowOperative",
+  mapId: "hangarGateFaInterior",
+  x: 5,
+  y: 5,
+  facing: "down",
+
+  health: 75,
+  defeated: false,
+  visible: true,
+
+  autonomous: true,
+  residentState: "attackingPlayer"
+},
+
+{
+  id: "fa-operative-2",
+  definitionId: "redSnowOperative",
+  mapId: "hangarGateFaInterior",
+  x: 20,
+  y: 7,
+  facing: "left",
+
+  health: 75,
+  defeated: false,
+  visible: true,
+
+  autonomous: true,
+  residentState: "attackingPlayer"
+},
+
+{
+  id: "fa-operative-3",
+  definitionId: "redSnowOperative",
+  mapId: "hangarGateFaInterior",
+  x: 8,
+  y: 19,
+  facing: "right",
+
+  health: 75,
+  defeated: false,
+  visible: true,
+
+  autonomous: true,
+  residentState: "attackingPlayer"
+},
+
+{
+  id: "fa-operative-4",
+  definitionId: "redSnowOperative",
+  mapId: "hangarGateFaInterior",
+  x: 23,
+  y: 25,
+  facing: "up",
+
+  health: 75,
+  defeated: false,
+  visible: true,
+
+  autonomous: true,
+  residentState: "attackingPlayer"
+},
+
+
+/* =============================================================
+   BD HANGAR GATE OPERATIVES
+   ============================================================= */
+
+{
+  id: "bd-operative-1",
+  definitionId: "redSnowOperative",
+  mapId: "hangarGateBdInterior",
+  x: 4,
+  y: 3,
+  facing: "down",
+
+  health: 75,
+  defeated: false,
+  visible: true,
+
+  autonomous: true,
+  residentState: "attackingPlayer"
+},
+
+{
+  id: "bd-operative-2",
+  definitionId: "redSnowOperative",
+  mapId: "hangarGateBdInterior",
+  x: 22,
+  y: 7,
+  facing: "left",
+
+  health: 75,
+  defeated: false,
+  visible: true,
+
+  autonomous: true,
+  residentState: "attackingPlayer"
+},
+
+{
+  id: "bd-operative-3",
+  definitionId: "redSnowOperative",
+  mapId: "hangarGateBdInterior",
+  x: 7,
+  y: 17,
+  facing: "right",
+
+  health: 75,
+  defeated: false,
+  visible: true,
+
+  autonomous: true,
+  residentState: "attackingPlayer"
+},
+
+{
+  id: "bd-operative-4",
+  definitionId: "redSnowOperative",
+  mapId: "hangarGateBdInterior",
+  x: 20,
+  y: 25,
+  facing: "up",
+
+  health: 75,
+  defeated: false,
+  visible: true,
+
+  autonomous: true,
+  residentState: "attackingPlayer"
+},
+
 /*
 
   {
@@ -6587,6 +6826,8 @@ const buildingStamps = [
   x: 7,
   y: 3,
 
+  blueprintId: "hangarGateBdInterior",
+
   ambush: {
     triggered: false,
     renegades: 4,
@@ -6601,6 +6842,8 @@ const buildingStamps = [
   mapId: "FA",
   x: 1,
   y: 13,
+
+  blueprintId: "hangarGateFaInterior",
 
   ambush: {
     triggered: false,
@@ -7184,6 +7427,7 @@ const player = {
     "binoculars",
     "hereoDevice",
     "unrecognizerWatch",
+    "keycard1"
   ],
 
   inventoryCapacity: 20,
@@ -11944,10 +12188,23 @@ function playNewsTape1(pageIndex = 0) {
 /* Standard object interactions demonstrate varied menus. */
 const INTERACTIONS = {
 
-  lockedHangarGate() {
+  lockedHangarGate(entrance) {
+  if (!hasItem("keycard1")) {
+    showBubble(
+      "RED SNOW TUNNEL ENTRANCE",
+      "The outer gate is open, but the inner door mechanism is electronically locked. A security keycard reader remains active."
+    );
+    return;
+  }
+
   showBubble(
-    "RED SNOW TUNNEL ENTRANCE",
-    "The outer gate is open, but the inner door mechanism is latched and locked."
+    "ACCESS",
+    "The keycard reader accepts your card."
+  );
+
+  enterBuilding(
+    entrance.stamp,
+    entrance.definition
   );
 },
 
@@ -12701,6 +12958,141 @@ function animateProjectile(projectile) {
   }, stepDelay);
 }
 
+function getResidentWeapon(character) {
+  const definition =
+    getCharacterDefinition(character);
+
+  if (!definition?.weaponId) {
+    return null;
+  }
+
+  const weapon =
+    ITEM_DEFINITIONS[definition.weaponId];
+
+  if (
+    !weapon ||
+    weapon.category !== "weapon"
+  ) {
+    return null;
+  }
+
+  return weapon;
+}
+
+
+function getStraightDirectionToPlayer(character) {
+  if (character.x === player.x) {
+    return player.y < character.y
+      ? "up"
+      : "down";
+  }
+
+  if (character.y === player.y) {
+    return player.x < character.x
+      ? "left"
+      : "right";
+  }
+
+  return null;
+}
+
+
+function residentHasClearShot(character, direction, range) {
+  const vector = DIRECTIONS[direction];
+
+  let x = character.x;
+  let y = character.y;
+
+  for (let step = 1; step <= range; step++) {
+    x += vector.dx;
+    y += vector.dy;
+
+    if (!inBounds(x, y)) {
+      return false;
+    }
+
+    if (
+      x === player.x &&
+      y === player.y
+    ) {
+      return true;
+    }
+
+    if (isProjectileBlocked(x, y)) {
+      return false;
+    }
+  }
+
+  return false;
+}
+
+
+function fireResidentWeapon(character) {
+  const weapon =
+    getResidentWeapon(character);
+
+  if (!weapon) {
+    return false;
+  }
+
+  const direction =
+    getStraightDirectionToPlayer(character);
+
+  if (!direction) {
+    return false;
+  }
+
+  if (
+    !residentHasClearShot(
+      character,
+      direction,
+      weapon.range
+    )
+  ) {
+    return false;
+  }
+
+  const now = Date.now();
+
+  if (
+    character.nextWeaponFireTime &&
+    now < character.nextWeaponFireTime
+  ) {
+    return false;
+  }
+
+  character.facing = direction;
+
+  const projectile = {
+    ownerId: character.id,
+    mapId: character.mapId,
+
+    x: character.x,
+    y: character.y,
+
+    direction,
+    damage: weapon.damage,
+    rangeRemaining: weapon.range,
+    image: weapon.projectileImage
+  };
+
+  worldState.projectiles.push(projectile);
+
+  /*
+    One shot every 1.4 seconds.
+    This prevents several Operatives from becoming
+    an uninterrupted laser hose.
+  */
+  character.nextWeaponFireTime =
+    now + 1400;
+
+  playSound(SOUNDS.laser);
+  drawGame();
+  animateProjectile(projectile);
+
+  return true;
+}
+
 /* =============================================================
    RESIDENT LIFE SYSTEM
 
@@ -13210,6 +13602,16 @@ function updateResident(character) {
     Math.abs(character.x - player.x) +
     Math.abs(character.y - player.y);
 
+  /*
+    Fire first if there is a clear shot.
+  */
+  if (fireResidentWeapon(character)) {
+    break;
+  }
+
+  /*
+    Otherwise preserve the old melee attack.
+  */
   if (distance <= 1) {
     player.health = Math.max(
       0,
@@ -13428,6 +13830,37 @@ function updateSingleProjectile(projectile) {
   if (!inBounds(nextX, nextY)) {
     return true;
   }
+
+  /*
+  Enemy projectiles can strike Yoi.
+*/
+if (
+  projectile.ownerId !== "player" &&
+  projectile.mapId === player.mapId &&
+  nextX === player.x &&
+  nextY === player.y
+) {
+  projectile.x = nextX;
+  projectile.y = nextY;
+
+  player.health = Math.max(
+    0,
+    player.health - projectile.damage
+  );
+
+  setMessage(
+    `LASER HIT · Yoi health: ${player.health}/${player.maxHealth}`
+  );
+
+  if (player.health <= 0) {
+    showBubble(
+      "YOI",
+      "Yoi collapses beneath the Red Snow assault."
+    );
+  }
+
+  return true;
+}
 
   const target = characters.find(character =>
     character.visible &&
