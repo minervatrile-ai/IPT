@@ -786,6 +786,7 @@ campfireSmoldering:
   doorBlue: "gallery/0-gallery/props/door-blue.png",
   campfireOut: "gallery/0-gallery/props/campfire-out.png",
   television: "gallery/0-gallery/props/television.png",
+  televisionMonsterSnowtruckShow: "gallery/0-gallery/props/television-snowtrucks.png",
   televisionNews: "gallery/0-gallery/props/television-news.png",
   televisionUnrecognizer1:
     "gallery/0-gallery/props/television-unrecognizer-1.png",
@@ -948,6 +949,7 @@ right: "gallery/0-gallery/sprite/yoi.png"
 },
 
 item: {
+
   redglassRock:
     "gallery/0-gallery/item/redglass-rock.png",
 
@@ -3765,14 +3767,14 @@ const BLUEPRINTS = {
 
   tiles: [
     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-    "W.W.W.......W...W.......W...W",
-    "W.W.W.W.WWW.W.W.W.WWW.W.WWW.W",
-    "W.W.......W.W.W...........W.W",
-    "W.W..W..W.WWW.WWW.........W.W",
+    "WhShhSh.....W...W.......W...W",
+    "Wh....h.....W.W.W.WWW.W.WWW.W",
+    "Wh.^..h.....W.W...........W.W",
+    "Wh...hh.....W.WWW.........W.W",
     "W.............W....W..W.....W",
     "WWW.W..W..WWWWW.W.........W.W",
     "W.............W.W.......W...W",
-    "W.W.W.W.WWW.W.W.W.W.......W.W",
+    "W.....W.WWW.W.W.W.W.......W.W",
     "W.W.W.W...W.W.W.W.........W.W",
     "W.W.W.WWW.WWW.W.W.WWWWW.W.WWW",
     "W.W...W.......W.W.....W.W...W",
@@ -4182,6 +4184,29 @@ beerMineInterior: {
    Definitions describe reusable kinds of things.
    Instances describe one particular thing in the world.
    ============================================================= */
+
+const TAPE_MONSTER_SNOWTRUCK_SHOW_TRANSCRIPT = [
+  "MONSTER SNOWTRUCK SHOW\n\nCRUSHFROST CHAMPIONSHIP TOUR",
+
+  "A roaring crowd fills an enormous floodlit snow arena.\n\nEngines thunder beneath shrieking electric guitars.",
+
+  "ANNOUNCER:\n\nTonight, the biggest machines on Stro collide in the coldest motorsport spectacle ever recorded!",
+
+  "A black-and-red monster snowtruck launches from an ice ramp and sails over a row of abandoned civilian vehicles.",
+
+  "The snowtruck crashes down through a barricade of frozen barrels. Its enormous tires continue turning through the wreckage.",
+
+  "ANNOUNCER:\n\nThat's the BLOOD AVALANCHE! Eight tons of steel, fuel, and extremely poor judgment!",
+
+  "A second snowtruck enters the arena carrying a gigantic front plow. It crushes an ice sculpture shaped like a government transport.",
+
+  "The crowd erupts as both snowtrucks circle the arena, spraying snow and fragments of machinery into the floodlights.",
+
+  "ANNOUNCER:\n\nRemember: professional snowtruck operators performed these demonstrations. Do not attempt them on public roads.",
+
+  "END OF PROGRAM"
+];
+
 const TAPE_STRO_NEWS_1_TRANSCRIPT = [
   "STRO NEWS\n\nBroadcast #1",
 
@@ -5043,6 +5068,15 @@ stakeWitness: {
 
   sellValue: 700,
   buyerId: "verkos"
+},
+
+  tapeMonsterSnowTruckShow: {
+  name: "MONSTER SNOWTRUCK SHOW",
+  image: "gallery/0-gallery/item/tape-monster-snowtruck-show.png",
+  type: "media",
+  bulk: 1,
+  description:
+    "A commercially released VHS in its original illustrated case. The cover promises enormous snowtrucks, crushed obstacles, and catastrophic quantities of engine noise."
 },
 
   tapeNews1: {
@@ -6086,7 +6120,19 @@ const STORAGE_CRATES = [
     inventory: [
       "sorceryTechBinocularsAugmentationKit"
     ]
-  }
+  },
+
+  {
+  id: "fa-video-room-tape-crate",
+  mapId: "hangarGateFaInterior",
+  x: 2,
+  y: 1,
+
+  inventory: [
+    "tapeMonsterSnowTruckShow"
+  ]
+}
+
 ];
 
 /* Locker instances */
@@ -7419,8 +7465,8 @@ const player = {
   facing: "right",
   mode: "walking",
   vehicleId: null,
-  health: 100,
-  maxHealth: 100,
+  health: 500,
+  maxHealth: 500,
 
   binocularMode: false,
   binocularMapId: "AA",
@@ -12197,6 +12243,33 @@ function playNewsTape1(pageIndex = 0) {
     });
 }
 
+function playMonsterSnowTruckShowTape(pageIndex = 0) {
+  const transcript = TAPE_MONSTER_SNOWTRUCK_SHOW_TRANSCRIPT;
+  const isLastPage = pageIndex >= transcript.length - 1;
+
+  const options = [];
+
+  if (!isLastPage) {
+    options.push({
+      label: "Continue",
+      action: () =>
+        playMonsterSnowTruckShowTape(pageIndex + 1)
+    });
+  }
+
+  options.push({
+    label: isLastPage ? "Eject Tape" : "Stop Tape",
+    action: () => INTERACTIONS.television()
+  });
+
+  openOverlay({
+    title: "MONSTER SNOWTRUCK SHOW",
+    image: ASSETS.props.televisionMonsterSnowtruckShow,
+    text: transcript[pageIndex],
+    options
+  });
+}
+
 /* Standard object interactions demonstrate varied menus. */
 const INTERACTIONS = {
 
@@ -12519,13 +12592,25 @@ trashChute() {
   const hasUnrecognizerTape1 =
     player.inventory.includes("tapeUnrecognizer1");
 
+  const hasMonsterSnowTruckShowTape = 
+    player.inventory.includes("tapeMonsterSnowTruckShow");
+
   const hasNewsTape1 =
     player.inventory.includes("tapeNews1");
 
   const hasAnyTape =
-    hasUnrecognizerTape1 || hasNewsTape1;
+  hasUnrecognizerTape1 ||
+  hasMonsterSnowTruckShowTape ||
+  hasNewsTape1;
 
   const options = [];
+
+  if (hasMonsterSnowTruckShowTape) {
+    options.push({
+      label: "Play Tape: Monster Snowtruck Tape",
+      action: () => playMonsterSnowTruckShowTape(0)
+    });
+  }
 
   if (hasUnrecognizerTape1) {
     options.push({
