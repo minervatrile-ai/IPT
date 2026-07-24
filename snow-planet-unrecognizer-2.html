@@ -12925,36 +12925,44 @@ function fireEquippedWeapon() {
   playSound(SOUNDS.laser);
   drawGame();
 
-  animateProjectile(projectile);
+  animateProjectile();
 }
 
-function animateProjectile(projectile) {
-  const stepDelay = 90;
+let projectileAnimationTimer = null;
 
-  const timer = setInterval(() => {
-    const stillExists =
-      worldState.projectiles.includes(projectile);
+function animateProjectile() {
+  if (projectileAnimationTimer !== null) {
+    return;
+  }
 
-    if (!stillExists) {
-      clearInterval(timer);
+  const stepDelay = 60;
+
+  projectileAnimationTimer = setInterval(() => {
+    if (worldState.projectiles.length === 0) {
+      clearInterval(projectileAnimationTimer);
+      projectileAnimationTimer = null;
       return;
     }
 
-    const finished = updateSingleProjectile(projectile);
+    const survivingProjectiles = [];
 
-    drawGame();
+    for (const projectile of worldState.projectiles) {
+      const finished =
+        updateSingleProjectile(projectile);
 
-    if (finished) {
-      clearInterval(timer);
-
-      worldState.projectiles =
-        worldState.projectiles.filter(
-          existingProjectile =>
-            existingProjectile !== projectile
-        );
-
-      drawGame();
+      if (!finished) {
+        survivingProjectiles.push(projectile);
+      }
     }
+
+    worldState.projectiles =
+      survivingProjectiles;
+
+    /*
+      One complete redraw per projectile step,
+      no matter how many beams are flying.
+    */
+    drawGame();
   }, stepDelay);
 }
 
@@ -13088,7 +13096,7 @@ function fireResidentWeapon(character) {
 
   playSound(SOUNDS.laser);
   drawGame();
-  animateProjectile(projectile);
+  animateProjectile();
 
   return true;
 }
