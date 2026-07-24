@@ -4238,17 +4238,25 @@ function openVerkosArtifactMenu() {
 const DIALOGUE_DEFINITIONS = {
 
   eshiClosedDepot: {
-    lines: [
-      "I came way over here from SECTOR CE to pick up my usual Unrecognizer supply.",
+  lines: [
+    "I came way over here from SECTOR CE to pick up my usual Unrecognizer supply.",
 
-      "But they don't have it.",
+    "But they don't have it.",
 
-      "When I heard the Unrecognizer Subfactory had been shut down by the SDA, I raced through the pines in my RS-3 Scorch Cat.<br><br> Yeah, it's a personnel transport, but sometimes a Red Snow gangster has to have some playtime.",
+    "When I heard the Unrecognizer Subfactory had been shut down by the SDA, I raced through the pines in my RS-3 Scorch Cat.<br><br> Yeah, it's a personnel transport, but sometimes a Red Snow gangster has to have some playtime.",
 
-      "I'm thinking about driving to the Beer Mine.<br><br>It's a great bar, if you've never been to Stro.<br><br> But BEER is BEER. I might just hang out here for a while..."
+    {
+      text:
+        "I'm thinking about driving to the Beer Mine.<br><br>" +
+        "It's a great bar, if you've never been to Stro.<br><br>" +
+        "But BEER is BEER. I might just hang out here for a while...",
 
-    ]
-  },
+      action: () => {
+        worldState.beerMineNet.eshiReady = true;
+      }
+    }
+  ]
+},
 
   stragObstructionist: {
   lines: [
@@ -4346,15 +4354,33 @@ const DIALOGUE_DEFINITIONS = {
 jegnaDialogue: {
   lines: [
     "I was soooo far from the station yesterday evening. The sun started setting, a blizzard rolled in... and me? I started getting hungry.",
+
     "Thankfully I'd packed a few heated meal rations in my inventory. Otherwise, I don't think I'd have made it back.",
-    "I was trying to hike the western station foot path, along the trail between those two pine trees... but I had to turn around and come back empty-handed."
+
+    {
+      text:
+        "I was trying to hike the western station foot path, along the trail between those two pine trees... but I had to turn around and come back empty-handed.",
+
+      action: () => {
+        worldState.beerMineNet.jegnaReady = true;
+      }
+    }
   ]
 },
 
   zyrDialogue: {
   lines: [
     "That door over there leads to the igloo where we keep the beer kegs cold.",
-    "When one runs dry, I haul the empty out back and roll a fresh keg in. The delivery truck picks up the empties the next time it comes through."
+
+    {
+      text:
+        "When one runs dry, I haul the empty out back and roll a fresh keg in. " +
+        "The delivery truck picks up the empties the next time it comes through.",
+
+      action: () => {
+        worldState.beerMineNet.zyrReady = true;
+      }
+    }
   ]
 },
 
@@ -4667,6 +4693,7 @@ if (
         removeItem("sorceryTechBinocularsAugmentationKit");
 
         player.binocularsCondition = "enhanced";
+        worldState.beerMineNet.wylReady = true;
 
         worldState.questFlags.binocularUpgradeKitsRetrieved = true;
         worldState.questFlags.binocularUpgradeCompleted = true;
@@ -6322,7 +6349,7 @@ const characters = [
   visible: true,
   conversationStep: 0,
   portraitShown: false,
-  vehicleId: "rs3ScorchCat"
+  vehicleId: "rs-3"
 },
 
 {
@@ -7176,8 +7203,8 @@ carryingHereoBackpack: false,
 backpackMoveToggle: false,
 
 gasJugFuel: 20,
-  merit: 1999,
-  serpentine: 0
+  merit: 850,
+  serpentine: 7
 };
 
 const worldState = {
@@ -7202,6 +7229,14 @@ const worldState = {
   binocularUpgradeQuestStarted: false,
   binocularUpgradeKitsRetrieved: false,
   binocularUpgradeCompleted: false
+},
+
+ beerMineNet: {
+  jegnaReady: false,
+  zyrReady: false,
+  wylReady: false,
+  eshiReady: false,
+  relocated: false
 },
 
 transmissionFlags: {
@@ -7312,6 +7347,158 @@ const THIRD_BUILDING_EXTERIOR = {
   y: 25,
   facing: "down"
 };
+
+/* =============================================================
+   STORY MOVERS
+
+   Story Movers perform permanent world rearrangements after
+   required story conditions have been completed.
+   ============================================================= */
+
+const BEER_MINE_CHARACTER_DESTINATIONS = {
+  "jegna-engine-test-facility": {
+    mapId: "beerMineInterior",
+    x: 3,
+    y: 3,
+    facing: "right"
+  },
+
+  "zyr-engine-test-facility": {
+    mapId: "beerMineInterior",
+    x: 5,
+    y: 3,
+    facing: "left"
+  },
+
+  "wyl-engine-test-facility": {
+    mapId: "beerMineInterior",
+    x: 7,
+    y: 4,
+    facing: "left"
+  },
+
+  "eshi-engine-test-facility": {
+    mapId: "beerMineInterior",
+    x: 8,
+    y: 5,
+    facing: "left"
+  }
+};
+
+function moveCharacterToStoryDestination(
+  characterId,
+  destination
+) {
+  const character = characters.find(
+    candidate => candidate.id === characterId
+  );
+
+  if (!character || !destination) {
+    return false;
+  }
+
+  character.mapId = destination.mapId;
+  character.x = destination.x;
+  character.y = destination.y;
+  character.facing = destination.facing || "down";
+
+  character.visible = true;
+
+  return true;
+}
+
+const BEER_MINE_VEHICLE_DESTINATIONS = {
+  "rs-3": {
+    mapId: "AF",
+    x: 2,
+    y: 20,
+    facing: "right"
+  },
+
+  driftwagon: {
+    mapId: "AF",
+    x: 7,
+    y: 20,
+    facing: "right"
+  }
+};
+
+function moveVehicleToStoryDestination(
+  vehicleId,
+  destination
+) {
+  const vehicle = vehicles.find(
+    candidate => candidate.id === vehicleId
+  );
+
+  if (!vehicle || !destination) {
+    return false;
+  }
+
+  vehicle.mapId = destination.mapId;
+  vehicle.x = destination.x;
+  vehicle.y = destination.y;
+  vehicle.facing = destination.facing || "down";
+  vehicle.reversing = false;
+
+  return true;
+}
+
+function checkBeerMineNet() {
+  const net = worldState.beerMineNet;
+
+  if (!net || net.relocated) {
+    return false;
+  }
+
+  const everyoneReady =
+    net.jegnaReady &&
+    net.zyrReady &&
+    net.wylReady &&
+    net.eshiReady;
+
+  if (!everyoneReady) {
+    return false;
+  }
+
+  /*
+    Move the four characters into the Beer Mine.
+  */
+  Object.entries(
+    BEER_MINE_CHARACTER_DESTINATIONS
+  ).forEach(([characterId, destination]) => {
+    moveCharacterToStoryDestination(
+      characterId,
+      destination
+    );
+  });
+
+  /*
+    Never relocate a vehicle while Yoi is currently driving it.
+  */
+  const activeVehicleId =
+    player.mode === "driving"
+      ? player.vehicleId
+      : null;
+
+  if (activeVehicleId !== "rs-3") {
+    moveVehicleToStoryDestination(
+      "rs-3",
+      BEER_MINE_VEHICLE_DESTINATIONS["rs-3"]
+    );
+  }
+
+  if (activeVehicleId !== "driftwagon") {
+    moveVehicleToStoryDestination(
+      "driftwagon",
+      BEER_MINE_VEHICLE_DESTINATIONS.driftwagon
+    );
+  }
+
+  net.relocated = true;
+
+  return true;
+}
 
 /* =============================================================
    11. GENERAL HELPERS
@@ -8174,6 +8361,7 @@ function activateAllHtiCalibrationTargetsCheat() {
   worldState.htiNetwork.triangulationEstablished = true;
 
   triggerStragCEObstructionEvent();
+  checkBeerMineNet();
 
   /*
     Make sure the player possesses the handheld during testing.
@@ -8433,6 +8621,7 @@ function transitionWalkingAcrossAtlasEdge(direction) {
   nextMap.discovered = true;
 
   triggerStragCEObstructionEvent();
+  checkBeerMineNet();
 
   setMessage(`${nextMapId}: ${nextMap.title}`);
   return true;
@@ -9465,6 +9654,10 @@ function attemptVehicleMove(
     worldState.currentMapId = vehicle.mapId;
 
     triggerStragCEObstructionEvent();
+
+if (crossesEdge) {
+  checkBeerMineNet();
+}
 
     const action = reversing ? "Reversing" : "Driving";
 
