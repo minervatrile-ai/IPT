@@ -8190,9 +8190,11 @@ function calibrateHtiTarget(target) {
     return;
   }
 
-  worldState.htiNetwork.calibratedTargetIds.push(
-    target.id
-  );
+ worldState.htiNetwork.calibratedTargetIds.push(
+  target.id
+);
+
+player.merit += 150;
 
   const triangulationWasEstablished =
     worldState.htiNetwork.triangulationEstablished;
@@ -8207,10 +8209,11 @@ function calibrateHtiTarget(target) {
     triangulationNowEstablished
   ) {
     showBubble(
-      "HTI TRIANGULATION COMPLETE",
-      "Three calibration targets are now synchronized. " +
-      "The HEREO Teleporter handheld network is operational."
-    );
+  "HTI TRIANGULATION COMPLETE",
+  "Three calibration targets are now synchronized. " +
+  "The HEREO Teleporter handheld network is operational." +
+  "<br><br>HEREO PAYMENT RECEIVED: 150 MERIT."
+);
 
     return;
   }
@@ -8220,18 +8223,20 @@ function calibrateHtiTarget(target) {
       getCalibratedTriangulationTargets().length;
 
     showBubble(
-      "HTI CALIBRATION SUCCESS",
-      `${target.teleporterName || target.mapId} calibrated. ` +
-      `${count} of 3 triangulation targets synchronized.`
-    );
+  "HTI CALIBRATION SUCCESS",
+  `${target.teleporterName || target.mapId} calibrated. ` +
+  `${count} of 3 triangulation targets synchronized.` +
+  "<br><br>HEREO PAYMENT RECEIVED: 150 MERIT."
+);
 
     return;
   }
 
   showBubble(
-    "HTI CALIBRATION SUCCESS",
-    `${target.teleporterName || target.mapId} has been added to the active HEREO network.`
-  );
+  "HTI CALIBRATION SUCCESS",
+  `${target.teleporterName || target.mapId} has been added to the active HEREO network.` +
+  "<br><br>HEREO PAYMENT RECEIVED: 150 MERIT."
+);
 }
 
 function getAdjacentHtiCalibrationTarget() {
