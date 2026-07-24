@@ -4196,6 +4196,8 @@ function openVerkosArtifactMenu() {
           return;
         }
 
+        plantThought("people_verkos_culture");
+
         closeOverlay();
 
         showBubble(
@@ -4282,14 +4284,6 @@ const DIALOGUE_DEFINITIONS = {
   lines: character => {
     const sellableItems =
       getItemsSellableToBuyer("verkos");
-
-    /*
-      After Yoi has completed Verkos's explanation once,
-      a later conversation plants the deeper reflection.
-    */
-    if (character.cultureConversationCompleted) {
-      plantThought("people_verkos_culture");
-    }
 
     /*
       Verkos sees at least one ART CORP cultural artifact
@@ -7070,6 +7064,14 @@ people_strag_first_impression: {
     "He is obstructive, but not mindless. He acts like someone protecting a purpose he has not explained yet."
 },
 
+people_eshi_first_impression: {
+  id: "people_eshi_first_impression",
+  category: "People",
+  title: "Eshi",
+  text: "Eshi said the SDA has closed the Unrecognizer Subfactory. I know where it is, generally north of SECTOR AA. He also mentioned having come from SECTOR CE. I'll prioritize calibration of any HTI targets there."
+},
+
+
 people_verkos_first_impression: {
   id: "people_verkos_first_impression",
   category: "People",
@@ -7307,9 +7309,11 @@ function getPlantedThoughts() {
 }
 
 function getThoughtsByCategory(category) {
-  return getPlantedThoughts().filter(
-    thought => thought.category === category
-  );
+  return getPlantedThoughts()
+    .filter(
+      thought => thought.category === category
+    )
+    .reverse();
 }
 
 const RECOVERY_LOCATION = {
