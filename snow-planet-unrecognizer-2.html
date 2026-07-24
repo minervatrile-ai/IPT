@@ -4371,7 +4371,19 @@ const DIALOGUE_DEFINITIONS = {
 
     "What would I like?",
 
-    "I'm kind of partial to monster truck shows."
+    {
+  text:
+    "I'm kind of partial to monster truck shows.<br><br>" +
+    "Here. Take my keycard to the RED SNOW UNDERGROUND COMPLEX ENTRANCES.<br><br>" +
+    "There's a Red Snow video-viewing room. They're hogging all the good tapes.<br><br>" +
+    "I'm not allowed in there anymore. Got drunk... puked all over the furniture once.",
+
+  action: () => {
+    if (!hasItem("keycard1")) {
+      addItem("keycard1");
+    }
+  }
+}
   ]
 },
 
@@ -7426,8 +7438,7 @@ const player = {
     "gasJug",
     "binoculars",
     "hereoDevice",
-    "unrecognizerWatch",
-    "keycard1"
+    "unrecognizerWatch"
   ],
 
   inventoryCapacity: 20,
