@@ -1074,6 +1074,13 @@ binocularsAugmentationKit:
       right: "gallery/vehicle/red-snow/rs-2/right.png"
     },
 
+    rs3: {
+      up: "gallery/0-gallery/vehicle/rs/rs-3/up.png",
+      down: "gallery/0-gallery/vehicle/rs/rs-3/down.png",
+      left: "gallery/0-gallery/vehicle/rs/rs-3/left.png",
+      right: "gallery/0-gallery/vehicle/rs/rs-3/right.png"
+    },
+
     wfOperator: {
       up: "gallery/vehicle/wf/operator/full/up.png",
       down: "gallery/vehicle/wf/operator/full/down.png",
@@ -5789,6 +5796,25 @@ const VEHICLE_DEFINITIONS = {
     hasDoorSound: false
   },
 
+  rs3ScorchCat: {
+    name: "RS-3 Scorch Cat",
+    family: "personnelTransport",
+    faction: "redSnow",
+    cargoCapacity: 37,
+    renderMode: "full",
+    images: ASSETS.vehicle.rs3,
+    size: {
+      up: { width: 2, height: 4 },
+      down: { width: 2, height: 4 },
+      left: { width: 4, height: 2 },
+      right: { width: 4, height: 2 }
+    },
+    boardable: true,
+    fuelCapacity: 300,
+    fuelPerStep: 0.66,
+    hasDoorSound: true
+  },
+
   wfOperatorVehicle: {
     name: "WF Operator Vehicle",
     family: "operator",
@@ -6015,7 +6041,17 @@ const vehicles = [
     ownerId: "verkos"
   },
 
-
+    {
+    id: "rs-3",
+    definitionId: "rs3ScorchCat",
+    mapId: "AA",
+    x: 2,
+    y: 22,
+    facing: "right",
+    fuel: 300,
+    boardable: true,
+    ownerId: "eshi"
+  },
   
   {
     id: "rs-1",
@@ -6028,6 +6064,8 @@ const vehicles = [
     boardable: false,
     ownerId: "strag-ce"
   },
+
+
 
 /*
 
