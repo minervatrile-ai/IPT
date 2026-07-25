@@ -5883,6 +5883,7 @@ const VEHICLE_DEFINITIONS = {
     name: "Soft Candy Ride",
     family: "luxurySnowcraft",
     faction: "civilian",
+    purchasePrice: 1200,
     cargoCapacity: 20,
     renderMode: "full",
     images: ASSETS.vehicle.softCandy,
@@ -5903,6 +5904,7 @@ const VEHICLE_DEFINITIONS = {
     name: "Pink Leopard Ride",
     family: "luxurySnowcraft",
     faction: "civilian",
+    purchasePrice: 1500,
     cargoCapacity: 20,
     renderMode: "full",
     images: ASSETS.vehicle.pinkLeopard,
@@ -6228,6 +6230,7 @@ const vehicles = [
     y: 18,
     facing: "down",
     fuel: 200,
+    purchased: false,
     ownerId: null
   },
 
@@ -6239,6 +6242,7 @@ const vehicles = [
     y: 18,
     facing: "down",
     fuel: 200,
+    purchased: false,
     ownerId: null
   },
 
@@ -9780,15 +9784,87 @@ function canBoardVehicle(vehicle) {
   return { allowed: true, reason: "" };
 }
 
-function enterVehicle(vehicle) {
-  const access = canBoardVehicle(vehicle);
+function openLuxurySnowcraftPurchaseMenu(vehicle) {
+  const definition = getVehicleDefinition(vehicle);
+  const price = definition.purchasePrice;
 
-  if (!access.allowed) {
-    showBubble("VEHICLE ACCESS", access.reason);
+  openOverlay({
+    title: "LUXURY SNOWCRAFT SALES",
+    image: getVehicleOverlayImage(vehicle),
+
+    text:
+      `<strong>${definition.name}</strong><br><br>` +
+      `Purchase price: ${price} Merit<br>` +
+      `Available Merit: ${player.merit}<br><br>` +
+      `Purchasing this vehicle will permanently authorize Yoi to operate it.`,
+
+    options: [
+      {
+        label: `Buy for ${price} Merit`,
+
+        action: () => {
+          if (player.merit < price) {
+            closeOverlay();
+
+            showBubble(
+              "LUXURY SNOWCRAFT SALES",
+              `Purchase declined.<br><br>` +
+              `${definition.name} costs ${price} Merit.<br>` +
+              `Yoi currently has ${player.merit} Merit.`
+            );
+
+            return;
+          }
+
+          player.merit -= price;
+
+          vehicle.purchased = true;
+          vehicle.ownerId = "yoi";
+
+          updateHud();
+          closeOverlay();
+
+          showBubble(
+            "LUXURY SNOWCRAFT SALES",
+            `PURCHASE COMPLETE.<br><br>` +
+            `${definition.name} is now registered to Yoi Zimek.`
+          );
+        }
+      },
+
+      {
+        label: "Leave Without Buying",
+        action: closeOverlay
+      }
+    ]
+  });
+}
+
+function enterVehicle(vehicle) {
+  const definition = getVehicleDefinition(vehicle);
+
+  /*
+    Unpurchased luxury snowcrafts open their sales menu
+    instead of allowing immediate boarding.
+  */
+  if (
+    definition.family === "luxurySnowcraft" &&
+    !vehicle.purchased
+  ) {
+    openLuxurySnowcraftPurchaseMenu(vehicle);
     return;
   }
 
-  const definition = getVehicleDefinition(vehicle);
+  const access = canBoardVehicle(vehicle);
+
+  if (!access.allowed) {
+    showBubble(
+      "VEHICLE ACCESS",
+      access.reason
+    );
+
+    return;
+  }
 
   player.mode = "driving";
   player.vehicleId = vehicle.id;
@@ -9796,10 +9872,16 @@ function enterVehicle(vehicle) {
   player.x = vehicle.x;
   player.y = vehicle.y;
 
-  if (definition.hasDoorSound) playSound(SOUNDS.carDoor);
+  if (definition.hasDoorSound) {
+    playSound(SOUNDS.carDoor);
+  }
+
   startVehicleSound(vehicle);
 
-  setMessage(`Driving ${definition.name}. Fuel: ${vehicle.fuel.toFixed(2)}`);
+  setMessage(
+    `Driving ${definition.name}. Fuel: ${vehicle.fuel.toFixed(2)}`
+  );
+
   drawGame();
 }
 
@@ -12436,24 +12518,31 @@ function playMonsterSnowTruckShowTape(pageIndex = 0) {
 const INTERACTIONS = {
 
   lockedHangarGate(entrance) {
-  if (!hasItem("keycard1")) {
-    showBubble(
-      "RED SNOW TUNNEL ENTRANCE",
-      "The outer gate is open, but the inner door mechanism is electronically locked. A security keycard reader remains active."
+
+    // Only the FA hangar currently requires keycard1.
+    if (
+      entrance.stamp.id === "hangar-gate-fa" &&
+      !hasItem("keycard1")
+    ) {
+      showBubble(
+        "RED SNOW TUNNEL ENTRANCE",
+        "The outer gate is open, but the inner door mechanism is electronically locked. A security keycard reader remains active."
+      );
+      return;
+    }
+
+    if (entrance.stamp.id === "hangar-gate-fa") {
+      showBubble(
+        "ACCESS",
+        "The keycard reader accepts your card."
+      );
+    }
+
+    enterBuilding(
+      entrance.stamp,
+      entrance.definition
     );
-    return;
-  }
-
-  showBubble(
-    "ACCESS",
-    "The keycard reader accepts your card."
-  );
-
-  enterBuilding(
-    entrance.stamp,
-    entrance.definition
-  );
-},
+  },
 
   campfire() {
   openOverlay({
