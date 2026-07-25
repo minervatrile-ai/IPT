@@ -4453,20 +4453,83 @@ eshiDialogue: {
       for delivery of the Pink Leopard Ride.
     */
     if (character.residentState === "stopUntilTalkedTo") {
-      return [
-        "There you are.",
 
-        "I'll wait out here.<br><br>" +
-        "No sense making you drag a Pink Leopard Ride through the Beer Mine.",
+  /*
+    Eshi has already paid for the Pink Leopard.
+  */
+  if (worldState.eshiPinkLeopardJob.paid) {
+    return [
+      "The Pink Leopard runs beautifully.",
 
-        "Luxury Snowcraft Sales.<br><br>" +
-        "Pink Leopard Ride.<br><br>" +
-        "Bring it here, and I'll pay you in Serpentine.",
+      "Much more reasonable than taking the RS-3 everywhere.",
 
-        "And I mean properly pay you.<br><br>" +
-        "Better than whatever exchange rate they're offering."
-      ];
-    }
+      "Not as enjoyable, obviously.<br><br>" +
+      "But much more reasonable."
+    ];
+  }
+
+  /*
+    The Pink Leopard is physically parked near
+    the Beer Mine exterior exit right now.
+  */
+  if (isPinkLeopardParkedAtBeerMine()) {
+    return [
+      "There it is.",
+
+      "The Pink Leopard Ride.<br><br>" +
+      "Even better-looking out here than it was in the showroom.",
+
+      "You spent 1,500 Merit on my behalf.<br><br>" +
+      "And I promised to make the exchange worthwhile.",
+
+      {
+        text:
+          "Twenty-three Serpentine.<br><br>" +
+          "Count it if you like.",
+
+        action: () => {
+          player.serpentine += 23;
+
+      const pinkLeopard = vehicles.find(
+  vehicle =>
+    vehicle.id ===
+    "pink-leopard-snowcraft-dealership-1"
+);
+
+if (pinkLeopard) {
+  pinkLeopard.boardable = false;
+}
+
+          worldState.eshiPinkLeopardJob.paid = true;
+
+          setMessage(
+            "Eshi paid Yoi 23 Serpentine for the Pink Leopard Ride."
+          );
+
+          updateHud();
+        }
+      }
+    ];
+  }
+
+  /*
+    Eshi is waiting, but the Pink Leopard is not
+    currently parked in the delivery area.
+  */
+  return [
+    "There you are.",
+
+    "I'll wait out here.<br><br>" +
+    "No sense making you drag a Pink Leopard Ride through the Beer Mine.",
+
+    "Luxury Snowcraft Sales.<br><br>" +
+    "Pink Leopard Ride.<br><br>" +
+    "Bring it here, and I'll pay you in Serpentine.",
+
+    "And I mean properly pay you.<br><br>" +
+    "Better than whatever exchange rate they're offering."
+  ];
+}
 
     /*
       INSIDE BEER MINE CONVERSATION
@@ -7748,6 +7811,10 @@ const worldState = {
   relocated: false
 },
 
+eshiPinkLeopardJob: {
+  paid: false
+},
+
 transmissionFlags: {
   readUnrecognizerBulletins: [],
   watchAcknowledgedBulletins: [],
@@ -9025,6 +9092,28 @@ function startVehicleSound(vehicle) {
   if (definition.engineSound && SOUNDS[definition.engineSound]) {
     playSound(SOUNDS[definition.engineSound], false);
   }
+}
+
+/* pink leopard check */
+
+function isPinkLeopardParkedAtBeerMine() {
+  const pinkLeopard = vehicles.find(
+    vehicle =>
+      vehicle.id ===
+      "pink-leopard-snowcraft-dealership-1"
+  );
+
+  if (!pinkLeopard) {
+    return false;
+  }
+
+  return (
+    pinkLeopard.mapId === "AF" &&
+    pinkLeopard.x >= 0 &&
+    pinkLeopard.x <= 12 &&
+    pinkLeopard.y >= 12 &&
+    pinkLeopard.y <= 26
+  );
 }
 
 /* =============================================================
