@@ -770,6 +770,9 @@ const ASSETS = {
 
   props: {
 
+    coffeePot:
+  "gallery/0-gallery/props/coffee-pot.png",
+
   campfireDead:
   "gallery/0-gallery/props/campfire-dead.png",
 
@@ -982,6 +985,10 @@ stakeWitness:
     thermalSnowSuit: "gallery/item/snowsuit-thermal-grey.png",
     gasJugFull: "gallery/item/gas-jug-full.png",
     gasJugEmpty: "gallery/item/gas-jug-empty.png",
+
+    coffeeThermos:
+  "gallery/0-gallery/item/coffee-thermos.png",
+
     keycard1: "gallery/item/keycard.png",
 
     binocularsBroken:
@@ -1231,6 +1238,7 @@ const OUTSIDE_TILES = {
   prevents a door image from automatically meaning "exit building."
 */
 const BLUEPRINT_TILE = {
+  "q": ASSETS.props.coffeePot,
   "y": ASSETS.machinery.redglassGrinder,
   "Y": ASSETS.machinery.redglassProcessor,
   "!": ASSETS.machinery.pillEncapsulator,
@@ -1302,6 +1310,12 @@ const BLUEPRINT_TILE = {
   door unless that exact location is declared as an exit.
 */
 const BLUEPRINT_TILE_RULES = {
+
+  "q": {
+  name: "coffee pot",
+  walkable: false,
+  interaction: "coffeePot"
+},
 
   "h": {
   name: "red armchair",
@@ -4097,7 +4111,7 @@ hangarGateBdInterior: {
 
  tiles: [
   "WWWWWWWWWWWW",
-  "WTkbbbk.FtCW",
+  "WTkbbbk.FqCW",
   "W.l...r....W",
   "W.k...k....W",
   "W..........R",
@@ -5143,6 +5157,20 @@ stakeWitness: {
   bulk: 4,
   description:
     "Portable fuel container. Equip it before interacting with a vehicle to transfer fuel."
+},
+
+  coffeeThermos: {
+  id: "coffeeThermos",
+  name: "COFFEE THERMOS",
+  image: ASSETS.item.coffeeThermos,
+
+  description:
+    "A dented insulated thermos for carrying hot coffee through the frozen wilderness of Planet Stro.",
+
+  category: "drinkContainer",
+  capacity: 100,
+  bulk: 1,
+  stackable: false
 },
 
 binoculars: {
@@ -7485,7 +7513,8 @@ const player = {
     "gasJug",
     "binoculars",
     "hereoDevice",
-    "unrecognizerWatch"
+    "unrecognizerWatch",
+    "coffeeThermos"
   ],
 
   inventoryCapacity: 20,
@@ -7500,12 +7529,14 @@ equippedKeyId: null,
 equippedDeviceId: null,
 equippedWatchId: "unrecognizerWatch",
 equippedFuelContainerId: null,
+equippedDrinkContainerId: null,
 
 binocularsCondition: "broken",
 
 carryingHereoBackpack: false,
 backpackMoveToggle: false,
 
+coffeeThermosLevel: 0,
 gasJugFuel: 20,
   merit: 850,
   serpentine: 7
@@ -7994,7 +8025,8 @@ function getEquipmentSlot(category) {
     key: "equippedKeyId",
     device: "equippedDeviceId",
     watch: "equippedWatchId",
-    fuelContainer: "equippedFuelContainerId"
+    fuelContainer: "equippedFuelContainerId",
+    drinkContainer: "equippedDrinkContainerId"
   };
 
   return slots[category] || null;
@@ -10901,6 +10933,21 @@ function openInventoryItemMenu(itemId, inventoryIndex) {
   });
 }
 
+if (itemId === "coffeeThermos") {
+
+  options.push({
+    label: "Drink",
+
+    image: item.image,
+
+    text:
+      "Choose how much coffee to drink.",
+
+    action: openCoffeeThermosMenu
+  });
+
+}
+
 if (itemId === "heatedMealRation") {
   options.push({
     label: "Consume",
@@ -11008,6 +11055,11 @@ function openInventory(selectedIndex = 0) {
         `<br><br>Fuel: ${player.gasJugFuel.toFixed(2)} / ${item.capacity}`;
     }
 
+    if (itemId === "coffeeThermos") {
+  extraDetails =
+    `<br><br>Coffee: ${player.coffeeThermosLevel} / ${item.capacity}`;
+}
+
     return {
       label: `${item.name}${status}`,
       image: itemImage,
@@ -11056,6 +11108,82 @@ openOverlay({
   options,
   selectedIndex
 });
+
+}
+
+function openCoffeeThermosMenu() {
+
+  openOverlay({
+
+    title: "COFFEE THERMOS",
+
+    image: ASSETS.item.coffeeThermos,
+
+    text:
+      `Coffee remaining: ${player.coffeeThermosLevel} / 100`,
+
+    options: [
+
+      {
+        label: "Sip",
+        action: () => drinkCoffee(4, 1)
+      },
+
+      {
+        label: "Drink",
+        action: () => drinkCoffee(12, 3)
+      },
+
+      {
+        label: "Gulp",
+        action: () => drinkCoffee(24, 6)
+      },
+
+      {
+        label: "Chug",
+        action: () => drinkCoffee(40, 10)
+      },
+
+      {
+        label: "Back",
+        action: openInventory
+      }
+
+    ]
+
+  });
+
+}
+
+function drinkCoffee(bodyHeat, coffeeUsed) {
+
+  if (player.coffeeThermosLevel < coffeeUsed) {
+
+    closeOverlay();
+
+    showBubble(
+      "COFFEE THERMOS",
+      "There isn't enough coffee remaining."
+    );
+
+    return;
+  }
+
+  player.coffeeThermosLevel -= coffeeUsed;
+
+  player.bodyHeat = Math.min(
+    100,
+    player.bodyHeat + bodyHeat
+  );
+
+  updateHud();
+
+  closeOverlay();
+
+  showBubble(
+    "COFFEE THERMOS",
+    "Hot coffee warms you against the cold."
+  );
 
 }
 
@@ -12389,6 +12517,67 @@ const INTERACTIONS = {
     title: "RESTROOM",
     image: ASSETS.props.restroomMarker,
     text: "Restroom."
+  });
+},
+
+coffeePot() {
+  const thermosEquipped =
+    player.equippedDrinkContainerId === "coffeeThermos";
+
+  const thermosOwned =
+    player.inventory.includes("coffeeThermos");
+
+  let text;
+
+  if (!thermosOwned) {
+    text =
+      "A pot of hot coffee waits on the warmer." +
+      "<br><br>Yoi is not carrying a coffee thermos.";
+  } else if (!thermosEquipped) {
+    text =
+      "A pot of hot coffee waits on the warmer." +
+      "<br><br>Equip the Coffee Thermos to fill it.";
+  } else if (player.coffeeThermosLevel >= 100) {
+    text =
+      "The equipped Coffee Thermos is already full.";
+  } else {
+    text =
+      `Coffee Thermos: ${player.coffeeThermosLevel} / 100`;
+  }
+
+  const options = [];
+
+  if (
+    thermosEquipped &&
+    player.coffeeThermosLevel < 100
+  ) {
+    options.push({
+      label: "Fill Coffee Thermos",
+
+      action: () => {
+        player.coffeeThermosLevel = 100;
+
+        updateHud();
+        closeOverlay();
+
+        showBubble(
+          "COFFEE POT",
+          "Yoi fills the thermos with hot coffee."
+        );
+      }
+    });
+  }
+
+  options.push({
+    label: "Leave",
+    action: closeOverlay
+  });
+
+  openOverlay({
+    title: "COFFEE POT",
+    image: ASSETS.props.coffeePot,
+    text,
+    options
   });
 },
 
