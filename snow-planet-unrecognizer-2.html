@@ -4174,8 +4174,18 @@ beerMineInterior: {
     kind: "interior",
 
     exits: [
-      { x: 5, y: 7 }
-    ],
+  {
+    x: 5,
+    y: 7,
+
+    destination: {
+      mapId: "AF",
+      x: 5,
+      y: 19,
+      facing: "down"
+    }
+  }
+],
    tiles: [
     "WWWWWWWWWWWW",
     "W........TxW",
@@ -4427,6 +4437,97 @@ const DIALOGUE_DEFINITIONS = {
   ]
 },
 
+eshiDialogue: {
+  lines: character => {
+
+    /*
+      OUTSIDE BEER MINE CONVERSATION
+
+      Eshi has walked outside and is now waiting
+      for delivery of the Pink Leopard Ride.
+    */
+    if (character.residentState === "stopUntilTalkedTo") {
+      return [
+        "There you are.",
+
+        "I'll wait out here.<br><br>" +
+        "No sense making you drag a Pink Leopard Ride through the Beer Mine.",
+
+        "Luxury Snowcraft Sales.<br><br>" +
+        "Pink Leopard Ride.<br><br>" +
+        "Bring it here, and I'll pay you in Serpentine.",
+
+        "And I mean properly pay you.<br><br>" +
+        "Better than whatever exchange rate they're offering."
+      ];
+    }
+
+    /*
+      INSIDE BEER MINE CONVERSATION
+    */
+    return [
+      "Apparently I've been receiving complaints.",
+
+      "People keep telling me I shouldn't use the RS-3 Scorch Cat every time I want to go somewhere.",
+
+      "They say it's a personnel transport.<br><br>" +
+      "They say it burns too much fuel.<br><br>" +
+      "They say driving it to the Beer Mine is irresponsible.",
+
+      "They're probably right.<br><br>" +
+      "But it's a very enjoyable machine.",
+
+      "I've been encouraged to purchase a personal recreational vehicle.",
+
+      "There's one at Luxury Snowcraft Sales I've had my eye on.<br><br>" +
+      "The Pink Leopard Ride.",
+
+      "Problem is, the dealership only accepts Merit.",
+
+      "I've got savings.<br><br>" +
+      "Plenty of Serpentine coin.<br><br>" +
+      "But they won't accept it.",
+
+      "You earn Merit working for HEREO.<br><br>" +
+      "That means you can purchase the vehicle.",
+
+      "Buy me the Pink Leopard Ride and deliver it here.",
+
+      "I'll repay you in Serpentine.<br><br>" +
+      "More than the official exchange rate would reckon the Merit to.",
+
+      {
+        text:
+          "I'll wait outside.<br><br>" +
+          "Come find me when you're ready to discuss the delivery.",
+
+        action: character => {
+          character.autonomous = true;
+          character.residentState = "leavingBuilding";
+
+          character.afterBuildingExitState =
+            "stopUntilTalkedTo";
+
+          /*
+            Eshi does not continue walking toward the RS-3.
+            He remains outside the Beer Mine awaiting delivery.
+          */
+          character.nextResidentState = null;
+
+          character.talkGateCompleted = false;
+          character.stateTimer = 0;
+
+          /*
+            Reset dialogue so the first outside line begins
+            after Eshi exits the Beer Mine.
+          */
+          character.conversationStep = 0;
+        }
+      }
+    ];
+  }
+},
+
   verkosDialogue: {
   lines: character => {
     const sellableItems =
@@ -4494,19 +4595,83 @@ const DIALOGUE_DEFINITIONS = {
 
 jegnaDialogue: {
   lines: [
-    "I was soooo far from the station yesterday evening. The sun started setting, a blizzard rolled in... and me? I started getting hungry.",
+    "I was hiking west toward Outpost 3 yesterday.<br><br>" +
+    "At least... that was the plan.",
 
-    "Thankfully I'd packed a few heated meal rations in my inventory. Otherwise, I don't think I'd have made it back.",
+    "I kept stopping to search the campfires along the way.<br><br>" +
+    "You never know what somebody might have left behind.",
+
+    "By the time I realized how far I'd wandered, the sun was going down and a blizzard was moving in.",
+
+    "I didn't have enough supplies to stay out there much longer.<br><br>" +
+    "But I still had a few gulps of coffee left in my thermos.",
+
+    "That coffee kept me warm long enough to make it back here.<br><br>" +
+    "So now I call it my lucky thermos.",
 
     {
       text:
-        "I was trying to hike the western station foot path, along the trail between those two pine trees... but I had to turn around and come back empty-handed.",
+        "I never reached Outpost 3.<br><br>" +
+        "Got completely sidetracked by those campfires and came back empty-handed.<br><br>" +
+        "Well... not completely empty-handed.<br><br>" +
+        "I still have my lucky thermos.",
 
       action: () => {
         worldState.beerMineNet.jegnaReady = true;
       }
     }
   ]
+},
+
+  jegnaLuckyThermos: {
+  lines: character => {
+
+    if (hasItem("coffeeThermos")) {
+      return [
+        "Still carrying it?",
+
+        "Good.<br><br>" +
+        "Every Unrecognizer on Stro ought to have a lucky thermos."
+      ];
+    }
+
+    return [
+      "Looks like you ended up sticking around after all.",
+
+      "Funny how that happens.<br><br>" +
+      "One assignment turns into another... and before long you're part of the place.",
+
+      "That thermos I told you about...<br><br>" +
+      "The one that got me back through the blizzard.",
+
+      "I've been thinking.<br><br>" +
+      "You're one of the Stro Unrecognizers now.",
+
+      {
+        text:
+          "So I want you to have it.<br><br>" +
+          "Take good care of my lucky thermos.<br><br>" +
+          "<strong>ITEM RECEIVED</strong><br>" +
+          "PLANET SNOW Coffee Thermos",
+
+        action: character => {
+
+          if (!canPlayerCarryItem("coffeeThermos")) {
+            showBubble(
+              "JEGNA",
+              "Looks like you're carrying too much right now.<br><br>" +
+              "Come back after you've made some room. I'll hang onto it for you."
+            );
+            return;
+          }
+
+          addItem("coffeeThermos");
+
+          releaseResidentAfterTalk(character);
+        }
+      }
+    ];
+  }
 },
 
   zyrDialogue: {
@@ -7517,8 +7682,7 @@ const player = {
     "gasJug",
     "binoculars",
     "hereoDevice",
-    "unrecognizerWatch",
-    "coffeeThermos"
+    "unrecognizerWatch"
   ],
 
   inventoryCapacity: 20,
@@ -7813,6 +7977,24 @@ function checkBeerMineNet() {
       destination
     );
   });
+
+  const eshi = characters.find(
+  character => character.id === "eshi-engine-test-facility"
+);
+
+if (eshi) {
+  eshi.dialogueId = "eshiDialogue";
+  eshi.conversationStep = 0;
+}
+
+  const jegna = characters.find(
+    character => character.id === "jegna-engine-test-facility"
+  );
+
+if (jegna) {
+  jegna.dialogueId = "jegnaLuckyThermos";
+  jegna.conversationStep = 0;
+}
 
   /*
     Never relocate a vehicle while Yoi is currently driving it.
@@ -14074,9 +14256,12 @@ function updateResident(character) {
     break;
   }
 
-  const reachedExit =
-    character.x === exit.x &&
-    character.y === exit.y;
+  const distanceToExit =
+  Math.abs(character.x - exit.x) +
+  Math.abs(character.y - exit.y);
+
+const reachedExit =
+  distanceToExit <= 1;
 
   if (!reachedExit) {
     moveResidentOneStepToward(
