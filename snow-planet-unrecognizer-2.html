@@ -770,6 +770,9 @@ const ASSETS = {
 
   props: {
 
+    medicalKitDispenser: 
+    "gallery/0-gallery/props/medical-kit-dispenser.png",
+
     coffeePot:
   "gallery/0-gallery/props/coffee-pot.png",
 
@@ -955,6 +958,9 @@ right: "gallery/0-gallery/sprite/yoi.png"
 },
 
 item: {
+
+  firstAidKit:
+    "gallery/0-gallery/item/first-aid-kit.png",
 
   redglassRock:
     "gallery/0-gallery/item/redglass-rock.png",
@@ -1248,6 +1254,7 @@ const OUTSIDE_TILES = {
   prevents a door image from automatically meaning "exit building."
 */
 const BLUEPRINT_TILE = {
+  "M": ASSETS.props.medicalKitDispenser,
   "q": ASSETS.props.coffeePot,
   "y": ASSETS.machinery.redglassGrinder,
   "Y": ASSETS.machinery.redglassProcessor,
@@ -1320,6 +1327,12 @@ const BLUEPRINT_TILE = {
   door unless that exact location is declared as an exit.
 */
 const BLUEPRINT_TILE_RULES = {
+
+  "M": {
+    name: "medical kit dispenser",
+    walkable: false,
+    interaction: "medicalKitDispenser"
+  },
 
   "q": {
   name: "coffee pot",
@@ -3886,9 +3899,9 @@ hangarGateBdInterior: {
 
     tiles: [
       "WWWWWWWW",
+      "W.M....W",
       "W......W",
-      "W......W",
-      "W......W",
+      "W....CBW",
       "W......W",
       "WWWddWWW"
     ]
@@ -5261,6 +5274,19 @@ cruk: {
 };
 
 const ITEM_DEFINITIONS = {
+
+  firstAidKit: {
+  id: "firstAidKit",
+  name: "First Aid Kit",
+  image: ASSETS.item.firstAidKit,
+  category: "medical",
+  usable: true,
+  stackable: true,
+  bulk: 1,
+
+  description:
+    "A complete emergency medical kit. Restores Yoi's health to 500 HP."
+},
 
   redglassRock: {
   id: "redglassRock",
@@ -7845,7 +7871,8 @@ const player = {
     "gasJug",
     "binoculars",
     "hereoDevice",
-    "unrecognizerWatch"
+    "unrecognizerWatch",
+    "firstAidKit"
   ],
 
   inventoryCapacity: 20,
@@ -11434,6 +11461,45 @@ if (itemId === "heatedMealRation") {
   });
 }
 
+if (itemId === "firstAidKit") {
+  options.push({
+    label: "Use First Aid Kit",
+    image: item.image,
+
+    text:
+      "Use the first aid kit to restore Yoi's health to 500 HP.",
+
+    action: () => {
+      /*
+        Consume the selected first-aid kit.
+      */
+      if (!removeItem("firstAidKit")) {
+        closeOverlay();
+
+        showBubble(
+          "FIRST AID KIT",
+          "The first aid kit could not be found in Yoi's inventory."
+        );
+
+        return;
+      }
+
+      /*
+        Restore Yoi to his normal full health value.
+      */
+      player.health = 500;
+
+      updateHud();
+      closeOverlay();
+
+      showBubble(
+        "FIRST AID KIT",
+        "You treat your laser wounds. Yoi's health has been restored to 500 HP."
+      );
+    }
+  });
+}
+
   options.push({
     label: "Drop",
     image: item.image,
@@ -13048,6 +13114,46 @@ coffeePot() {
     image: ASSETS.props.coffeePot,
     text,
     options
+  });
+},
+
+medicalKitDispenser() {
+  openOverlay({
+    title: "AUTOMATED MEDICAL SUPPLY DISPENSER",
+    image: ASSETS.props.medicalKitDispenser,
+    text: "Request medical supplies.",
+
+    options: [
+      {
+        label: "Dispense a first aid kit",
+
+        action: () => {
+          const itemAdded = addItem("firstAidKit");
+
+          closeOverlay();
+        
+        
+          if (!itemAdded) {
+            showBubble(
+              "MEDICAL SUPPLY DISPENSER",
+              "INVENTORY TOO FULL. Make room before dispensing a first aid kit."
+            );
+
+            return;
+          }
+
+          showBubble(
+            "MEDICAL SUPPLY DISPENSER",
+            "A first aid kit slides out of the supply ramp."
+          );
+        }
+      },
+
+      {
+        label: "Leave",
+        action: closeOverlay
+      }
+    ]
   });
 },
 
