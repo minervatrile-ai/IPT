@@ -821,6 +821,9 @@ campfireSmoldering:
 architecture: {
   /* Full outside building stamps */
 
+  hospital: 
+  "gallery/0-gallery/architecture/hospital.png",
+
   unrecognizerDepot:
   "gallery/0-gallery/architecture/unrecognizer-depot.png",
 
@@ -1895,13 +1898,13 @@ const BA_MAP = [
 const BB_MAP = [
   "..........=====.............",
   "..........=====.............",
-  "..........=====.............",
-  "..........=====.............",
-  "..........=====.............",
-  "..........=====.............",
-  "..........=====.............",
-  "....PPPPPP=====.............",
-  "......PP...=====............",
+  "..........=====.......======",
+  "..........=====.......======",
+  "..........=====.......======",
+  "..........=====.......======",
+  "..........=====.......======",
+  "....PPPPPP=====.......======",
+  "......PP...=====......======",
   "......PP....================",
   ".............===============",
   ".......p.....===============",
@@ -1926,13 +1929,13 @@ const BB_MAP = [
 const BC_MAP = [
   ".......Ppp..................",
   ".......p....................",
-  ".......P....................",
-  ".................===========",
-  "......P......===============",
-  "......p...==================",
-  "....PpP...==================",
-  ".........==============....P",
-  "........===============....P",
+  "=======P....................",
+  "======p..........===========",
+  "======P......===============",
+  "======p...==================",
+  "====PpP...==================",
+  "====.....==============....P",
+  "====....===============....P",
   "====================.......P",
   "==========..................",
   "=========....PP............P",
@@ -3857,6 +3860,31 @@ hangarGateBdInterior: {
     "W...W...................W...W",
     "WWWWWWWWWWWWWWdWWWWWWWWWWWWWW"
   ]
+},
+
+  hospitalInterior: {
+    id: "hospitalInterior",
+    title: "RESTPOINT WEST HOSPITAL",
+    kind: "interior",
+
+    exits: [
+      { x: 3, y: 5 },
+      { x: 4, y: 5 }
+    ],
+
+    spawn: {
+      x: 4, 
+      y: 4
+    },
+
+    tiles: [
+      "WWWWWWWW",
+      "W......W",
+      "W......W",
+      "W......W",
+      "W......W",
+      "WWWddWWW"
+    ]
 },
 
   unrecognizerDepotInterior: {
@@ -6941,6 +6969,26 @@ const characters = [
 
 const BUILDING_DEFINITIONS = {
 
+  hospital: {
+    image: ASSETS.architecture.hospital,
+
+    width: 6,
+    height: 8,
+
+    collisionMask: [
+      "......",
+      "......",
+      "......",
+      "......",
+      "......",
+      "......",
+      "......",
+      "......"
+    ],
+
+    blueprintId: "hospitalInterior"
+  },
+
   unrecognizerDepot: {
   image: ASSETS.architecture.unrecognizerDepot,
 
@@ -7127,6 +7175,14 @@ const BUILDING_DEFINITIONS = {
 };
 
 const buildingStamps = [
+
+  {
+  id: "hospital-bc",
+  definitionId: "hospital",
+  mapId: "BC",
+  x: 7,
+  y: 1
+  },
 
   {
   id: "unrecognizer-depot-hg",
