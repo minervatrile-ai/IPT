@@ -1018,6 +1018,13 @@ binocularsAugmentationKit:
 
   vehicle: {
 
+    ambulance: {
+      up: "gallery/0-gallery/vehicle/civ/ambulance/up.png",
+      down: "gallery/0-gallery/vehicle/civ/ambulance/down.png",
+      left: "gallery/0-gallery/vehicle/civ/ambulance/left.png",
+      right: "gallery/0-gallery/vehicle/civ/ambulance/right.png"
+    },
+
     softCandy: {
       up: "gallery/0-gallery/vehicle/civ/soft-candy/up.png",
       down: "gallery/0-gallery/vehicle/civ/soft-candy/down.png",
@@ -6141,6 +6148,26 @@ const VEHICLE_DEFINITIONS = {
   hasDoorSound: true
 },
 
+  ambulance: {
+    name: "Restpoint West Ambulance",
+    family: "trackedCar",
+    faction: "civilian",
+    cargoCapacity: 60,
+    renderMode: "full",
+    images: ASSETS.vehicle.ambulance,
+    size: {
+      up: { width: 2, height: 3 },
+      down: { width: 2, height: 3 },
+      left: { width: 3, height: 2 },
+      right: { width: 3, height: 2 }
+    },
+    boardable: true,
+    fuelCapacity: 220,
+    fuelPerStep: 0.20,
+    engineSound: "car1",
+    hasDoorSound: true
+  },
+
   softCandyRide: {
     name: "Soft Candy Ride",
     family: "luxurySnowcraft",
@@ -6483,6 +6510,17 @@ const vehicles = [
   fuel: 120,
   cargo: ["hereoBackpack"]
 },
+
+  {
+    id: "ambulance-bc-1",
+    definitionId: "ambulance",
+    mapId: "BC",
+    x: 14,
+    y: 1,
+    facing: "down",
+    fuel: 220,
+    ownerId: null
+  },
 
   {
     id: "soft-candy-snowcraft-dealership-1",
