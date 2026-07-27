@@ -3900,9 +3900,9 @@ hangarGateBdInterior: {
     tiles: [
       "WWWWWWWW",
       "W.M....W",
-      "W......W",
       "W....CBW",
       "W......W",
+      "W.....^W",
       "WWWddWWW"
     ]
 },
@@ -6250,7 +6250,7 @@ const VEHICLE_DEFINITIONS = {
       left: { width: 3, height: 2 },
       right: { width: 3, height: 2 }
     },
-    boardable: true,
+    
     fuelCapacity: 160,
     fuelPerStep: 0.60,
     engineSound: "car1",
@@ -6533,6 +6533,7 @@ const vehicles = [
   x: 2,
   y: 8,
   facing: "right",
+  boardable: true,
   fuel: 120,
   cargo: ["hereoBackpack"]
 },
@@ -6544,6 +6545,7 @@ const vehicles = [
     x: 14,
     y: 1,
     facing: "down",
+    boardable: true,
     fuel: 220,
     ownerId: null
   },
@@ -6557,7 +6559,8 @@ const vehicles = [
     facing: "down",
     fuel: 200,
     purchased: false,
-    ownerId: null
+    ownerId: null,
+    boardable: true
   },
 
   {
@@ -6569,7 +6572,8 @@ const vehicles = [
     facing: "down",
     fuel: 200,
     purchased: false,
-    ownerId: null
+    ownerId: null,
+    boardable: true
   },
 
   {
@@ -6579,6 +6583,7 @@ const vehicles = [
     x: 2,
     y: 17,
     facing: "right",
+    boardable: true,
     fuel: 160,
     ownerId: "jegna-engine-test-facility"
   },
@@ -6590,6 +6595,7 @@ const vehicles = [
     x: 2,
     y: 13,
     facing: "right",
+    boardable: true,
     fuel: 100,
     ownerId: "zyr"
   },
@@ -6601,6 +6607,7 @@ const vehicles = [
     x: 12,
     y: 9,
     facing: "left",
+    boardable: true,
     fuel: 70,
     ownerId: "verkos"
   },
@@ -6662,6 +6669,7 @@ const vehicles = [
     x: 22,
     y: 21,
     facing: "left",
+    boardable: false,
     fuel: 50
   },
 
@@ -6672,6 +6680,7 @@ const vehicles = [
     x: 5,
     y: 19,
     facing: "right",
+    boardable: true,
     fuel: 0
   },
 
@@ -6696,6 +6705,7 @@ const vehicles = [
     x: 16,
     y: 19,
     facing: "left",
+    boardable: true,
     fuel: 165,
     passengers: [
       "sda-peacekeeper-1",
@@ -8024,6 +8034,37 @@ const RECOVERY_LOCATION = {
   }
 };
 
+/*
+  Recovery destination for the Cruk hospital
+  recovery scenario after Yoi reaches 0 HP.
+*/
+const CRUK_RECOVERY_LOCATION = {
+  mapId: "hospitalInterior",
+  x: 6,
+  y: 3,
+  facing: "down",
+
+  exitDestination: {
+    mapId: "BC",
+    x: 9,
+    y: 4
+  }
+};
+
+const CRUK_RECOVERY_DRIFTWAGON_LOCATION = {
+  mapId: "BC",
+  x: 8,
+  y: 8,
+  facing: "right"
+};
+
+const CRUK_RECOVERY_CRUK_LOCATION = {
+  mapId: "hospitalInterior",
+  x: 2,
+  y: 3,
+  facing: "right"
+};
+
 /* Quest constants */
 
 const KIGH_SNOWMOBILE_RETURN_ZONE = {
@@ -8111,14 +8152,16 @@ const BEER_MINE_VEHICLE_DESTINATIONS = {
     mapId: "AF",
     x: 2,
     y: 20,
-    facing: "right"
+    facing: "right",
+    boardable: false
   },
 
   driftwagon: {
     mapId: "AF",
     x: 7,
     y: 20,
-    facing: "right"
+    facing: "right",
+    boardable: true
   }
 };
 
@@ -8139,6 +8182,10 @@ function moveVehicleToStoryDestination(
   vehicle.y = destination.y;
   vehicle.facing = destination.facing || "down";
   vehicle.reversing = false;
+
+  if ("boardable" in destination) {
+    vehicle.boardable = destination.boardable;
+  }
 
   return true;
 }
@@ -10174,22 +10221,34 @@ function getAdjacentVehicle() {
 function canBoardVehicle(vehicle) {
   const definition = getVehicleDefinition(vehicle);
 
-  if (!definition.boardable) {
-    return { allowed: false, reason: `${definition.name} is not available to operate.` };
+  if (!vehicle.boardable) {
+    return {
+      allowed: false,
+      reason:
+        `${definition.name} is locked and not available to operate.`
+    };
   }
 
   if (
-  definition.requiredEquippedBadgeId &&
-  player.equippedBadgeId !== definition.requiredEquippedBadgeId
-) {
-  return {
-    allowed: false,
-    reason:
-      `Equip ${ITEM_DEFINITIONS[definition.requiredEquippedBadgeId].name} first.`
-  };
-}
+    definition.requiredEquippedBadgeId &&
+    player.equippedBadgeId !==
+      definition.requiredEquippedBadgeId
+  ) {
+    return {
+      allowed: false,
+      reason:
+        `Equip ${
+          ITEM_DEFINITIONS[
+            definition.requiredEquippedBadgeId
+          ].name
+        } first.`
+    };
+  }
 
-  return { allowed: true, reason: "" };
+  return {
+    allowed: true,
+    reason: ""
+  };
 }
 
 function openLuxurySnowcraftPurchaseMenu(vehicle) {
@@ -12049,6 +12108,107 @@ function recoverPlayer(reason = "collapse") {
         action: () => {
           closeOverlay();
           setMessage("You awaken inside the Atlas Engine Test Facility.");
+        }
+      }
+    ]
+  });
+}
+
+function recoverPlayerCruk() {
+  const crukDefinition = CHARACTER_DEFINITIONS.cruk;
+
+  /*
+    End any special player states.
+  */
+  player.binocularMode = false;
+  player.mode = "walking";
+  player.vehicleId = null;
+
+  worldState.combatMode = false;
+  worldState.combatEnemyId = null;
+
+  /*
+    Move Yoi to the hospital recovery room.
+  */
+  worldState.currentMapId =
+    CRUK_RECOVERY_LOCATION.mapId;
+
+  player.mapId =
+    CRUK_RECOVERY_LOCATION.mapId;
+
+  player.x =
+    CRUK_RECOVERY_LOCATION.x;
+
+  player.y =
+    CRUK_RECOVERY_LOCATION.y;
+
+  player.facing =
+    CRUK_RECOVERY_LOCATION.facing;
+
+  /*
+    Give the hospital exit a valid outside destination.
+  */
+  worldState.previousOutsidePosition = {
+    ...CRUK_RECOVERY_LOCATION.exitDestination
+  };
+
+  /*
+    Restore Yoi after emergency treatment.
+
+    Notice:
+    Body Heat is intentionally NOT restored here.
+    The player keeps whatever body heat remained
+    after the laser battle.
+  */
+  player.health = player.maxHealth;
+
+  /*
+    Stage the physical recovery scene.
+  */
+
+  moveCharacterToStoryDestination(
+    "cruk-outpost-2",
+    CRUK_RECOVERY_CRUK_LOCATION
+  );
+
+  moveVehicleToStoryDestination(
+    "driftwagon",
+    CRUK_RECOVERY_DRIFTWAGON_LOCATION
+  );
+
+  const driftwagon = vehicles.find(
+    vehicle => vehicle.id === "driftwagon"
+  );
+
+  if (driftwagon) {
+    driftwagon.boardable = false;
+  }
+
+  drawGame();
+
+  openOverlay({
+    title: "CRUK",
+
+    image:
+      crukDefinition.portrait ||
+      crukDefinition.image,
+
+    text:
+      "Jegna saw the Red Snow Gang roll up at the Beer Mine and throw you out onto the snow to bleed.<br><br>" +
+      "You were in terrible shape. Laser burns; just blasted with laser beam holes.<br><br>" +
+      "You nearly died. I think they said your HP was actually ZERO upon arrival, my friend.<br><br>" +
+      "Be more careful, alright?",
+
+    options: [
+      {
+        label: "Continue",
+
+        action: () => {
+          closeOverlay();
+
+          setMessage(
+            "You awaken inside Restpoint West Hospital."
+          );
         }
       }
     ]
@@ -14760,11 +14920,9 @@ if (
   );
 
   if (player.health <= 0) {
-    showBubble(
-      "YOI",
-      "Yoi collapses beneath the Red Snow assault."
-    );
-  }
+  recoverPlayerCruk();
+  return true;
+}
 
   return true;
 }
