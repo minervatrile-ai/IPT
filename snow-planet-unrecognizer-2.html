@@ -13465,30 +13465,43 @@ const INTERACTIONS = {
   },
 
   campfire() {
+  /*
+    Visiting any communal fire completely restores
+    Yoi's body heat.
+  */
+  player.bodyHeat = 100;
+
+  worldState.lastBodyHeat = player.bodyHeat;
+  worldState.lastBodyHeatWarning = "";
+
+  updateHud();
+
   openOverlay({
     title: "ABANDONED CAMP",
-    image: ASSETS.props.campfireOut,
+    image: ASSETS.props.campfireSmoldering,
 
     text:
-      "A cold ring of stones rests in the snow. " +
-      "Objects left beside fires across Stro seem to pass into a loose, communal circulation.",
+      "The fire drives the cold from Yoi's body.<br><br>" +
+      "BODY HEAT RESTORED TO 100%.<br><br>" +
+      "Objects left beside fires across Stro seem to pass " +
+      "into a loose, communal circulation.",
 
     options: [
-  {
-    label: "Search the communal fire",
-    action: searchCampfire
-  },
+      {
+        label: "Search the communal fire",
+        action: searchCampfire
+      },
 
-  {
-    label: "Leave an item in the communal fire",
-    action: openCampfireDepositMenu
-  },
+      {
+        label: "Leave an item in the communal fire",
+        action: openCampfireDepositMenu
+      },
 
-  {
-    label: "Leave",
-    action: closeOverlay
-  }
-]
+      {
+        label: "Leave",
+        action: closeOverlay
+      }
+    ]
   });
 },
 
