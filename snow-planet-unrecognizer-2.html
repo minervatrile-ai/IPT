@@ -4431,6 +4431,18 @@ function openVerkosArtifactMenu() {
 
 const DIALOGUE_DEFINITIONS = {
 
+  crukRecoveryDialogue: {
+  lines: [
+    "You need to rest awhile.<br><br>" +
+      "Those laser wounds were serious.",
+
+    "The Driftwagon is locked.<br><br>" +
+      "Nobody's going anywhere until you're steady on your feet.",
+
+    "Be more careful out there, my friend."
+  ]
+},
+
   wylGlad: {
     lines: [
       "Glad you made it, Yoi."
@@ -7615,6 +7627,151 @@ const buildingStamps = [
 ];
 
 /* =============================================================
+   COPY SYSTEM
+
+   Copies are temporary performers produced from existing
+   character or vehicle instances.
+
+   The original instance remains completely untouched.
+   ============================================================= */
+
+function copyProduce(
+  sourceId,
+  copyId,
+  staging = {}
+) {
+  /*
+    Prevent two copies from sharing the same ID.
+    If this copy already exists, vanish the old one first.
+  */
+  copyVanish(copyId);
+
+  const sourceCharacter = characters.find(
+    character => character.id === sourceId
+  );
+
+  if (sourceCharacter) {
+    const characterCopy = {
+      ...sourceCharacter,
+      ...staging,
+
+      id: copyId,
+
+      isCopy: true,
+      copySourceId: sourceId,
+
+      /*
+        A produced character begins as its own fresh performer.
+      */
+      conversationStep:
+        staging.conversationStep ?? 0,
+
+      portraitShown:
+        staging.portraitShown ?? true,
+
+      visible:
+        staging.visible ?? true,
+
+      defeated:
+        staging.defeated ?? false
+    };
+
+    characters.push(characterCopy);
+
+    return characterCopy;
+  }
+
+  const sourceVehicle = vehicles.find(
+    vehicle => vehicle.id === sourceId
+  );
+
+  if (sourceVehicle) {
+    const vehicleCopy = {
+      ...sourceVehicle,
+      ...staging,
+
+      id: copyId,
+
+      isCopy: true,
+      copySourceId: sourceId,
+
+      reversing: false
+    };
+
+    /*
+      Do not let a copied vehicle share the original vehicle's
+      cargo array. Each vehicle must own its own cargo list.
+    */
+    if (Array.isArray(sourceVehicle.cargo)) {
+      vehicleCopy.cargo = [
+        ...sourceVehicle.cargo
+      ];
+    }
+
+    vehicles.push(vehicleCopy);
+
+    return vehicleCopy;
+  }
+
+  console.warn(
+    `copyProduce could not find source instance: ${sourceId}`
+  );
+
+  return null;
+}
+
+function copyVanish(copyId) {
+  /*
+    Never vanish a vehicle while Yoi is occupying it.
+    This prevents another visit to BETWEEN.
+  */
+  if (player.vehicleId === copyId) {
+    console.warn(
+      `copyVanish refused to remove occupied vehicle: ${copyId}`
+    );
+
+    return false;
+  }
+
+  const characterIndex = characters.findIndex(
+    character =>
+      character.id === copyId &&
+      character.isCopy
+  );
+
+  if (characterIndex !== -1) {
+    characters.splice(characterIndex, 1);
+    return true;
+  }
+
+  const vehicleIndex = vehicles.findIndex(
+    vehicle =>
+      vehicle.id === copyId &&
+      vehicle.isCopy
+  );
+
+  if (vehicleIndex !== -1) {
+    vehicles.splice(vehicleIndex, 1);
+    return true;
+  }
+
+  return false;
+}
+
+function copyCheckCrukRecoveryVanish(
+  previousMapId,
+  nextMapId
+) {
+  if (
+    previousMapId === "BC" &&
+    nextMapId !== "BC"
+  ) {
+    copyVanish("copyCruk");
+    copyVanish("copyDriftwagon");
+  }
+}
+
+/* =============================================================
    THINKING MODE DEFINITIONS
 
    Each thought has a permanent ID.
@@ -8049,6 +8206,14 @@ const CRUK_RECOVERY_LOCATION = {
     x: 9,
     y: 4
   }
+};
+
+const CRUK_RECOVERY_REAL_DRIFTWAGON_LOCATION = {
+  mapId: "AC",
+  x: 5,
+  y: 18,
+  facing: "right",
+  boardable: true
 };
 
 const CRUK_RECOVERY_DRIFTWAGON_LOCATION = {
@@ -9355,7 +9520,10 @@ function getAdjacentAtlasCode(code, direction) {
 
 function transitionWalkingAcrossAtlasEdge(direction) {
   const currentMapId = worldState.currentMapId;
-  const nextMapId = getAdjacentAtlasCode(currentMapId, direction);
+  const nextMapId = getAdjacentAtlasCode(
+    currentMapId,
+    direction
+  );
 
   if (!nextMapId) {
     setMessage("The chart ends here.");
@@ -9363,15 +9531,27 @@ function transitionWalkingAcrossAtlasEdge(direction) {
   }
 
   const nextMap = ATLAS[nextMapId];
-  const { width, height } = getMapDimensions(nextMap);
+  const { width, height } =
+    getMapDimensions(nextMap);
 
   let arrivalX = player.x;
   let arrivalY = player.y;
 
-  if (direction === "left") arrivalX = width - 1;
-  if (direction === "right") arrivalX = 0;
-  if (direction === "up") arrivalY = height - 1;
-  if (direction === "down") arrivalY = 0;
+  if (direction === "left") {
+    arrivalX = width - 1;
+  }
+
+  if (direction === "right") {
+    arrivalX = 0;
+  }
+
+  if (direction === "up") {
+    arrivalY = height - 1;
+  }
+
+  if (direction === "down") {
+    arrivalY = 0;
+  }
 
   const arrivalSymbol = getTileSymbol(
     arrivalX,
@@ -9379,10 +9559,14 @@ function transitionWalkingAcrossAtlasEdge(direction) {
     nextMap
   );
 
-  const arrivalTile = OUTSIDE_TILES[arrivalSymbol];
+  const arrivalTile =
+    OUTSIDE_TILES[arrivalSymbol];
 
   if (!arrivalTile?.walkable) {
-    setMessage("The route into the next sector is blocked.");
+    setMessage(
+      "The route into the next sector is blocked."
+    );
+
     return false;
   }
 
@@ -9393,33 +9577,45 @@ function transitionWalkingAcrossAtlasEdge(direction) {
       arrivalY
     )
   ) {
-    setMessage("The route into the next sector is blocked.");
+    setMessage(
+      "The route into the next sector is blocked."
+    );
+
     return false;
   }
 
-  const characterBlocked = characters.some(character =>
-    character.visible &&
-    !character.defeated &&
-    character.mapId === nextMapId &&
-    character.x === arrivalX &&
-    character.y === arrivalY
+  const characterBlocked = characters.some(
+    character =>
+      character.visible &&
+      !character.defeated &&
+      character.mapId === nextMapId &&
+      character.x === arrivalX &&
+      character.y === arrivalY
   );
 
   if (characterBlocked) {
-    setMessage("Someone is blocking the route into the next sector.");
+    setMessage(
+      "Someone is blocking the route into the next sector."
+    );
+
     return false;
   }
 
-  const vehicleBlocked = vehicles.some(vehicle =>
-    vehicle.mapId === nextMapId &&
-    getVehicleOccupiedTiles(vehicle).some(tile =>
-      tile.x === arrivalX &&
-      tile.y === arrivalY
-    )
+  const vehicleBlocked = vehicles.some(
+    vehicle =>
+      vehicle.mapId === nextMapId &&
+      getVehicleOccupiedTiles(vehicle).some(
+        tile =>
+          tile.x === arrivalX &&
+          tile.y === arrivalY
+      )
   );
 
   if (vehicleBlocked) {
-    setMessage("A vehicle is blocking the route into the next sector.");
+    setMessage(
+      "A vehicle is blocking the route into the next sector."
+    );
+
     return false;
   }
 
@@ -9430,38 +9626,75 @@ function transitionWalkingAcrossAtlasEdge(direction) {
 
   nextMap.discovered = true;
 
+  copyCheckCrukRecoveryVanish(
+    currentMapId,
+    nextMapId
+  );
+
   triggerStragCEObstructionEvent();
   checkBeerMineNet();
 
   setMessage(`${nextMapId}: ${nextMap.title}`);
+
   return true;
 }
 
-function transitionVehicleAcrossAtlasEdge(vehicle, direction) {
-  const nextMapId = getAdjacentAtlasCode(worldState.currentMapId, direction);
+function transitionVehicleAcrossAtlasEdge(
+  vehicle,
+  direction
+) {
+  const currentMapId =
+    worldState.currentMapId;
+
+  const nextMapId = getAdjacentAtlasCode(
+    currentMapId,
+    direction
+  );
+
   if (!nextMapId) {
     setMessage("The chart ends here.");
     return false;
   }
 
   const nextMap = ATLAS[nextMapId];
-  const { width, height } = getMapDimensions(nextMap);
-  const size = getVehicleSize(vehicle, vehicle.facing);
+
+  const { width, height } =
+    getMapDimensions(nextMap);
+
+  const size =
+    getVehicleSize(vehicle, vehicle.facing);
 
   worldState.currentMapId = nextMapId;
   player.mapId = nextMapId;
   vehicle.mapId = nextMapId;
   nextMap.discovered = true;
 
-  if (direction === "left") vehicle.x = width - size.width;
-  if (direction === "right") vehicle.x = 0;
-  if (direction === "up") vehicle.y = height - size.height;
-  if (direction === "down") vehicle.y = 0;
+  if (direction === "left") {
+    vehicle.x = width - size.width;
+  }
+
+  if (direction === "right") {
+    vehicle.x = 0;
+  }
+
+  if (direction === "up") {
+    vehicle.y = height - size.height;
+  }
+
+  if (direction === "down") {
+    vehicle.y = 0;
+  }
 
   player.x = vehicle.x;
   player.y = vehicle.y;
 
+  copyCheckCrukRecoveryVanish(
+    currentMapId,
+    nextMapId
+  );
+
   setMessage(`${nextMapId}: ${nextMap.title}`);
+
   return true;
 }
 
@@ -12162,29 +12395,44 @@ function recoverPlayerCruk() {
   */
   player.health = player.maxHealth;
 
-  /*
-    Stage the physical recovery scene.
+    /*
+    Produce temporary performers for the
+    Cruk hospital recovery scene.
   */
 
-  moveCharacterToStoryDestination(
-    "cruk-outpost-2",
-    CRUK_RECOVERY_CRUK_LOCATION
-  );
+  copyProduce(
+  "cruk-outpost-2",
+  "copyCruk",
+  {
+    ...CRUK_RECOVERY_CRUK_LOCATION,
 
-  moveVehicleToStoryDestination(
-    "driftwagon",
-    CRUK_RECOVERY_DRIFTWAGON_LOCATION
-  );
-
-  const driftwagon = vehicles.find(
-    vehicle => vehicle.id === "driftwagon"
-  );
-
-  if (driftwagon) {
-    driftwagon.boardable = false;
+    dialogueId: "crukRecoveryDialogue",
+    conversationStep: 0,
+    portraitShown: true,
+    visible: true
   }
+);
 
-  drawGame();
+  copyProduce(
+  "driftwagon",
+  "copyDriftwagon",
+  {
+    ...CRUK_RECOVERY_DRIFTWAGON_LOCATION,
+
+    boardable: false
+  }
+);
+
+/*
+  While the copy performs at the hospital,
+  relocate the real Driftwagon to Outpost 2.
+*/
+moveVehicleToStoryDestination(
+  "driftwagon",
+  CRUK_RECOVERY_REAL_DRIFTWAGON_LOCATION
+);
+
+drawGame();
 
   openOverlay({
     title: "CRUK",
