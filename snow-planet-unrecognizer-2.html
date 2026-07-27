@@ -1108,6 +1108,13 @@ binocularsAugmentationKit:
       right: "gallery/0-gallery/vehicle/rs/rs-3/right.png"
     },
 
+    rs4: {
+      up: "gallery/0-gallery/vehicle/rs/rs-4/up.png",
+      down: "gallery/0-gallery/vehicle/rs/rs-4/down.png",
+      left: "gallery/0-gallery/vehicle/rs/rs-4/left.png",
+      right: "gallery/0-gallery/vehicle/rs/rs-4/right.png"
+    },
+
     wfOperator: {
       up: "gallery/vehicle/wf/operator/full/up.png",
       down: "gallery/vehicle/wf/operator/full/down.png",
@@ -3851,7 +3858,7 @@ hangarGateBdInterior: {
 
   tiles: [
     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-    "W.W.....W...........W.......W",
+    "WSW.....W...........W.......W",
     "W.W.WWW.WWWWW.WWWWW.WWW.WWW.W",
     "W.W...........W.............W",
     "W.W..W...W..WWW.W..W..W...W.W",
@@ -3899,10 +3906,10 @@ hangarGateBdInterior: {
 
     tiles: [
       "WWWWWWWW",
-      "W.M....W",
+      "WqMF..TW",
       "W....CBW",
-      "W......W",
-      "W.....^W",
+      "U......W",
+      "R.....^W",
       "WWWddWWW"
     ]
 },
@@ -6179,7 +6186,6 @@ const VEHICLE_DEFINITIONS = {
     right: { width: 4, height: 4 }
   },
 
-  boardable: true,
   fuelCapacity: 160,
   fuelPerStep: 0.10,
   engineSound: "car1",
@@ -6199,7 +6205,7 @@ const VEHICLE_DEFINITIONS = {
       left: { width: 3, height: 2 },
       right: { width: 3, height: 2 }
     },
-    boardable: true,
+
     fuelCapacity: 220,
     fuelPerStep: 0.20,
     engineSound: "car1",
@@ -6220,7 +6226,7 @@ const VEHICLE_DEFINITIONS = {
       left: { width: 2, height: 1 },
       right: { width: 2, height: 1 }
     },
-    boardable: true,
+
     fuelCapacity: 200,
     fuelPerStep: 0.05,
     engineSound: "snowmobile",
@@ -6241,7 +6247,7 @@ const VEHICLE_DEFINITIONS = {
       left: { width: 2, height: 1 },
       right: { width: 2, height: 1 }
     },
-    boardable: true,
+
     fuelCapacity: 200,
     fuelPerStep: 0.05,
     engineSound: "snowmobile",
@@ -6282,7 +6288,7 @@ const VEHICLE_DEFINITIONS = {
       left: { width: 3, height: 2 },
       right: { width: 3, height: 2 }
     },
-    boardable: true,
+
     fuelCapacity: 110,
     fuelPerStep: 0.20,
     engineSound: "car1",
@@ -6302,7 +6308,7 @@ const VEHICLE_DEFINITIONS = {
       left: { width: 3, height: 2 },
       right: { width: 3, height: 2 }
     },
-    boardable: true,
+
     fuelCapacity: 140,
     fuelPerStep: 0.25,
     engineSound: "rs1",
@@ -6322,6 +6328,7 @@ const VEHICLE_DEFINITIONS = {
       left: { width: 6, height: 3 },
       right: { width: 6, height: 3 }
     },
+
     fuelCapacity: 160,
     fuelPerStep: 0.5,
     engineSound: "rs1",
@@ -6341,10 +6348,11 @@ const VEHICLE_DEFINITIONS = {
       left: { width: 4, height: 3 },
       right: { width: 4, height: 3 }
     },
-    boardable: false,
+
     fuelCapacity: 140,
     fuelPerStep: 0.4,
-    hasDoorSound: false
+    hasDoorSound: false,
+    engineSound: "car1"
   },
 
   rs3ScorchCat: {
@@ -6360,10 +6368,32 @@ const VEHICLE_DEFINITIONS = {
       left: { width: 4, height: 2 },
       right: { width: 4, height: 2 }
     },
-    boardable: true,
+
     fuelCapacity: 300,
     fuelPerStep: 0.66,
-    hasDoorSound: true
+    hasDoorSound: true,
+    engineSound: "car1"
+  },
+
+  rs4RangeDemon: {
+    name: "RS-4 Range Demon",
+    family: "militant",
+    faction: "redSnow",
+    cargoCapacity: 33,
+    renderMode: "full",
+    images: ASSETS.vehicle.rs4,
+    size: {
+      up: { width: 3, height: 4 },
+      down: { width: 3, height: 4 },
+      left: { width: 4, height: 3 },
+      right: { width: 4, height: 3 }
+    },
+
+    fuelCapacity: 190,
+    fuelPerStep: 0.5,
+    hasDoorSound: true,
+    engineSound: "car1"
+
   },
 
   wfOperatorVehicle: {
@@ -6379,10 +6409,11 @@ const VEHICLE_DEFINITIONS = {
       left: { width: 2, height: 2 },
       right: { width: 2, height: 2 }
     },
-    boardable: false,
+  
     fuelCapacity: 100,
     fuelPerStep: 0.3,
-    hasDoorSound: true
+    hasDoorSound: true,
+    engineSound: "car1"
   },
 
   wfSnowmobile: {
@@ -6398,7 +6429,7 @@ const VEHICLE_DEFINITIONS = {
       left: { width: 2, height: 1 },
       right: { width: 2, height: 1 }
     },
-    boardable: false,
+    
     fuelCapacity: 60,
     fuelPerStep: 0.05,
     engineSound: "snowmobile",
@@ -6418,7 +6449,7 @@ const VEHICLE_DEFINITIONS = {
       left: { width: 2, height: 1 },
       right: { width: 2, height: 1 }
     },
-    boardable: true,
+    
     requiredEquippedBadgeId: "yoiUnrecognizerBadge",
     fuelCapacity: 60,
     fuelPerStep: 0.05,
@@ -6439,7 +6470,7 @@ const VEHICLE_DEFINITIONS = {
       left: { width: 4, height: 2 },
       right: { width: 4, height: 2 }
     },
-    boardable: false,
+    
     fuelCapacity: 180,
     fuelPerStep: 0.5,
     hasDoorSound: true
@@ -6458,7 +6489,7 @@ const VEHICLE_DEFINITIONS = {
       left: { width: 5, height: 2 },
       right: { width: 5, height: 2 }
     },
-    boardable: true,
+    
     fuelCapacity: 180,
     fuelPerStep: 0.5,
     hasDoorSound: true
@@ -6468,6 +6499,18 @@ const VEHICLE_DEFINITIONS = {
 /* Storage Crate instances */
 
 const STORAGE_CRATES = [
+
+  {
+    id: "bd-sda-service-laser-crate",
+    mapId: "hangarGateBdInterior",
+    x: 1, 
+    y: 1,
+
+    inventory: [
+      "sdaServiceLaser" 
+    ]
+  },
+
   {
     id: "outpost3-binoculars-augmentation-crate",
     mapId: "outpost3Interior",
@@ -6694,6 +6737,28 @@ const vehicles = [
     facing: "right",
     boardable: true,
     fuel: 0
+  },
+
+  { 
+    id: "green-snowmobile-backup-1",
+    definitionId: "unrecognizerSnowmobile",
+    mapId: "AC",
+    x: 7,
+    y: 7,
+    facing: "right",
+    boardable: true,
+    fuel: 60
+  },
+
+  {
+    id: "green-snowmobile-backup-2",
+    definitionId: "unrecognizerSnowmobile",
+    mapId: "AC",
+    x: 7,
+    y: 9,
+    facing: "right",
+    boardable: true,
+    fuel: 60
   },
 
 /*
