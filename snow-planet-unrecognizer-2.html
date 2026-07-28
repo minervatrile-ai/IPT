@@ -936,6 +936,7 @@ right: "gallery/0-gallery/sprite/yoi.png"
   redSnowDefeated: "gallery/sprite/badge/rs/red-snow-badge-defeated.png",
   eshi: "gallery/sprite/badge/rs/eshi.png",
   strag: "gallery/sprite/badge/rs/strag.png",
+  phayl: "gallery/sprite/badge/rs/phayl.png",
   gliv: "gallery/sprite/badge/civilian/gliv.png",
   yord: "gallery/sprite/badge/wf/yord.png",
   kigh: "gallery/sprite/badge/unrecognizer/kigh.png",
@@ -5253,6 +5254,14 @@ cruk: {
   firstMeetingThoughtId: "people_cruk_first_impression"
 },
 
+  phayl: {
+    name: "PHAYL",
+    image: ASSETS.character.badge.phayl,
+    portrait: ASSETS.character.badge.phayl,
+    faction: "redSnow",
+    maxHealth: 100,
+  },
+
   eshi: {
     name: "ESHI",
     image: ASSETS.character.badge.eshi,
@@ -6668,6 +6677,17 @@ const vehicles = [
   },
 
     {
+      id: "rs-4",
+      definitionId: "rs4RangeDemon",
+      mapId: "AF",
+      x: 1,
+      y: 21,
+      facing: "right",
+      fuel: 190,
+      boardable: true
+    },
+
+    {
     id: "rs-3",
     definitionId: "rs3ScorchCat",
     mapId: "AA",
@@ -7075,7 +7095,21 @@ const characters = [
   portraitShown: false
 },
 
-{ id: "eshi-engine-test-facility",
+{
+  id: "phayl-beer-mine-af",
+  definitionId: "phayl",
+  mapId: "beerMineInterior",
+  x: 1,
+  y: 6,
+  facing: "up",
+  health: 100,
+  defeated: false,
+  visible: true,
+  portraitShown: false
+},
+
+{ 
+  id: "eshi-engine-test-facility",
   definitionId: "eshi",
   mapId: "engineTestInterior",
   x: 2,
