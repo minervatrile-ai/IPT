@@ -4189,7 +4189,7 @@ hangarGateBdInterior: {
     ],
    tiles: [
     "WWWWWWWWWWWW",
-    "WTF..CttxLLW",
+    "WTFq.CttxLLW",
     "W..........W",
     "W.AAAA.....W",
     "W.A.....S..W",
@@ -4216,8 +4216,8 @@ hangarGateBdInterior: {
     "W..........W",
     "W.AAAA.....W",
     "W.A..A.....W",
-    "W..........W",
-    "W.........kW",
+    "W.A.......qW",
+    "W.AA......kW",
     "WWWWWDWWWWWW"
   ],
 
@@ -4248,7 +4248,7 @@ beerMineInterior: {
     "W.kbbbbk...W",
     "W.l........W",
     "W.l........W",
-    "Wkb........W",
+    "Wkb.......LW",
     "W.........TW",
     "WWWWWDWWWWWW"
   ],
@@ -6973,7 +6973,7 @@ const characters = [
   id: "strag-ce",
   definitionId: "strag",
   mapId: "CE",
-  x: 5,
+  x: 4,
   y: 22,
   facing: "left",
   health: 100,
@@ -10774,6 +10774,13 @@ function attemptVehicleMove(
 ) {
   if (!vehicle) return false;
 
+  /*
+    Preserve the vehicle's starting map before an atlas transition
+    changes vehicle.mapId. Cleanup checks need both the old and new
+    map IDs.
+  */
+  const previousMapId = vehicle.mapId;
+
   const definition = getVehicleDefinition(vehicle);
 
   if (consumeFuel && vehicle.fuel <= 0) {
@@ -10797,9 +10804,14 @@ function attemptVehicleMove(
   const nextX = vehicle.x + vector.dx;
   const nextY = vehicle.y + vector.dy;
 
-  const nextSize = getVehicleSize(vehicle, visualFacing);
+  const nextSize = getVehicleSize(
+    vehicle,
+    visualFacing
+  );
+
   const mapDimensions = getMapDimensions(
-    ATLAS[vehicle.mapId] || BLUEPRINTS[vehicle.mapId]
+    ATLAS[vehicle.mapId] ||
+    BLUEPRINTS[vehicle.mapId]
   );
 
   const crossesEdge =
@@ -10809,36 +10821,42 @@ function attemptVehicleMove(
     nextY + nextSize.height > mapDimensions.height;
 
   if (crossesEdge) {
-  if (!allowAtlasTransition || !ATLAS[vehicle.mapId]) {
-    return false;
-  }
-
-  vehicle.facing = visualFacing;
-  vehicle.reversing = reversing;
-
-  const transitioned = transitionVehicleAcrossAtlasEdgeFor(
-    vehicle,
-    direction
-  );
-
-  if (!transitioned) {
-    if (driverType === "player") {
-      setMessage("The route into the next sector is blocked.");
-
-      if (redraw) {
-        drawGame();
-      }
+    if (
+      !allowAtlasTransition ||
+      !ATLAS[vehicle.mapId]
+    ) {
+      return false;
     }
 
-    return false;
-  }
+    vehicle.facing = visualFacing;
+    vehicle.reversing = reversing;
+
+    const transitioned =
+      transitionVehicleAcrossAtlasEdgeFor(
+        vehicle,
+        direction
+      );
+
+    if (!transitioned) {
+      if (driverType === "player") {
+        setMessage(
+          "The route into the next sector is blocked."
+        );
+
+        if (redraw) {
+          drawGame();
+        }
+      }
+
+      return false;
+    }
   } else {
     const oldMapId = worldState.currentMapId;
 
     /*
       Collision helpers currently inspect worldState.currentMapId.
       Temporarily point them at the vehicle's actual map so NPC
-      vehicles can move even while Zyr is somewhere else.
+      vehicles can move even while Yoi is somewhere else.
     */
     worldState.currentMapId = vehicle.mapId;
 
@@ -10862,7 +10880,10 @@ function attemptVehicleMove(
         setMessage("Vehicle route blocked.");
       }
 
-      if (redraw && vehicle.mapId === worldState.currentMapId) {
+      if (
+        redraw &&
+        vehicle.mapId === worldState.currentMapId
+      ) {
         drawGame();
       }
 
@@ -10887,19 +10908,36 @@ function attemptVehicleMove(
 
     triggerStragCEObstructionEvent();
 
-if (crossesEdge) {
-  checkBeerMineNet();
-}
+    if (crossesEdge) {
+      /*
+        The vehicle has now completed the atlas transition.
 
-    const action = reversing ? "Reversing" : "Driving";
+        previousMapId contains the sector Yoi left.
+        vehicle.mapId contains the sector Yoi entered.
+      */
+      copyCheckCrukRecoveryVanish(
+        previousMapId,
+        vehicle.mapId
+      );
+
+      checkBeerMineNet();
+    }
+
+    const action = reversing
+      ? "Reversing"
+      : "Driving";
 
     setMessage(
       `${action} ${definition.name} · ` +
-      `Fuel ${vehicle.fuel.toFixed(2)} / ${definition.fuelCapacity}`
+      `Fuel ${vehicle.fuel.toFixed(2)} / ` +
+      `${definition.fuelCapacity}`
     );
   }
 
-  if (redraw && vehicle.mapId === worldState.currentMapId) {
+  if (
+    redraw &&
+    vehicle.mapId === worldState.currentMapId
+  ) {
     drawGame();
   }
 
