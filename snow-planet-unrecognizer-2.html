@@ -1806,18 +1806,18 @@ const AF_MAP = [
   "=====ppPp...................",
   "=====PPPP...................",
   "=====PPPP...pPpP...pPpp...Pp",
-  "pp===PppP...PPpp...pPPP...PP",
-  "pP===pppp...pppP...pPPP...pp",
-  "Pp===pPpP...PPpP...PPpP...pP",
-  "PP===.......PPPP...PpPP...pp",
-  "Pp..........PppP...PPPp...pP",
-  "pP..........PpPp...PPPPp.ppp",
-  "pP...pPP.......P...PpPpPPPPP",
-  "pP...pP............pPpPpPPpp",
-  "p....P.............PpppPpPpp",
-  "P..................PPPPPpPPp",
-  "p...........................",
-  "P...........................",
+  "p====PppP...PPpp...pPPP...PP",
+  "p====pppp...pppP...pPPP...pp",
+  "P====pPPp...PPpP...PPpP...pP",
+  "P====ppPp...PPPP...PpPP...pp",
+  "P====PppP===PppP...PPPp...pP",
+  "p====......=PpPp...PPPPp.ppp",
+  "p=======...=...P...PpPpPPPPP",
+  "p===============...pPpPpPPpp",
+  "p===============...PpppPpPpp",
+  "P===============...PPPPPpPPp",
+  "p===============............",
+  "P=========..................",
   "===========.................",
   "===========........PpPP...pP",
   "===========........PpPp...pP",
@@ -1827,12 +1827,12 @@ const AF_MAP = [
   "..........................PP",
   "Ppp.=====................pPP",
   "PPPP=====.........ppppppPppP",
-  "ppPP=====...pPPPPPpPPpPPpPPP",
+  "ppPP=====...ppPpPPpPPpPPpPPP",
 ];
 
 const AG_MAP = [
-  "PpPPPppppPppppPpPPPPpPPPPPpP",
-  "pPpPpPPPppPPp.o.ppPPPppPpPPp",
+  "PpPPPppppPppp...PPPPpPPPPPpP",
+  "pPpPpPPPppPP..o.ppPPPppPpPPp",
   "....ppPppp.............PPPPp",
   "............................",
   "....PpPPp..............P.Ppp",
@@ -3578,23 +3578,23 @@ const HG_MAP = [
   "Ppp.P.............=====P.PPP",
   "PPP.p.............==========",
   "PpP...............==========",
-  "PPp.PpPppPPPPPPPPP==========",
-  "PPP.PppPPPPpPpPPpP==========",
-  "ppP..............P==========",
-  "PPP..............ppPPpPP.Ppp",
-  "PPP..............pPPPPPP.PpP",
-  "pPP..............PPpPPPP.ppP",
-  "pPP...............pPpPpp.Ppp",
-  "pPppPPpPppPpPppPP.PPPPpp.pPP",
-  "PPppppPPPPPPPPPPP.pppPPP.pPp",
+  "PPp.PpPppPPPPP....==========",
+  "PPP.PppPPPPpPpP..===========",
+  "ppP.p...........============",
+  "PPP===================PP.Ppp",
+  "PPP===================PP.PpP",
+  "pPP===================PP.ppP",
+  "pPP=============..pPpPpp.Ppp",
+  "pPp============PP.PPPPpp.pPP",
+  "PPp============PP.pppPPP.pPp",
   "PPpPPPpppPPpPppPP.ppPpPP.pPp",
   "PPpppppPPppPPpPpp.PPPPPp.pPP",
   "ppPPpppppPPPpPPpP.pPpPpp.PpP",
   "PPpppppPPPPPPpppP.PPPPpp.pPP",
   ".........................PPp",
-  "pPPPPpPpPppPPPpPpPPPPPPPPPPP",
-  "PPPpPPpPPpPPPpppPPpPPPpPpppp",
-  "PPPPppPppppPpPppPPpPPPpPpPpP",
+  "pPPPPpPpPppPP...pPPPPPPPPPPP",
+  "PPPpPPpPPpPPP...PPpPPPpPpppp",
+  "PPPPppPppppPp...PPpPPPpPpPpP",
 ];
 
 const HH_MAP = [
@@ -4236,8 +4236,8 @@ beerMineInterior: {
 
     destination: {
       mapId: "AF",
-      x: 5,
-      y: 19,
+      x: 7,
+      y: 12,
       facing: "down"
     }
   }
@@ -4306,13 +4306,13 @@ const TAPE_STRO_NEWS_1_TRANSCRIPT = [
 const TAPE_UNRECOGNIZER_1_TRANSCRIPT = [
   "UNRECOGNIZER AGENCY ORIENTATION PROGRAM\n\nTAPE 1",
 
-  "[PLACEHOLDER]\n\nWelcome to the Unrecognizer Agency.",
+  "Welcome to the Unrecognizer Agency.",
 
-  "[PLACEHOLDER]\n\nUnrecognizer agents come from all backgrounds and lifestyles.",
+  "Unrecognizer agents come from all backgrounds and lifestyles.",
 
-  "[PLACEHOLDER]\n\nOur primary mission is to promote the Unrecognizer brand and distribute Unrecognizer products.",
+  "[UNRECOGNIZER]\n\nOur primary mission is to promote the Unrecognizer brand and distribute Unrecognizer products.",
 
-  "[PLACEHOLDER]\n\nThis includes but is not limited to the Unrecognizer drug. See Unrecognizer Intro Tape #2 for further information.",
+  "This includes but is not limited to the Unrecognizer drug. See Unrecognizer Intro Tape #2 for further information.",
 
   "END OF TAPE"
 ];
@@ -7373,8 +7373,8 @@ const buildingStamps = [
   id: "unrecognizer-depot-hg",
   definitionId: "unrecognizerDepot",
   mapId: "HG",
-  x: 4,
-  y: 13
+  x: 5,
+  y: 11
 },
 
   {
@@ -7719,8 +7719,8 @@ const buildingStamps = [
     id: "the-beer-mine",
     definitionId: "beerMine",
     mapId: "AF",
-    x: 2,
-    y: 14
+    x: 4,
+    y: 9
   }
 
 ];
