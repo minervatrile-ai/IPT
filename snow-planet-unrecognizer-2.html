@@ -770,6 +770,11 @@ const ASSETS = {
 
   props: {
 
+    laserShieldRight: "gallery/0-gallery/item/basic-laser-shield/right.png",
+    laserShieldLeft: "gallery/0-gallery/item/basic-laser-shield/left.png",
+    laserShieldUp: "gallery/0-gallery/item/basic-laser-shield/up.png",
+    laserShieldDown: "gallery/0-gallery/item/basic-laser-shield/down.png",
+
     medicalKitDispenser: 
     "gallery/0-gallery/props/medical-kit-dispenser.png",
 
@@ -5303,6 +5308,16 @@ cruk: {
 
 const ITEM_DEFINITIONS = {
 
+  laserShield: {
+  name: "Basic Laser Shield",
+  description:
+    "A portable directional barrier designed to intercept laser fire.",
+  image:
+    "gallery/0-gallery/item/basic-laser-shield/folded.png",
+  bulk: 1,
+  stackable: true
+},
+
   firstAidKit: {
   id: "firstAidKit",
   name: "First Aid Kit",
@@ -7819,56 +7834,9 @@ function copyProduce(
   return null;
 }
 
-function copyVanish(copyId) {
-  /*
-    Never vanish a vehicle while Yoi is occupying it.
-    This prevents another visit to BETWEEN.
-  */
-  if (player.vehicleId === copyId) {
-    console.warn(
-      `copyVanish refused to remove occupied vehicle: ${copyId}`
-    );
 
-    return false;
-  }
 
-  const characterIndex = characters.findIndex(
-    character =>
-      character.id === copyId &&
-      character.isCopy
-  );
 
-  if (characterIndex !== -1) {
-    characters.splice(characterIndex, 1);
-    return true;
-  }
-
-  const vehicleIndex = vehicles.findIndex(
-    vehicle =>
-      vehicle.id === copyId &&
-      vehicle.isCopy
-  );
-
-  if (vehicleIndex !== -1) {
-    vehicles.splice(vehicleIndex, 1);
-    return true;
-  }
-
-  return false;
-}
-
-function copyCheckCrukRecoveryVanish(
-  previousMapId,
-  nextMapId
-) {
-  if (
-    previousMapId === "BC" &&
-    nextMapId !== "BC"
-  ) {
-    copyVanish("copyCruk");
-    copyVanish("copyDriftwagon");
-  }
-}
 
 /* =============================================================
    THINKING MODE DEFINITIONS
@@ -8138,7 +8106,9 @@ const player = {
     "binoculars",
     "hereoDevice",
     "unrecognizerWatch",
-    "firstAidKit"
+    "firstAidKit",
+    "laserShield",
+    "basicLaserHandgun"
   ],
 
   inventoryCapacity: 20,
@@ -8220,6 +8190,8 @@ weatherEndsAt: null,
   lastWeatherMessage: "",
   lastBodyHeatWarning: "",
   lastBodyHeat: 28,
+
+deployedLaserShields: [],
 
 droppedHereoBackpack: null,
 droppedItems: [],
@@ -8352,8 +8324,83 @@ const THIRD_BUILDING_EXTERIOR = {
   facing: "down"
 };
 
+/*
+==========================================================
+  CLEANUP SYSTEM
+==========================================================
+
+  Temporary runtime copies eventually leave the world.
+
+  Walking and vehicle transitions report map changes to
+  this system, which decides whether any temporary story
+  scenes should be cleaned up.
+
+==========================================================
+*/
+
+function runMapTransitionCleanup(
+  previousMapId,
+  nextMapId
+) {
+  copyCheckCrukRecoveryVanish(
+    previousMapId,
+    nextMapId
+  );
+}
+
+function copyCheckCrukRecoveryVanish(
+  previousMapId,
+  nextMapId
+) {
+  if (
+    previousMapId === "BC" &&
+    nextMapId !== "BC"
+  ) {
+    copyVanish("copyCruk");
+    copyVanish("copyDriftwagon");
+  }
+}
+
+function copyVanish(copyId) {
+  /*
+    Never vanish a vehicle while Yoi is occupying it.
+    This prevents another visit to BETWEEN.
+  */
+  if (player.vehicleId === copyId) {
+    console.warn(
+      `copyVanish refused to remove occupied vehicle: ${copyId}`
+    );
+
+    return false;
+  }
+
+  const characterIndex = characters.findIndex(
+    character =>
+      character.id === copyId &&
+      character.isCopy
+  );
+
+  if (characterIndex !== -1) {
+    characters.splice(characterIndex, 1);
+    return true;
+  }
+
+  const vehicleIndex = vehicles.findIndex(
+    vehicle =>
+      vehicle.id === copyId &&
+      vehicle.isCopy
+  );
+
+  if (vehicleIndex !== -1) {
+    vehicles.splice(vehicleIndex, 1);
+    return true;
+  }
+
+  return false;
+}
+
 /* =============================================================
-   STORY MOVERS
+   STORY MOVERS story net system cleanup
 
    Story Movers perform permanent world rearrangements after
    required story conditions have been completed.
@@ -9725,10 +9772,10 @@ function transitionWalkingAcrossAtlasEdge(direction) {
 
   nextMap.discovered = true;
 
-  copyCheckCrukRecoveryVanish(
-    currentMapId,
-    nextMapId
-  );
+  runMapTransitionCleanup(
+  currentMapId,
+  nextMapId
+);
 
   triggerStragCEObstructionEvent();
   checkBeerMineNet();
@@ -10027,6 +10074,16 @@ function canPlayerWalkTo(x, y) {
   if (isOccupiedByCharacter(x, y)) return false;
   if (isOccupiedByVehicle(x, y)) return false;
   if (isDroppedHereoBackpackAt(x, y)) return false;
+
+  const deployedShield = getDeployedLaserShieldAt(
+  worldState.currentMapId,
+  x,
+  y
+);
+
+if (deployedShield) {
+  return false;
+}
 
   return true;
 }
@@ -10909,19 +10966,13 @@ function attemptVehicleMove(
     triggerStragCEObstructionEvent();
 
     if (crossesEdge) {
-      /*
-        The vehicle has now completed the atlas transition.
+  runMapTransitionCleanup(
+    previousMapId,
+    vehicle.mapId
+  );
 
-        previousMapId contains the sector Yoi left.
-        vehicle.mapId contains the sector Yoi entered.
-      */
-      copyCheckCrukRecoveryVanish(
-        previousMapId,
-        vehicle.mapId
-      );
-
-      checkBeerMineNet();
-    }
+  checkBeerMineNet();
+}
 
     const action = reversing
       ? "Reversing"
@@ -11925,6 +11976,23 @@ if (itemId === "firstAidKit") {
         "FIRST AID KIT",
         "You treat your laser wounds. Yoi's health has been restored to 500 HP."
       );
+    }
+  });
+}
+
+if (itemId === "laserShield") {
+  options.push({
+    label: "Deploy",
+
+    image: item.image,
+
+    text:
+      "Deploy one laser shield on the tile directly in front of Yoi. " +
+      "The shield will face the same direction as Yoi.",
+
+    action: () => {
+      closeOverlay();
+      deployLaserShield();
     }
   });
 }
@@ -14324,6 +14392,265 @@ if (blueprintExit) {
   return null;
 }
 
+/* DEFENSE COMBAT SYSTEMS */
+
+function findNearbyDeployedLaserShield() {
+  const adjacentTiles = [
+    { x: player.x,     y: player.y - 1 },
+    { x: player.x + 1, y: player.y     },
+    { x: player.x,     y: player.y + 1 },
+    { x: player.x - 1, y: player.y     }
+  ];
+
+  for (const tile of adjacentTiles) {
+    const shield = getDeployedLaserShieldAt(
+      worldState.currentMapId,
+      tile.x,
+      tile.y
+    );
+
+    if (shield) {
+      return shield;
+    }
+  }
+
+  return null;
+}
+
+function pickUpDeployedLaserShield(shield) {
+  if (!shield) {
+    return false;
+  }
+
+  /*
+    Make sure Yoi can carry the folded shield before
+    removing the deployed world version.
+  */
+  if (!canPlayerCarryItem("laserShield")) {
+    setMessage(
+      "Yoi does not have enough inventory space for the laser shield."
+    );
+    return false;
+  }
+
+  const shieldIndex =
+    worldState.deployedLaserShields.findIndex(candidate =>
+      candidate.id === shield.id
+    );
+
+  if (shieldIndex === -1) {
+    setMessage("The deployed laser shield could not be found.");
+    return false;
+  }
+
+  /*
+    Add the folded inventory item first.
+  */
+  if (!addItem("laserShield")) {
+    setMessage("The laser shield could not be returned to inventory.");
+    return false;
+  }
+
+  /*
+    Remove the deployed world version only after
+    the inventory addition succeeds.
+  */
+  worldState.deployedLaserShields.splice(shieldIndex, 1);
+
+  showBubble(
+    "LASER SHIELD",
+    "Yoi folds the laser shield and returns it to inventory."
+  );
+
+  drawGame();
+  return true;
+}
+
+function getDeployedLaserShieldAt(mapId, x, y) {
+  return worldState.deployedLaserShields.find(shield =>
+    shield.mapId === mapId &&
+    shield.x === x &&
+    shield.y === y
+  ) || null;
+}
+
+function getLaserShieldAsset(shield) {
+  switch (shield.facing) {
+    case "up":
+      return ASSETS.props.laserShieldUp;
+
+    case "down":
+      return ASSETS.props.laserShieldDown;
+
+    case "left":
+      return ASSETS.props.laserShieldLeft;
+
+    case "right":
+      return ASSETS.props.laserShieldRight;
+  }
+
+  return ASSETS.props.laserShieldUp;
+}
+
+function deployLaserShield() {
+  const itemId = "laserShield";
+  const item = ITEM_DEFINITIONS[itemId];
+
+  if (!item || !hasItem(itemId)) {
+    setMessage("Yoi does not have a laser shield to deploy.");
+    return false;
+  }
+
+  const vector = DIRECTIONS[player.facing];
+  const targetX = player.x + vector.dx;
+  const targetY = player.y + vector.dy;
+  const currentMapId = worldState.currentMapId;
+
+  /*
+    Keep deployment inside the current map.
+  */
+  if (!inBounds(targetX, targetY)) {
+    setMessage("The laser shield cannot be deployed beyond the map boundary.");
+    drawGame();
+    return false;
+  }
+
+  /*
+    Check for another deployed shield first.
+
+    Later, canPlayerWalkTo() will also recognize shields as solid,
+    so this specific check belongs before the general collision check.
+  */
+  const shieldAlreadyThere =
+    worldState.deployedLaserShields.some(shield =>
+      shield.mapId === currentMapId &&
+      shield.x === targetX &&
+      shield.y === targetY
+    );
+
+  if (shieldAlreadyThere) {
+    setMessage("A laser shield is already deployed there.");
+    drawGame();
+    return false;
+  }
+
+  /*
+    Prevent deployment on ordinary dropped items.
+  */
+  const droppedItemThere =
+    worldState.droppedItems.some(droppedItem =>
+      droppedItem.mapId === currentMapId &&
+      droppedItem.x === targetX &&
+      droppedItem.y === targetY
+    );
+
+  if (droppedItemThere) {
+    setMessage("An item on the ground blocks shield deployment.");
+    drawGame();
+    return false;
+  }
+
+  /*
+    Reject walls, vehicles, characters, props,
+    and other locations Yoi could not normally enter.
+  */
+  if (!canPlayerWalkTo(targetX, targetY)) {
+    setMessage("There is not enough open space to deploy the laser shield.");
+    drawGame();
+    return false;
+  }
+
+  /*
+    Do not consume the inventory item until every check succeeds.
+  */
+  if (!removeItem(itemId)) {
+    setMessage("The laser shield could not be removed from inventory.");
+    return false;
+  }
+
+  /*
+    Create the active world version.
+  */
+  worldState.deployedLaserShields.push({
+    id:
+      `laser-shield-${Date.now()}-` +
+      Math.random().toString(36).slice(2, 8),
+
+    mapId: currentMapId,
+    x: targetX,
+    y: targetY,
+
+    facing: player.facing,
+
+    integrity: 100,
+    maxIntegrity: 100
+  });
+
+  closeOverlay();
+
+  showBubble(
+    "LASER SHIELD",
+    `Yoi deploys the laser shield facing ${player.facing}.`
+  );
+
+  drawGame();
+  return true;
+}
+
+function damageDeployedLaserShield(shield, damage) {
+  if (!shield) return false;
+
+  shield.integrity = Math.max(
+    0,
+    shield.integrity - damage
+  );
+
+  if (shield.integrity <= 0) {
+    const shieldIndex =
+      worldState.deployedLaserShields.findIndex(candidate =>
+        candidate.id === shield.id
+      );
+
+    if (shieldIndex !== -1) {
+      worldState.deployedLaserShields.splice(
+        shieldIndex,
+        1
+      );
+    }
+
+    showBubble(
+      "LASER SHIELD",
+      "The laser shield overloads and collapses."
+    );
+  } else {
+    setMessage(
+      `LASER SHIELD HIT · Integrity: ` +
+      `${shield.integrity}/${shield.maxIntegrity}`
+    );
+  }
+
+  drawGame();
+  return true;
+}
+
+function doesLaserShieldBlockProjectile(shield, projectile) {
+  if (!shield || !projectile) {
+    return false;
+  }
+
+  const incomingDirectionByShieldFacing = {
+    up: "down",
+    down: "up",
+    left: "right",
+    right: "left"
+  };
+
+  return (
+    projectile.direction ===
+    incomingDirectionByShieldFacing[shield.facing]
+  );
+}
+
 /* =============================================================
    19. COMBAT AND PROJECTILES
 
@@ -15297,33 +15624,64 @@ function updateSingleProjectile(projectile) {
   }
 
   /*
-  Enemy projectiles can strike Yoi.
-*/
+    Deployed laser shields intercept projectiles before
+    those projectiles can strike Yoi or another character.
+  */
+  const deployedShield = getDeployedLaserShieldAt(
+  projectile.mapId,
+  nextX,
+  nextY
+);
+
 if (
-  projectile.ownerId !== "player" &&
-  projectile.mapId === player.mapId &&
-  nextX === player.x &&
-  nextY === player.y
+  deployedShield &&
+  doesLaserShieldBlockProjectile(
+    deployedShield,
+    projectile
+  )
 ) {
   projectile.x = nextX;
   projectile.y = nextY;
 
-  player.health = Math.max(
-    0,
-    player.health - projectile.damage
+  damageDeployedLaserShield(
+    deployedShield,
+    projectile.damage
   );
 
-  setMessage(
-    `LASER HIT · Yoi health: ${player.health}/${player.maxHealth}`
-  );
-
-  if (player.health <= 0) {
-  recoverPlayerCruk();
+  /*
+    The projectile is destroyed by the shield.
+  */
   return true;
 }
 
-  return true;
-}
+  /*
+    Enemy projectiles can strike Yoi.
+  */
+  if (
+    projectile.ownerId !== "player" &&
+    projectile.mapId === player.mapId &&
+    nextX === player.x &&
+    nextY === player.y
+  ) {
+    projectile.x = nextX;
+    projectile.y = nextY;
+
+    player.health = Math.max(
+      0,
+      player.health - projectile.damage
+    );
+
+    setMessage(
+      `LASER HIT · Yoi health: ${player.health}/${player.maxHealth}`
+    );
+
+    if (player.health <= 0) {
+      recoverPlayerCruk();
+      return true;
+    }
+
+    return true;
+  }
 
   const target = characters.find(character =>
     character.visible &&
@@ -15416,6 +15774,13 @@ if (droppedBackpack) {
 
 if (droppedItem) {
   pickUpDroppedItem(droppedItem);
+  return;
+}
+
+const deployedShield = findNearbyDeployedLaserShield();
+
+if (deployedShield) {
+  pickUpDeployedLaserShield(deployedShield);
   return;
 }
 
@@ -16156,6 +16521,7 @@ function drawGame() {
 drawDroppedHereoBackpack();
 drawDroppedItems();
 drawProjectiles();
+drawDeployedLaserShields();
 drawPlayer();
   updateCamera();
   updateWeatherDisplay();
@@ -16223,6 +16589,35 @@ function drawDroppedItems() {
       droppedItem.x,
       droppedItem.y
     );
+  }
+}
+
+function drawDeployedLaserShields() {
+  for (const shield of worldState.deployedLaserShields) {
+    if (shield.mapId !== getViewedMapId()) {
+      continue;
+    }
+
+    const shieldImage = getLaserShieldAsset(shield);
+
+    if (!shieldImage) {
+      continue;
+    }
+
+    const sprite = document.createElement("div");
+
+sprite.className = "entity laserShieldSprite";
+sprite.style.backgroundImage = `url("${shieldImage}")`;
+
+sprite.style.backgroundSize = "contain";
+sprite.style.backgroundPosition = "center";
+sprite.style.backgroundRepeat = "no-repeat";
+
+placeEntity(
+  sprite,
+  shield.x,
+  shield.y
+);
   }
 }
 
