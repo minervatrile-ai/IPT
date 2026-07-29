@@ -16501,29 +16501,60 @@ function toggleDayNight() {
    22. RENDERING
    ============================================================= */
 
+/*
+  Mobile uses a smaller rendered tile size so more of the
+  surrounding map fits on screen.
+
+  This changes only visual scale.
+  World coordinates and movement remain unchanged.
+*/
+const MOBILE_TILE_SIZE = 26;
+
+function getRenderTileSize() {
+  const mobileScreen =
+    window.matchMedia(
+      "(max-width: 900px) and (pointer: coarse)"
+    ).matches;
+
+  return mobileScreen
+    ? MOBILE_TILE_SIZE
+    : TILE_SIZE;
+}
+
+
 function drawGame() {
   const map = getViewedMap();
   const { width, height } = getMapDimensions(map);
+  const renderTileSize = getRenderTileSize();
 
   game.innerHTML = "";
-  game.style.gridTemplateColumns = `repeat(${width}, ${TILE_SIZE}px)`;
-  game.style.gridTemplateRows = `repeat(${height}, ${TILE_SIZE}px)`;
-  game.style.width = `${width * TILE_SIZE}px`;
-  game.style.height = `${height * TILE_SIZE}px`;
+
+  game.style.gridTemplateColumns =
+    `repeat(${width}, ${renderTileSize}px)`;
+
+  game.style.gridTemplateRows =
+    `repeat(${height}, ${renderTileSize}px)`;
+
+  game.style.width =
+    `${width * renderTileSize}px`;
+
+  game.style.height =
+    `${height * renderTileSize}px`;
 
   drawTiles(map);
 
   if (isOutsideMap(getViewedMapId())) {
-  drawBuildingStamps();
-  drawVehicles();
-}
+    drawBuildingStamps();
+    drawVehicles();
+  }
 
   drawCharacters();
-drawDroppedHereoBackpack();
-drawDroppedItems();
-drawProjectiles();
-drawDeployedLaserShields();
-drawPlayer();
+  drawDroppedHereoBackpack();
+  drawDroppedItems();
+  drawProjectiles();
+  drawDeployedLaserShields();
+  drawPlayer();
+
   updateCamera();
   updateWeatherDisplay();
   updateHud();
@@ -16550,11 +16581,27 @@ function drawTiles(map) {
   }
 }
 
-function placeEntity(element, x, y, widthTiles = 1, heightTiles = 1) {
-  element.style.left = `${x * TILE_SIZE}px`;
-  element.style.top = `${y * TILE_SIZE}px`;
-  element.style.width = `${widthTiles * TILE_SIZE}px`;
-  element.style.height = `${heightTiles * TILE_SIZE}px`;
+function placeEntity(
+  element,
+  x,
+  y,
+  widthTiles = 1,
+  heightTiles = 1
+) {
+  const renderTileSize = getRenderTileSize();
+
+  element.style.left =
+    `${x * renderTileSize}px`;
+
+  element.style.top =
+    `${y * renderTileSize}px`;
+
+  element.style.width =
+    `${widthTiles * renderTileSize}px`;
+
+  element.style.height =
+    `${heightTiles * renderTileSize}px`;
+
   game.appendChild(element);
 }
 
@@ -16797,6 +16844,8 @@ function updateCamera() {
   let focusTileX;
   let focusTileY;
 
+  const renderTileSize = getRenderTileSize();
+
   if (player.binocularMode) {
     focusTileX = player.binocularCameraX;
     focusTileY = player.binocularCameraY;
@@ -16804,14 +16853,20 @@ function updateCamera() {
     const vehicle = getCurrentVehicle();
 
     if (vehicle) {
-      const size = getVehicleSize(vehicle, vehicle.facing);
+      const size = getVehicleSize(
+        vehicle,
+        vehicle.facing
+      );
 
       /*
         Center the camera on the complete vehicle footprint,
         rather than its top-left coordinate.
       */
-      focusTileX = vehicle.x + size.width / 2;
-      focusTileY = vehicle.y + size.height / 2;
+      focusTileX =
+        vehicle.x + size.width / 2;
+
+      focusTileY =
+        vehicle.y + size.height / 2;
 
       /*
         Push the camera view ahead of the vehicle so the driver
@@ -16843,20 +16898,26 @@ function updateCamera() {
     focusTileY = player.y;
   }
 
-  const focusX = focusTileX * TILE_SIZE;
-  const focusY = focusTileY * TILE_SIZE;
+  const focusX =
+    focusTileX * renderTileSize;
+
+  const focusY =
+    focusTileY * renderTileSize;
 
   const map = getViewedMap();
-  const { width, height } = getMapDimensions(map);
+  const { width, height } =
+    getMapDimensions(map);
 
   const maxLeft = Math.max(
     0,
-    width * TILE_SIZE - camera.clientWidth
+    width * renderTileSize -
+      camera.clientWidth
   );
 
   const maxTop = Math.max(
     0,
-    height * TILE_SIZE - camera.clientHeight
+    height * renderTileSize -
+      camera.clientHeight
   );
 
   const left = Math.max(
@@ -16878,6 +16939,31 @@ function updateCamera() {
   game.style.transform =
     `translate(${-left}px, ${-top}px)`;
 }
+
+/*
+  Recalculate the rendered scale when a phone rotates
+  or the browser viewport changes size.
+*/
+let previousRenderTileSize =
+  getRenderTileSize();
+
+window.addEventListener("resize", () => {
+  const nextRenderTileSize =
+    getRenderTileSize();
+
+  if (
+    nextRenderTileSize !==
+    previousRenderTileSize
+  ) {
+    previousRenderTileSize =
+      nextRenderTileSize;
+
+    drawGame();
+    return;
+  }
+
+  updateCamera();
+});
 
 function updateHud() {
   const map = getCurrentMap();
