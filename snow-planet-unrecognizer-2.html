@@ -668,12 +668,12 @@
       </button>
 
       <button
-        id="mobileBack"
-        class="mobileButton mobileActionButton"
-        type="button"
-      >
-        BACK
-      </button>
+  id="mobileDeploy"
+  class="mobileButton mobileActionButton"
+  type="button"
+>
+  DEPLOY
+</button>
 
       <button
         id="mobileMenu"
@@ -749,6 +749,7 @@ const mobileInteract = document.getElementById("mobileInteract");
 const mobileMenu = document.getElementById("mobileMenu");
 
 const mobileFire = document.getElementById("mobileFire");
+const mobileDeploy = document.getElementById("mobileDeploy");
 
 /* =============================================================
    02. ASSET REGISTRY
@@ -17119,6 +17120,26 @@ if (mobileInteract) {
   mobileInteract.addEventListener("pointerdown", event => {
     event.preventDefault();
     handleMobileInteract();
+  });
+}
+
+if (mobileDeploy) {
+  mobileDeploy.addEventListener("pointerdown", event => {
+    event.preventDefault();
+
+    if (worldState.overlay.open) {
+      return;
+    }
+
+    if (bubbleOverlay.style.display === "block") {
+      return;
+    }
+
+    if (player.binocularMode) {
+      return;
+    }
+
+    deployLaserShield();
   });
 }
 
