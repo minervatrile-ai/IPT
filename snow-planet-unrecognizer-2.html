@@ -688,8 +688,8 @@
   <div id="messageBox">Atlas engine initialized.</div>
 
   <div class="instructions">
-    Arrow keys: move / drive · E: interact / enter / exit · B or Escape: back ·
-    F: fire equipped weapon · I: inventory · M: atlas · T: thinking mode
+    Arrow keys: move / drive · E: interact / enter / exit · B: back ·
+    F: fire equipped weapon · S: deploy shield · I: inventory · M: atlas · T: thinking mode
   </div>
 
   <!-- One overlay shell serves phones, computers, merchants, machines,
@@ -14583,8 +14583,8 @@ function deployLaserShield() {
 
     facing: player.facing,
 
-    integrity: 100,
-    maxIntegrity: 100
+    integrity: 600,
+    maxIntegrity: 600
   });
 
   closeOverlay();
