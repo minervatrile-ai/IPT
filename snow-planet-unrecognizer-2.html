@@ -17336,6 +17336,12 @@ moveBinocularCamera(direction);
     return;
   }
 
+  if (key === "s") {
+    deployLaserShield();
+    event.preventDefault();
+    return;
+  }
+
   if (key === "i") {
     openInventory();
     event.preventDefault();
