@@ -935,6 +935,7 @@ left: "gallery/0-gallery/sprite/yoi.png",
 right: "gallery/0-gallery/sprite/yoi.png"
     },
     badge: {
+  sdaOfficer: "gallery/sprite/badge/sda/personnel.png",
   verkos: "gallery/sprite/badge/art-corp/verkos.png",
   yoiUnrecognizer: "gallery/0-gallery/sprite/badge/yoi-unrecognizer.png",
   redSnowOperative: "gallery/0-gallery/sprite/rs-operative.png",
@@ -3576,27 +3577,27 @@ const HG_MAP = [
   "PPpppPPppPPp....ppPPPpPPPPPP",
   "PpPPpPPppPpp....PPPPPpPPpPpP",
   "pPPPP................PPPpPPp",
-  "....p.......................",
-  "PPp.P................PPp.PPp",
-  "pPp.p................ppp.ppp",
-  "PPp.P................ppp.PPp",
-  "pPp.p.............=====P.PPP",
-  "Ppp.P.............=====P.PPP",
-  "PPP.p.............==========",
-  "PpP...............==========",
+  "....p................pp.....",
+  "PPp.P................PPppPPp",
+  "pPp.p................pppPppp",
+  "PPp.P................ppppPPp",
+  "pPp.p.......P.....=====PpPPP",
+  "Ppp.P.......P.....=====PpPPP",
+  "PPP.p......pp.....==========",
+  "PpP........ppp....==========",
   "PPp.PpPppPPPPP....==========",
   "PPP.PppPPPPpPpP..===========",
   "ppP.p...........============",
-  "PPP===================PP.Ppp",
-  "PPP===================PP.PpP",
-  "pPP===================PP.ppP",
-  "pPP=============..pPpPpp.Ppp",
-  "pPp============PP.PPPPpp.pPP",
-  "PPp============PP.pppPPP.pPp",
-  "PPpPPPpppPPpPppPP.ppPpPP.pPp",
-  "PPpppppPPppPPpPpp.PPPPPp.pPP",
-  "ppPPpppppPPPpPPpP.pPpPpp.PpP",
-  "PPpppppPPPPPPpppP.PPPPpp.pPP",
+  "PPP===================PPpPpp",
+  "PPP===================PPPPpP",
+  "pPP===================PPpppP",
+  "pPP=============..pPpPpppPpp",
+  "pPp============PPpPPPPppppPP",
+  "PPp============PPPpppPPPPpPp",
+  "PPpPPPpppPPpPppPPPppPpPPppPp",
+  "PPpppppPPppPPpPpppPPPPPpppPP",
+  "ppPPpppppPPPpPPpPppPpPppPPpP",
+  "PPpppppPPPPPPpppPpPPPPppPpPP",
   ".........................PPp",
   "pPPPPpPpPppPP...pPPPPPPPPPPP",
   "PPPpPPpPPpPPP...PPpPPPpPpppp",
@@ -4500,6 +4501,14 @@ function openPhaylUnrecognizerTrade() {
 
 const DIALOGUE_DEFINITIONS = {
 
+  sdaFactoryGuardDialogue: {
+  lines: () => [
+    "This facility is closed.",
+
+    "The UNRECOGNIZER Subfactory has been seized by the SDA on behalf of the Central Human Governance of Planet Thraeya."
+  ]
+},
+
   phaylUnrecognizerBuyer: {
   lines: [
     {
@@ -5379,7 +5388,15 @@ cruk: {
   faction: "redSnow",
   maxHealth: 75,
   weaponId: "basicLaserHandgun"
-}
+},
+
+sdaOfficer: {
+  name: "SDA OFFICER",
+  image: ASSETS.character.badge.sdaOfficer,
+  faction: "sda",
+  maxHealth: 100,
+  weaponId: "sdaServiceLaser"
+},
 
 };
 
@@ -6901,6 +6918,18 @@ const vehicles = [
       "sda-peacekeeper-2",
       "sda-peacekeeper-3"
     ]
+  },
+
+  {
+    id: "sda-transport-2",
+    definitionId: "sdaPersonnelTransport",
+    mapId: "HG",
+    x: 18,
+    y: 10,
+    facing: "right",
+    boardable: false,
+    fuel: 165,
+    passengers: []
   }
 
 ];
@@ -7060,6 +7089,50 @@ const characters = [
 },
 
 */
+
+/* UNRECOGNIZER DEPOT GUARDS SDA */
+
+{
+  id: "sda-factory-guard-1",
+  definitionId: "sdaOfficer",
+  dialogueId: "sdaFactoryGuardDialogue",
+  mapId: "HG",
+  x: 23,
+  y: 9,
+  facing: "right",
+  health: 100,
+  defeated: false,
+  visible: true,
+  conversationStep: 0
+},
+
+{
+  id: "sda-factory-guard-2",
+  definitionId: "sdaOfficer",
+  dialogueId: "sdaFactoryGuardDialogue",
+  mapId: "HG",
+  x: 22,
+  y: 12,
+  facing: "right",
+  health: 100,
+  defeated: false,
+  visible: true,
+  conversationStep: 0
+},
+
+{
+  id: "sda-factory-guard-3",
+  definitionId: "sdaOfficer",
+  dialogueId: "sdaFactoryGuardDialogue",  
+  mapId: "HG",
+  x: 22,
+  y: 13,
+  facing: "right",
+  health: 100,
+  defeated: false,
+  visible: true,
+  conversationStep: 0
+},
 
 {
   id: "strag-ce",
