@@ -17813,6 +17813,7 @@ function openMobileSystemMenu() {
 
 document.addEventListener("keydown", event => {
   const key = event.key.toLowerCase();
+  const code = event.code;
 
   /*
     Overlay controls have first priority.
@@ -17888,25 +17889,78 @@ moveBinocularCamera(direction);
   }
 
   /*
-    Normal movement begins only when binocular mode is off.
-  */
-  const directionByKey = {
-    arrowup: "up",
-    arrowdown: "down",
-    arrowleft: "left",
-    arrowright: "right"
-  };
+  NORMAL MOVEMENT AND AIM MODE
 
-  if (directionByKey[key]) {
-    if (player.mode === "driving") {
-      moveVehicle(directionByKey[key]);
-    } else {
-      movePlayer(directionByKey[key]);
-    }
+  Arrow keys and the cardinal numpad keys move normally
+  while Aim Mode is off.
 
-    event.preventDefault();
-    return;
+  While Aim Mode is on, those same keys fire without
+  moving Yoi.
+*/
+const cardinalDirectionByKey = {
+  ArrowUp: "up",
+  ArrowDown: "down",
+  ArrowLeft: "left",
+  ArrowRight: "right",
+
+  Numpad8: "up",
+  Numpad2: "down",
+  Numpad4: "left",
+  Numpad6: "right"
+};
+
+const cardinalDirection =
+  cardinalDirectionByKey[code];
+
+if (cardinalDirection) {
+  if (worldState.aimMode) {
+    fireEquippedWeapon(cardinalDirection);
+  } else if (player.mode === "driving") {
+    moveVehicle(cardinalDirection);
+  } else {
+    movePlayer(cardinalDirection);
   }
+
+  event.preventDefault();
+  return;
+}
+
+/*
+  The four diagonal numpad keys always fire diagonally,
+  regardless of whether Aim Mode is active.
+*/
+const diagonalDirectionByKey = {
+  Numpad7: "upLeft",
+  Numpad9: "upRight",
+  Numpad1: "downLeft",
+  Numpad3: "downRight"
+};
+
+const diagonalDirection =
+  diagonalDirectionByKey[code];
+
+if (diagonalDirection) {
+  fireEquippedWeapon(diagonalDirection);
+
+  event.preventDefault();
+  return;
+}
+
+/*
+  Numpad 5 toggles Aim Mode.
+*/
+if (code === "Numpad5") {
+  toggleAimMode();
+
+  setMessage(
+    worldState.aimMode
+      ? "AIM MODE ON"
+      : "AIM MODE OFF"
+  );
+
+  event.preventDefault();
+  return;
+}
 
   if (key === "e" || key === "enter") {
     interact();
