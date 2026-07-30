@@ -4290,7 +4290,7 @@ beerMineInterior: {
     "W.kbbbbk...W",
     "W.l........W",
     "W.l........W",
-    "Wkb.......LW",
+    "Wkb........W",
     "W.........TW",
     "WWWWWDWWWWWW"
   ],
@@ -8829,11 +8829,38 @@ if (zyr) {
    ============================================================= */
 
 const DIRECTIONS = {
-  up: { dx: 0, dy: -1 },
-  down: { dx: 0, dy: 1 },
-  left: { dx: -1, dy: 0 },
-  right: { dx: 1, dy: 0 }
+  upLeft:    { dx: -1, dy: -1 },
+  up:        { dx:  0, dy: -1 },
+  upRight:   { dx:  1, dy: -1 },
+
+  left:      { dx: -1, dy:  0 },
+  right:     { dx:  1, dy:  0 },
+
+  downLeft:  { dx: -1, dy:  1 },
+  down:      { dx:  0, dy:  1 },
+  downRight: { dx:  1, dy:  1 }
 };
+
+const CARDINAL_DIRECTIONS = new Set([
+  "up",
+  "down",
+  "left",
+  "right"
+]);
+
+function isCardinalDirection(direction) {
+  return CARDINAL_DIRECTIONS.has(direction);
+}
+
+function isDiagonalDirection(direction) {
+  const vector = DIRECTIONS[direction];
+
+  return Boolean(
+    vector &&
+    vector.dx !== 0 &&
+    vector.dy !== 0
+  );
+}
 
 const PROJECTILE_DIRECTIONS = {
   ...DIRECTIONS,
@@ -11203,7 +11230,7 @@ function canPlayerWalkToIgnoringCurrentVehicle(x, y, vehicleId) {
   return true;
 }
 
-// player or npc drives vehicle
+// Player or NPC drives vehicle.
 
 function attemptVehicleMove(
   vehicle,
@@ -11216,6 +11243,16 @@ function attemptVehicleMove(
   } = {}
 ) {
   if (!vehicle) return false;
+
+  const vector = DIRECTIONS[direction];
+
+  if (!vector) {
+    console.warn(
+      `Unknown vehicle movement direction: ${direction}`
+    );
+
+    return false;
+  }
 
   /*
     Preserve the vehicle's starting map before an atlas transition
@@ -11234,15 +11271,37 @@ function attemptVehicleMove(
     return false;
   }
 
+  const cardinalMovement =
+    isCardinalDirection(direction);
+
+  const diagonalMovement =
+    isDiagonalDirection(direction);
+
+  /*
+    Reversing only applies to cardinal movement.
+
+    Diagonal movement preserves the vehicle's most recently
+    established cardinal facing.
+  */
   const reversing =
+    cardinalMovement &&
     definition.family !== "snowmobile" &&
-    isOppositeDirection(vehicle.facing, direction);
+    isOppositeDirection(
+      vehicle.facing,
+      direction
+    );
 
-  const visualFacing = reversing
-    ? vehicle.facing
-    : direction;
+  /*
+    Cardinal movement may change visual facing.
 
-  const vector = DIRECTIONS[direction];
+    Diagonal movement retains the most recent cardinal facing
+    because vehicles do not have diagonal sprites.
+  */
+  const visualFacing = cardinalMovement
+    ? reversing
+      ? vehicle.facing
+      : direction
+    : vehicle.facing;
 
   const nextX = vehicle.x + vector.dx;
   const nextY = vehicle.y + vector.dy;
@@ -11252,16 +11311,41 @@ function attemptVehicleMove(
     visualFacing
   );
 
-  const mapDimensions = getMapDimensions(
+  const map =
     ATLAS[vehicle.mapId] ||
-    BLUEPRINTS[vehicle.mapId]
-  );
+    BLUEPRINTS[vehicle.mapId];
+
+  const mapDimensions =
+    getMapDimensions(map);
 
   const crossesEdge =
     nextX < 0 ||
     nextY < 0 ||
-    nextX + nextSize.width > mapDimensions.width ||
-    nextY + nextSize.height > mapDimensions.height;
+    nextX + nextSize.width >
+      mapDimensions.width ||
+    nextY + nextSize.height >
+      mapDimensions.height;
+
+  /*
+    Do not permit diagonal atlas transitions yet.
+
+    A diagonal edge crossing could attempt to enter two neighboring
+    sectors simultaneously. Cardinal movement remains responsible
+    for atlas transitions.
+  */
+  if (crossesEdge && diagonalMovement) {
+    if (driverType === "player") {
+      setMessage(
+        "Use a cardinal direction to cross sectors."
+      );
+
+      if (redraw) {
+        drawGame();
+      }
+    }
+
+    return false;
+  }
 
   if (crossesEdge) {
     if (
@@ -11294,38 +11378,106 @@ function attemptVehicleMove(
       return false;
     }
   } else {
-    const oldMapId = worldState.currentMapId;
+    const oldMapId =
+      worldState.currentMapId;
 
     /*
       Collision helpers currently inspect worldState.currentMapId.
       Temporarily point them at the vehicle's actual map so NPC
       vehicles can move even while Yoi is somewhere else.
     */
-    worldState.currentMapId = vehicle.mapId;
+    worldState.currentMapId =
+      vehicle.mapId;
 
-    const canMove = canVehicleOccupy(
-      vehicle,
-      nextX,
-      nextY,
-      visualFacing
-    );
+    let canMove = false;
 
-    worldState.currentMapId = oldMapId;
+    /*
+      For diagonal movement, first confirm that both cardinal
+      component routes are open.
+
+      This prevents large vehicles from slipping diagonally through
+      touching corners.
+    */
+    if (diagonalMovement) {
+      const horizontalX =
+        vehicle.x + vector.dx;
+
+      const horizontalY =
+        vehicle.y;
+
+      const verticalX =
+        vehicle.x;
+
+      const verticalY =
+        vehicle.y + vector.dy;
+
+      const horizontalClear =
+        canVehicleOccupy(
+          vehicle,
+          horizontalX,
+          horizontalY,
+          visualFacing
+        );
+
+      const verticalClear =
+        canVehicleOccupy(
+          vehicle,
+          verticalX,
+          verticalY,
+          visualFacing
+        );
+
+      const diagonalClear =
+        canVehicleOccupy(
+          vehicle,
+          nextX,
+          nextY,
+          visualFacing
+        );
+
+      canMove =
+        horizontalClear &&
+        verticalClear &&
+        diagonalClear;
+    } else {
+      canMove = canVehicleOccupy(
+        vehicle,
+        nextX,
+        nextY,
+        visualFacing
+      );
+    }
+
+    worldState.currentMapId =
+      oldMapId;
 
     if (!canMove) {
-      if (!reversing) {
-        vehicle.facing = visualFacing;
+      /*
+        Cardinal commands may rotate the vehicle toward the blocked
+        route.
+
+        Diagonal commands preserve the existing cardinal facing.
+      */
+      if (
+        cardinalMovement &&
+        !reversing
+      ) {
+        vehicle.facing =
+          visualFacing;
       }
 
       vehicle.reversing = false;
 
       if (driverType === "player") {
-        setMessage("Vehicle route blocked.");
+        setMessage(
+          "Vehicle route blocked."
+        );
       }
 
       if (
         redraw &&
-        vehicle.mapId === worldState.currentMapId
+        vehicle.mapId ===
+          worldState.currentMapId
       ) {
         drawGame();
       }
@@ -11340,25 +11492,29 @@ function attemptVehicleMove(
   }
 
   if (consumeFuel) {
-    consumeVehicleFuelSilently(vehicle);
+    consumeVehicleFuelSilently(
+      vehicle
+    );
   }
 
   if (driverType === "player") {
     player.x = vehicle.x;
     player.y = vehicle.y;
     player.mapId = vehicle.mapId;
-    worldState.currentMapId = vehicle.mapId;
+
+    worldState.currentMapId =
+      vehicle.mapId;
 
     triggerStragCEObstructionEvent();
 
     if (crossesEdge) {
-  runMapTransitionCleanup(
-    previousMapId,
-    vehicle.mapId
-  );
+      runMapTransitionCleanup(
+        previousMapId,
+        vehicle.mapId
+      );
 
-  checkBeerMineNet();
-}
+      checkBeerMineNet();
+    }
 
     const action = reversing
       ? "Reversing"
@@ -11373,7 +11529,8 @@ function attemptVehicleMove(
 
   if (
     redraw &&
-    vehicle.mapId === worldState.currentMapId
+    vehicle.mapId ===
+      worldState.currentMapId
   ) {
     drawGame();
   }
@@ -17926,8 +18083,15 @@ if (cardinalDirection) {
 }
 
 /*
-  The four diagonal numpad keys always fire diagonally,
-  regardless of whether Aim Mode is active.
+  DIAGONAL NUMPAD INPUT
+
+  While driving:
+  - Aim Mode off: move the vehicle diagonally.
+  - Aim Mode on: fire diagonally.
+
+  While on foot:
+  - Diagonal numpad keys continue firing diagonally.
+  - Yoi's walking remains cardinal-only.
 */
 const diagonalDirectionByKey = {
   Numpad7: "upLeft",
@@ -17940,7 +18104,14 @@ const diagonalDirection =
   diagonalDirectionByKey[code];
 
 if (diagonalDirection) {
-  fireEquippedWeapon(diagonalDirection);
+  if (
+    player.mode === "driving" &&
+    !worldState.aimMode
+  ) {
+    moveVehicle(diagonalDirection);
+  } else {
+    fireEquippedWeapon(diagonalDirection);
+  }
 
   event.preventDefault();
   return;
