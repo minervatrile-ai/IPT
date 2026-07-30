@@ -4443,7 +4443,82 @@ function openVerkosArtifactMenu() {
   });
 }
 
+function openPhaylUnrecognizerTrade() {
+  const itemId = "fullPillBottle";
+  const item = ITEM_DEFINITIONS[itemId];
+
+  const quantityCarried =
+    getInventoryItemQuantity(itemId);
+
+  openOverlay({
+    title: "PHAYL",
+    image: ASSETS.character.badge.phayl,
+
+    text:
+      "Bring me some UNRECOGNIZER and I'll buy it." +
+      "<br><br>" +
+      "I'll pay <strong>7 Serpentine</strong> per bottle." +
+      "<br><br>" +
+      `UNRECOGNIZER bottles carried: ${quantityCarried}` +
+      "<br>" +
+      `Serpentine: ${player.serpentine}`,
+
+    options: [
+      {
+        label: "Sell 1 bottle for 7 Serpentine",
+
+        disabled: quantityCarried < 1,
+
+        text:
+          quantityCarried > 0
+            ? "Sell one bottle of UNRECOGNIZER to Phayl."
+            : "Yoi is not carrying a bottle of UNRECOGNIZER.",
+
+        action: () => {
+          runNpcItemSale({
+            sellerName: "Phayl",
+
+            itemId,
+            quantity: 1,
+
+            currencyId: "serpentine",
+            paymentAmount: 7,
+
+            successMessage:
+              "Phayl takes the bottle of UNRECOGNIZER and pays Yoi 7 Serpentine."
+          });
+        }
+      },
+
+      {
+        label: "Never mind",
+        action: closeOverlay
+      }
+    ]
+  });
+}
+
 const DIALOGUE_DEFINITIONS = {
+
+  phaylUnrecognizerBuyer: {
+  lines: [
+    {
+      text:
+        "Bring me some UNRECOGNIZER and I'll buy it.",
+
+      action: () => {
+        /*
+          Open the trading menu after the dialogue bubble
+          has been rendered.
+        */
+        setTimeout(
+          openPhaylUnrecognizerTrade,
+          0
+        );
+      }
+    }
+  ]
+},
 
   crukRecoveryDialogue: {
   lines: [
@@ -5261,12 +5336,13 @@ cruk: {
 },
 
   phayl: {
-    name: "PHAYL",
-    image: ASSETS.character.badge.phayl,
-    portrait: ASSETS.character.badge.phayl,
-    faction: "redSnow",
-    maxHealth: 100,
-  },
+  name: "PHAYL",
+  image: ASSETS.character.badge.phayl,
+  portrait: ASSETS.character.badge.phayl,
+  faction: "redSnow",
+  maxHealth: 100,
+  dialogueId: "phaylUnrecognizerBuyer"
+},
 
   eshi: {
     name: "ESHI",
@@ -8750,6 +8826,137 @@ function removeItem(itemId) {
   if (index === -1) return false;
 
   player.inventory.splice(index, 1);
+  return true;
+}
+
+/* =============================================================
+   NPC TRADE SYSTEM
+
+   Reusable for current and future NPC purchases.
+
+   Existing exchanges and merchant systems remain untouched.
+   ============================================================= */
+
+   
+
+function getInventoryItemQuantity(itemId) {
+  return player.inventory.filter(
+    carriedItemId => carriedItemId === itemId
+  ).length;
+}
+
+function runNpcItemSale({
+  sellerName = "NPC",
+  itemId,
+  quantity = 1,
+  currencyId = "serpentine",
+  paymentAmount = 0,
+  successMessage = null,
+  onSuccess = null
+}) {
+  const item = ITEM_DEFINITIONS[itemId];
+
+  if (!item) {
+    console.warn(
+      `NPC trade rejected unknown item: ${itemId}`
+    );
+
+    showBubble(
+      sellerName.toUpperCase(),
+      "That trade cannot be completed."
+    );
+
+    return false;
+  }
+
+  const quantityCarried =
+    getInventoryItemQuantity(itemId);
+
+  if (quantityCarried < quantity) {
+    showBubble(
+      sellerName.toUpperCase(),
+      `Yoi does not have ${
+        quantity === 1
+          ? `a ${item.name}`
+          : `${quantity} × ${item.name}`
+      }.`
+    );
+
+    return false;
+  }
+
+  /*
+    Validate the player's currency property before
+    removing anything from inventory.
+  */
+  if (
+    typeof player[currencyId] !== "number"
+  ) {
+    console.warn(
+      `NPC trade rejected unknown currency: ${currencyId}`
+    );
+
+    showBubble(
+      sellerName.toUpperCase(),
+      "That payment method is unavailable."
+    );
+
+    return false;
+  }
+
+  /*
+    Remove every required item.
+  */
+  for (
+    let removedCount = 0;
+    removedCount < quantity;
+    removedCount += 1
+  ) {
+    const removed = removeItem(itemId);
+
+    if (!removed) {
+      /*
+        This should not normally happen because the
+        quantity was already checked.
+
+        Restore any copies removed before the failure.
+      */
+      for (
+        let restoreCount = 0;
+        restoreCount < removedCount;
+        restoreCount += 1
+      ) {
+        addItem(itemId);
+      }
+
+      showBubble(
+        sellerName.toUpperCase(),
+        "The trade could not be completed."
+      );
+
+      return false;
+    }
+  }
+
+  /*
+    Pay Yoi only after the required item has
+    successfully been removed.
+  */
+  player[currencyId] += paymentAmount;
+
+  if (typeof onSuccess === "function") {
+    onSuccess();
+  }
+
+  closeOverlay();
+
+  showBubble(
+    sellerName.toUpperCase(),
+    successMessage ||
+      `${sellerName} pays Yoi ${paymentAmount} ${currencyId}.`
+  );
+
+  drawGame();
   return true;
 }
 
