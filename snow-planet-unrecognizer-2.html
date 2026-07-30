@@ -7267,6 +7267,8 @@ const BUILDING_DEFINITIONS = {
   },
 
   unrecognizerDepot: {
+  name: "UNRECOGNIZER Subfactory",
+
   image: ASSETS.architecture.unrecognizerDepot,
 
   width: 8,
@@ -7279,7 +7281,9 @@ const BUILDING_DEFINITIONS = {
     "........"
   ],
 
-  blueprintId: "unrecognizerDepotInterior"
+  blueprintId: "unrecognizerDepotInterior",
+
+  entranceInteraction: "unrecognizerDepotEntrance"
 },
 
   hangarGate: {
@@ -13811,6 +13815,31 @@ const INTERACTIONS = {
       entrance.definition
     );
   },
+
+  unrecognizerDepotEntrance(entrance) {
+
+  if (
+    player.equippedBadgeId !==
+    "yoiUnrecognizerBadge"
+  ) {
+    showBubble(
+      "UNRECOGNIZER SUBFACTORY",
+      "Access denied. Equip your UNRECOGNIZER Badge to enter."
+    );
+
+    return;
+  }
+
+  showBubble(
+    "ACCESS",
+    "The badge scanner recognizes Yoi's UNRECOGNIZER credentials."
+  );
+
+  enterBuilding(
+    entrance.stamp,
+    entrance.definition
+  );
+},
 
   campfire() {
   /*
