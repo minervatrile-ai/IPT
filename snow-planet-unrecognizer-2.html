@@ -452,11 +452,17 @@
   justify-content: center;
 }
 
-#mobileDpad {
+#mobileAimPad {
   display: grid;
   grid-template-columns: repeat(3, 58px);
   grid-template-rows: repeat(3, 58px);
   gap: 5px;
+}
+
+.mobileFireDiagonal {
+  background: #000;
+  color: #ff3333;
+  border-color: #ff3333;
 }
 
 .mobileButton {
@@ -595,95 +601,103 @@
   <!-- Mobile controls begin as a visual shell.
        Gameplay wiring is added in the next patch. -->
   <div
-    id="mobileControls"
-    class="mobileControlsDisabled"
-    aria-label="Mobile game controls"
-  >
-    <div id="mobileDpad" class="mobileControlGroup">
-      <div class="mobileDpadSpacer"></div>
-
-      <button
-        id="mobileUp"
-        class="mobileButton"
-        type="button"
-        aria-label="Move up"
-      >
-        ▲
-      </button>
-
-      <div class="mobileDpadSpacer"></div>
-
-      <button
-        id="mobileLeft"
-        class="mobileButton"
-        type="button"
-        aria-label="Move left"
-      >
-        ◀
-      </button>
-
-      <div class="mobileDpadSpacer"></div>
-
-      <button
-        id="mobileRight"
-        class="mobileButton"
-        type="button"
-        aria-label="Move right"
-      >
-        ▶
-      </button>
-
-      <div class="mobileDpadSpacer"></div>
-
-      <button
-        id="mobileDown"
-        class="mobileButton"
-        type="button"
-        aria-label="Move down"
-      >
-        ▼
-      </button>
-
-      <div class="mobileDpadSpacer"></div>
-    </div>
-
-    <div
-      id="mobileActionButtons"
-      class="mobileControlGroup"
-    >
-      <button
-        id="mobileInteract"
-        class="mobileButton mobileActionButton"
-        type="button"
-      >
-        ACT
-      </button>
-
-      <button
-        id="mobileFire"
-        class="mobileButton mobileActionButton"
-        type="button"
-      >
-        FIRE
-      </button>
-
-      <button
-  id="mobileDeploy"
-  class="mobileButton mobileActionButton"
-  type="button"
+  id="mobileControls"
+  class="mobileControlsDisabled"
+  aria-label="Mobile game controls"
 >
-  DEPLOY
-</button>
 
-      <button
-        id="mobileMenu"
-        class="mobileButton mobileActionButton"
-        type="button"
-      >
-        MENU
-      </button>
-    </div>
+  <!-- AIM PAD -->
+
+  <div id="mobileAimPad" class="mobileControlGroup">
+
+    <button id="mobileFireUpLeft"
+            class="mobileButton mobileFireDiagonal"
+            type="button">
+      ↖
+    </button>
+
+    <button id="mobileUp"
+            class="mobileButton"
+            type="button">
+      ▲
+    </button>
+
+    <button id="mobileFireUpRight"
+            class="mobileButton mobileFireDiagonal"
+            type="button">
+      ↗
+    </button>
+
+
+    <button id="mobileLeft"
+            class="mobileButton"
+            type="button">
+      ◀
+    </button>
+
+    <button id="mobileAim"
+            class="mobileButton"
+            type="button">
+      AIM
+    </button>
+
+    <button id="mobileRight"
+            class="mobileButton"
+            type="button">
+      ▶
+    </button>
+
+
+    <button id="mobileFireDownLeft"
+            class="mobileButton mobileFireDiagonal"
+            type="button">
+      ↙
+    </button>
+
+    <button id="mobileDown"
+            class="mobileButton"
+            type="button">
+      ▼
+    </button>
+
+    <button id="mobileFireDownRight"
+            class="mobileButton mobileFireDiagonal"
+            type="button">
+      ↘
+    </button>
+
   </div>
+
+
+  <div
+    id="mobileActionButtons"
+    class="mobileControlGroup"
+  >
+
+    <button
+      id="mobileInteract"
+      class="mobileButton mobileActionButton"
+      type="button">
+      ACT
+    </button>
+
+    <button
+      id="mobileDeploy"
+      class="mobileButton mobileActionButton"
+      type="button">
+      DEPLOY
+    </button>
+
+    <button
+      id="mobileMenu"
+      class="mobileButton mobileActionButton"
+      type="button">
+      MENU
+    </button>
+
+  </div>
+
+</div>
 
   <div id="messageBox">Atlas engine initialized.</div>
 
