@@ -5309,6 +5309,7 @@ const CHARACTER_DEFINITIONS = {
   image: ASSETS.character.badge.jegna,
   portrait: ASSETS.character.badge.jegna,
   faction: "unrecognizer",
+  weaponId: "basicLaserHandgun",
   maxHealth: 100,
   dialogueId: "jegnaDialogue",
   firstMeetingThoughtId: "people_jegna_first_impression"
@@ -5319,6 +5320,7 @@ const CHARACTER_DEFINITIONS = {
   image: ASSETS.character.badge.zyr,
   portrait: ASSETS.character.badge.zyr,
   faction: "unrecognizer",
+  weaponId: "basicLaserHandgun",
   maxHealth: 100,
   dialogueId: "zyrDialogue",
   firstMeetingThoughtId: "people_zyr_first_impression"
@@ -5339,6 +5341,7 @@ const CHARACTER_DEFINITIONS = {
   image: ASSETS.character.badge.kigh,
   portrait: ASSETS.character.badge.kigh,
   faction: "unrecognizer",
+  weaponId: "basicLaserHandgun",
   maxHealth: 100,
   dialogueId: "kighDialogue",
   firstMeetingThoughtId: "people_kigh_first_impression"
@@ -5349,6 +5352,7 @@ const CHARACTER_DEFINITIONS = {
   image: ASSETS.character.badge.wyl,
   portrait: ASSETS.character.badge.wyl,
   faction: "unrecognizer",
+  weaponId: "basicLaserHandgun",
   maxHealth: 100,
   dialogueId: "wylBinoculars",
   firstMeetingThoughtId: "people_wyl_first_impression"
@@ -5359,6 +5363,7 @@ cruk: {
   image: ASSETS.character.badge.cruk,
   portrait: ASSETS.character.badge.cruk,
   faction: "unrecognizer",
+  weaponId: "basicLaserHandgun",
   maxHealth: 100,
   dialogueId: "crukBinoculars",
   firstMeetingThoughtId: "people_cruk_first_impression"
@@ -16079,27 +16084,26 @@ if (
   projectile.y = nextY;
 
   const targetDefinition =
-    getCharacterDefinition(target);
+  getCharacterDefinition(target);
 
-  /*
-    Firing upon an SDA officer alerts that officer
-    and nearby members of the same faction.
+const faction =
+  targetDefinition?.faction;
 
-    This happens before damage resolution so nearby
-    officers still react if the struck officer is
-    defeated by the shot.
-  */
-  if (
-    projectile.ownerId === "player" &&
-    targetDefinition?.faction === "sda"
-  ) {
-    target.autonomous = true;
-    target.residentState = "attackingPlayer";
-    target.stateTimer = 0;
-    target.nextWeaponFireTime = 0;
+if (
+  projectile.ownerId === "player" &&
+  (
+    faction === "sda" ||
+    faction === "unrecognizer" ||
+    faction === "redSnow"
+  )
+) {
+  target.autonomous = true;
+  target.residentState = "attackingPlayer";
+  target.stateTimer = 0;
+  target.nextWeaponFireTime = 0;
 
-    alertNearbyFactionMembers(target, 8);
-  }
+  alertNearbyFactionMembers(target, 8);
+}
 
   target.health -= projectile.damage;
 
