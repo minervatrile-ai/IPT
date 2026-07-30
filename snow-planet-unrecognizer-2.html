@@ -432,6 +432,12 @@
    Gameplay wiring will be added in the next patch.
    ========================================================= */
 
+.aimModeActive {
+  background: #000;
+  color: #ff3333;
+  border-color: #ff3333;
+}
+
 #mobileControls {
   display: none;
   width: min(96vw, 960px);
@@ -757,6 +763,20 @@ const mobileUp = document.getElementById("mobileUp");
 const mobileDown = document.getElementById("mobileDown");
 const mobileLeft = document.getElementById("mobileLeft");
 const mobileRight = document.getElementById("mobileRight");
+
+const mobileAim = document.getElementById("mobileAim");
+
+const mobileFireUpLeft =
+  document.getElementById("mobileFireUpLeft");
+
+const mobileFireUpRight =
+  document.getElementById("mobileFireUpRight");
+
+const mobileFireDownLeft =
+  document.getElementById("mobileFireDownLeft");
+
+const mobileFireDownRight =
+  document.getElementById("mobileFireDownRight");
 
 const mobileInteract = document.getElementById("mobileInteract");
 
@@ -8391,6 +8411,7 @@ weatherEndsAt: null,
   lastBodyHeat: 28,
 
 deployedLaserShields: [],
+aimMode: false,
 
 droppedHereoBackpack: null,
 droppedItems: [],
@@ -15024,6 +15045,40 @@ function doesLaserShieldBlockProjectile(shield, projectile) {
    defeat state, and a generic combat target.
    ============================================================= */
 
+function updateAimButtonAppearance() {
+
+  const active = worldState.aimMode;
+
+  mobileAim.classList.toggle(
+    "aimModeActive",
+    active
+  );
+
+  [
+    mobileUp,
+    mobileDown,
+    mobileLeft,
+    mobileRight
+  ].forEach(button => {
+
+    button.classList.toggle(
+      "aimModeActive",
+      active
+    );
+
+  });
+
+}
+
+function toggleAimMode() {
+
+  worldState.aimMode =
+    !worldState.aimMode;
+
+  updateAimButtonAppearance();
+
+}
+
 function alertNearbyFactionMembers(
   triggeredCharacter,
   radius = 8
@@ -17562,6 +17617,26 @@ if (mobileDeploy) {
     }
 
     deployLaserShield();
+  });
+}
+
+if (mobileAim) {
+  mobileAim.addEventListener("pointerdown", event => {
+    event.preventDefault();
+
+    if (worldState.overlay.open) {
+      return;
+    }
+
+    if (bubbleOverlay.style.display === "block") {
+      return;
+    }
+
+    if (player.binocularMode) {
+      return;
+    }
+
+    toggleAimMode();
   });
 }
 
