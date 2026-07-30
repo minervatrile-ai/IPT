@@ -784,7 +784,6 @@ const mobileInteract = document.getElementById("mobileInteract");
 
 const mobileMenu = document.getElementById("mobileMenu");
 
-const mobileFire = document.getElementById("mobileFire");
 const mobileDeploy = document.getElementById("mobileDeploy");
 
 /* =============================================================
@@ -8836,6 +8835,30 @@ const DIRECTIONS = {
   right: { dx: 1, dy: 0 }
 };
 
+const PROJECTILE_DIRECTIONS = {
+  ...DIRECTIONS,
+
+  upLeft: {
+    dx: -1,
+    dy: -1
+  },
+
+  upRight: {
+    dx: 1,
+    dy: -1
+  },
+
+  downLeft: {
+    dx: -1,
+    dy: 1
+  },
+
+  downRight: {
+    dx: 1,
+    dy: 1
+  }
+};
+
 function isOppositeDirection(directionA, directionB) {
   return (
     (directionA === "left" && directionB === "right") ||
@@ -15077,27 +15100,6 @@ function toggleAimMode() {
   updateAimButtonAppearance();
 }
 
-function updateAimButtonAppearance() {
-  const active = worldState.aimMode;
-
-  mobileAim.classList.toggle(
-    "aimModeActive",
-    active
-  );
-
-  [
-    mobileUp,
-    mobileDown,
-    mobileLeft,
-    mobileRight
-  ].forEach(button => {
-    button.classList.toggle(
-      "aimModeActive",
-      active
-    );
-  });
-}
-
 function alertNearbyFactionMembers(
   triggeredCharacter,
   radius = 8
@@ -15148,29 +15150,49 @@ function endCombat(message = "Combat ended.") {
   setMessage(message);
 }
 
-function fireEquippedWeapon() {
+function fireEquippedWeapon(direction = player.facing) {
   if (player.mode !== "walking") {
     setMessage("Exit the vehicle before firing.");
-    return;
+    return false;
   }
 
-  const weapon = ITEM_DEFINITIONS[player.equippedWeaponId];
+  const weapon =
+    ITEM_DEFINITIONS[player.equippedWeaponId];
 
-  if (!weapon || weapon.category !== "weapon") {
+  if (
+    !weapon ||
+    weapon.category !== "weapon"
+  ) {
     setMessage("No weapon equipped.");
-    return;
+    return false;
+  }
+
+  if (!PROJECTILE_DIRECTIONS[direction]) {
+    console.warn(
+      `Invalid projectile direction: ${direction}`
+    );
+
+    return false;
+  }
+
+  /*
+    Cardinal aiming changes Yoi's visible facing.
+
+    Diagonal firing does not, because Yoi currently
+    has only four directional sprite facings.
+  */
+  if (DIRECTIONS[direction]) {
+    player.facing = direction;
   }
 
   const projectile = {
     ownerId: "player",
     mapId: worldState.currentMapId,
 
-    // Begin on Yoi's tile.
-    // The first animation step moves it into the tile ahead.
     x: player.x,
     y: player.y,
 
-    direction: player.facing,
+    direction,
     damage: weapon.damage,
     rangeRemaining: weapon.range,
     image: weapon.projectileImage
@@ -15180,8 +15202,9 @@ function fireEquippedWeapon() {
 
   playSound(SOUNDS.laser);
   drawGame();
-
   animateProjectile();
+
+  return true;
 }
 
 let projectileAnimationTimer = null;
@@ -16089,7 +16112,17 @@ function updateSingleProjectile(projectile) {
     return true;
   }
 
-  const vector = DIRECTIONS[projectile.direction];
+  const vector =
+  PROJECTILE_DIRECTIONS[projectile.direction];
+
+if (!vector) {
+  console.warn(
+    `Projectile has invalid direction: ` +
+    `${projectile.direction}`
+  );
+
+  return true;
+}
 
   const nextX = projectile.x + vector.dx;
   const nextY = projectile.y + vector.dy;
@@ -17571,6 +17604,17 @@ function handleMobileDirection(direction) {
     return;
   }
 
+  /*
+    Aim Mode converts the four cardinal movement
+    controls into cardinal firing controls.
+
+    Yoi remains planted on his current tile.
+  */
+  if (worldState.aimMode) {
+    fireEquippedWeapon(direction);
+    return;
+  }
+
   if (player.mode === "driving") {
     moveVehicle(direction);
     return;
@@ -17592,6 +17636,56 @@ connectMobileDirectionButton(mobileUp, "up");
 connectMobileDirectionButton(mobileDown, "down");
 connectMobileDirectionButton(mobileLeft, "left");
 connectMobileDirectionButton(mobileRight, "right");
+
+function connectMobileFireButton(
+  button,
+  direction
+) {
+  if (!button) return;
+
+  button.addEventListener(
+    "pointerdown",
+    event => {
+      event.preventDefault();
+
+      if (worldState.overlay.open) {
+        return;
+      }
+
+      if (
+        bubbleOverlay.style.display === "block"
+      ) {
+        return;
+      }
+
+      if (player.binocularMode) {
+        return;
+      }
+
+      fireEquippedWeapon(direction);
+    }
+  );
+}
+
+connectMobileFireButton(
+  mobileFireUpLeft,
+  "upLeft"
+);
+
+connectMobileFireButton(
+  mobileFireUpRight,
+  "upRight"
+);
+
+connectMobileFireButton(
+  mobileFireDownLeft,
+  "downLeft"
+);
+
+connectMobileFireButton(
+  mobileFireDownRight,
+  "downRight"
+);
 
 function handleMobileInteract() {
   if (worldState.overlay.open) {
@@ -17650,26 +17744,6 @@ if (mobileAim) {
         ? "AIM MODE ON"
         : "AIM MODE OFF"
     );
-  });
-}
-
-if (mobileFire) {
-  mobileFire.addEventListener("pointerdown", event => {
-    event.preventDefault();
-
-    if (worldState.overlay.open) {
-      return;
-    }
-
-    if (bubbleOverlay.style.display === "block") {
-      return;
-    }
-
-    if (player.binocularMode) {
-      return;
-    }
-
-    fireEquippedWeapon();
   });
 }
 
