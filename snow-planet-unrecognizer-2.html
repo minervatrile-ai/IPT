@@ -8873,15 +8873,22 @@ const DIRECTIONS = {
   downRight: { dx:  1, dy:  1 }
 };
 
-const CARDINAL_DIRECTIONS = new Set([
+const CARDINAL_DIRECTION_NAMES = new Set([
   "up",
   "down",
   "left",
   "right"
 ]);
 
+const CARDINAL_DIRECTION_VECTORS = [
+  DIRECTIONS.up,
+  DIRECTIONS.down,
+  DIRECTIONS.left,
+  DIRECTIONS.right
+];
+
 function isCardinalDirection(direction) {
-  return CARDINAL_DIRECTIONS.has(direction);
+  return CARDINAL_DIRECTION_NAMES.has(direction);
 }
 
 function isDiagonalDirection(direction) {
@@ -9268,14 +9275,20 @@ function getVehicleDefinition(vehicle) {
 function getVehicleById(vehicleId) {
   return vehicles.find(vehicle => vehicle.id === vehicleId) || null;
 }
-
 function getAdjacentCharacter() {
+  const cardinalDirections = [
+    DIRECTIONS.up,
+    DIRECTIONS.down,
+    DIRECTIONS.left,
+    DIRECTIONS.right
+  ];
+
   return characters.find(character => {
     if (!character.visible) return false;
     if (character.defeated) return false;
     if (character.mapId !== worldState.currentMapId) return false;
 
-    return Object.values(DIRECTIONS).some(direction => {
+    return cardinalDirections.some(direction => {
       return (
         character.x === player.x + direction.dx &&
         character.y === player.y + direction.dy
@@ -9495,11 +9508,18 @@ function getAdjacentHtiCalibrationTarget() {
         const targetX = target.x + localX;
         const targetY = target.y + localY;
 
-        const adjacent =
-          Object.values(DIRECTIONS).some(direction =>
-            player.x + direction.dx === targetX &&
-            player.y + direction.dy === targetY
-          );
+        const cardinalDirections = [
+  DIRECTIONS.up,
+  DIRECTIONS.down,
+  DIRECTIONS.left,
+  DIRECTIONS.right
+];
+
+const adjacent =
+  cardinalDirections.some(direction =>
+    player.x + direction.dx === targetX &&
+    player.y + direction.dy === targetY
+  );
 
         if (adjacent) {
           return true;
@@ -10637,7 +10657,7 @@ function findNearbyDroppedItem() {
   const checks = [
     { x: player.x, y: player.y },
 
-    ...Object.values(DIRECTIONS).map(vector => ({
+    ...CARDINAL_DIRECTION_VECTORS.map(vector => ({
       x: player.x + vector.dx,
       y: player.y + vector.dy
     }))
@@ -10831,7 +10851,7 @@ function findNearbyDroppedHereoBackpack() {
   */
   const checks = [
     { x: player.x, y: player.y },
-    ...Object.values(DIRECTIONS).map(vector => ({
+    ...CARDINAL_DIRECTION_VECTORS.map(vector => ({
       x: player.x + vector.dx,
       y: player.y + vector.dy
     }))
@@ -11038,7 +11058,7 @@ const cargoText =
    ============================================================= */
 
 function getAdjacentVehicle() {
-  const checks = Object.values(DIRECTIONS).map(vector => ({
+  const checks = CARDINAL_DIRECTION_VECTORS.map(vector => ({
     x: player.x + vector.dx,
     y: player.y + vector.dy
   }));
@@ -11047,7 +11067,10 @@ function getAdjacentVehicle() {
     if (vehicle.mapId !== worldState.currentMapId) return false;
 
     return getVehicleOccupiedTiles(vehicle).some(tile =>
-      checks.some(check => check.x === tile.x && check.y === tile.y)
+      checks.some(check =>
+        check.x === tile.x &&
+        check.y === tile.y
+      )
     );
   }) || null;
 }
@@ -11618,9 +11641,14 @@ function consumeVehicleFuel(vehicle) {
    ============================================================= */
 
 function findAdjacentFuelPump() {
-  return Object.values(DIRECTIONS)
-    .map(vector => ({ x: player.x + vector.dx, y: player.y + vector.dy }))
-    .find(spot => getTileSymbol(spot.x, spot.y) === "g") || null;
+  return CARDINAL_DIRECTION_VECTORS
+    .map(vector => ({
+      x: player.x + vector.dx,
+      y: player.y + vector.dy
+    }))
+    .find(
+      spot => getTileSymbol(spot.x, spot.y) === "g"
+    ) || null;
 }
 
 function findNearbyVehicle(range = 5) {
@@ -14777,7 +14805,7 @@ trashChute() {
    ============================================================= */
 
 function getAdjacentBuildingEntrance() {
-  const checks = Object.values(DIRECTIONS).map(vector => ({
+  const checks = CARDINAL_DIRECTION_VECTORS.map(vector => ({
     x: player.x + vector.dx,
     y: player.y + vector.dy
   }));
@@ -14935,7 +14963,7 @@ function getNearestResidentBlueprintExit(character) {
 function getAdjacentOutsideInteraction() {
   if (!isOutsideMap()) return null;
 
-  for (const direction of Object.values(DIRECTIONS)) {
+  for (const direction of CARDINAL_DIRECTION_VECTORS) {
     const x = player.x + direction.dx;
     const y = player.y + direction.dy;
 
@@ -14957,39 +14985,35 @@ function getAdjacentOutsideInteraction() {
 function getAdjacentInteriorInteraction() {
   if (isOutsideMap()) return null;
 
-  for (const vector of Object.values(DIRECTIONS)) {
-    const x = player.x + vector.dx;
-    const y = player.y + vector.dy;
+  for (const direction of CARDINAL_DIRECTION_VECTORS) {
+    const x = player.x + direction.dx;
+    const y = player.y + direction.dy;
 
-    /*
-      Coordinate-based exits take priority over the general behavior
-      attached to the tile symbol.
-    */
-   const blueprintExit = getBlueprintExitAt(
-  worldState.currentMapId,
-  x,
-  y
-);
+    const blueprintExit = getBlueprintExitAt(
+      worldState.currentMapId,
+      x,
+      y
+    );
 
-if (blueprintExit) {
-  return {
-    interaction: "exitBlueprint",
-    x,
-    y,
-    exit: blueprintExit
-  };
-}
+    if (blueprintExit) {
+      return {
+        interaction: "exitBlueprint",
+        x,
+        y,
+        exit: blueprintExit
+      };
+    }
 
     const symbol = getTileSymbol(x, y);
     const tile = INTERIOR_TILES[symbol];
 
     if (tile?.interaction) {
       return {
-  interaction: tile.interaction,
-  symbol,
-  x,
-  y
-};
+        interaction: tile.interaction,
+        symbol,
+        x,
+        y
+      };
     }
   }
 
@@ -15636,7 +15660,7 @@ function findResidentApproachTileForVehicle(
   const candidateTiles = [];
 
   for (const tile of occupiedTiles) {
-    for (const direction of Object.values(DIRECTIONS)) {
+    for (const direction of CARDINAL_DIRECTION_VECTORS) {
       const candidateX = tile.x + direction.dx;
       const candidateY = tile.y + direction.dy;
 
