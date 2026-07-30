@@ -7123,6 +7123,8 @@ const characters = [
   health: 100,
   defeated: false,
   visible: true,
+  autonomous: true,
+  residentState: "stationary",
   conversationStep: 0
 },
 
@@ -7137,6 +7139,8 @@ const characters = [
   health: 100,
   defeated: false,
   visible: true,
+  autonomous: true,
+  residentState: "stationary",
   conversationStep: 0
 },
 
@@ -7151,6 +7155,8 @@ const characters = [
   health: 100,
   defeated: false,
   visible: true,
+  autonomous: true,
+  residentState: "stationary",
   conversationStep: 0
 },
 
@@ -14999,6 +15005,42 @@ function doesLaserShieldBlockProjectile(shield, projectile) {
    defeat state, and a generic combat target.
    ============================================================= */
 
+function alertNearbyFactionMembers(
+  triggeredCharacter,
+  radius = 8
+) {
+  if (!triggeredCharacter) return;
+
+  const triggeredDefinition =
+    getCharacterDefinition(triggeredCharacter);
+
+  const faction = triggeredDefinition?.faction;
+
+  if (!faction) return;
+
+  characters.forEach(character => {
+    if (character === triggeredCharacter) return;
+
+    if (character.mapId !== triggeredCharacter.mapId) return;
+
+    const characterDefinition =
+      getCharacterDefinition(character);
+
+    if (characterDefinition?.faction !== faction) return;
+
+    const distance =
+      Math.abs(character.x - triggeredCharacter.x) +
+      Math.abs(character.y - triggeredCharacter.y);
+
+    if (distance > radius) return;
+
+    character.autonomous = true;
+    character.residentState = "attackingPlayer";
+    character.stateTimer = 0;
+    character.nextWeaponFireTime = 0;
+  });
+}   
+
 function beginCombat(enemy) {
   if (!enemy || enemy.defeated) return;
 
@@ -15748,13 +15790,13 @@ function updateResident(character) {
     );
 
     setMessage(
-      `RED SNOW ATTACK · Yoi health: ${player.health}/${player.maxHealth}`
+      `LASER ATTACK ONSLAUGHT · Yoi health: ${player.health}/${player.maxHealth}`
     );
 
     if (player.health <= 0) {
       showBubble(
         "YOI",
-        "Yoi collapses beneath the Red Snow assault."
+        "Yoi collapses from the assault."
       );
 
       character.residentState = "stationary";
@@ -16033,19 +16075,42 @@ if (
   );
 
   if (target) {
-    projectile.x = nextX;
-    projectile.y = nextY;
+  projectile.x = nextX;
+  projectile.y = nextY;
 
-    target.health -= projectile.damage;
+  const targetDefinition =
+    getCharacterDefinition(target);
 
-    if (target.health <= 0) {
-      defeatCharacter(target);
-    } else {
-      beginCombat(target);
-    }
+  /*
+    Firing upon an SDA officer alerts that officer
+    and nearby members of the same faction.
 
-    return true;
+    This happens before damage resolution so nearby
+    officers still react if the struck officer is
+    defeated by the shot.
+  */
+  if (
+    projectile.ownerId === "player" &&
+    targetDefinition?.faction === "sda"
+  ) {
+    target.autonomous = true;
+    target.residentState = "attackingPlayer";
+    target.stateTimer = 0;
+    target.nextWeaponFireTime = 0;
+
+    alertNearbyFactionMembers(target, 8);
   }
+
+  target.health -= projectile.damage;
+
+  if (target.health <= 0) {
+    defeatCharacter(target);
+  } else {
+    beginCombat(target);
+  }
+
+  return true;
+}
 
   if (isProjectileBlocked(nextX, nextY)) {
     return true;
