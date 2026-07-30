@@ -4501,6 +4501,26 @@ function openPhaylUnrecognizerTrade() {
 
 const DIALOGUE_DEFINITIONS = {
 
+  zyrBeerMineDialogue: {
+  lines: () => {
+    const lines = [
+      "I can't believe the SDA has seized the UNRECOGNIZER Subfactory...",
+
+      "I bet there's another way in. The facility is northwest of the outpost where HEREO Teleporter Incorporated dropped you off.",
+
+      "There ARE some pretty tricky little paths through the woods out there..."
+    ];
+
+    if (worldState.unrecognizerDepot.visited) {
+      lines.push(
+        "Really? There really IS another way in? And you FOUND it??"
+      );
+    }
+
+    return lines;
+  }
+},
+
   sdaFactoryGuardDialogue: {
   lines: () => [
     "This facility is closed.",
@@ -8710,6 +8730,16 @@ const wyl = characters.find(
 if (wyl) {
   wyl.dialogueId = "wylGlad";
   wyl.conversationStep = 0;
+}
+
+const zyr = characters.find(
+  character =>
+    character.id === "zyr-engine-test-facility"
+);
+
+if (zyr) {
+  zyr.dialogueId = "zyrBeerMineDialogue";
+  zyr.conversationStep = 0;
 }
 
   /*
