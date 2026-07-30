@@ -432,12 +432,6 @@
    Gameplay wiring will be added in the next patch.
    ========================================================= */
 
-.aimModeActive {
-  background: #000;
-  color: #ff3333;
-  border-color: #ff3333;
-}
-
 #mobileControls {
   display: none;
   width: min(96vw, 960px);
@@ -465,12 +459,6 @@
   gap: 5px;
 }
 
-.mobileFireDiagonal {
-  background: #000;
-  color: #ff3333;
-  border-color: #ff3333;
-}
-
 .mobileButton {
   min-width: 58px;
   min-height: 58px;
@@ -483,6 +471,20 @@
   font-weight: bold;
   text-align: center;
   touch-action: none;
+}
+
+/* Permanent diagonal-fire coloring */
+.mobileButton.mobileFireDiagonal {
+  background: #000;
+  color: #ff3333;
+  border-color: #ff3333;
+}
+
+/* Applied to AIM and straight directions during Aim Mode */
+.mobileButton.aimModeActive {
+  background: #000;
+  color: #ff3333;
+  border-color: #ff3333;
 }
 
 .mobileButton:active {
@@ -15071,12 +15073,29 @@ function updateAimButtonAppearance() {
 }
 
 function toggleAimMode() {
-
-  worldState.aimMode =
-    !worldState.aimMode;
-
+  worldState.aimMode = !worldState.aimMode;
   updateAimButtonAppearance();
+}
 
+function updateAimButtonAppearance() {
+  const active = worldState.aimMode;
+
+  mobileAim.classList.toggle(
+    "aimModeActive",
+    active
+  );
+
+  [
+    mobileUp,
+    mobileDown,
+    mobileLeft,
+    mobileRight
+  ].forEach(button => {
+    button.classList.toggle(
+      "aimModeActive",
+      active
+    );
+  });
 }
 
 function alertNearbyFactionMembers(
@@ -17624,19 +17643,13 @@ if (mobileAim) {
   mobileAim.addEventListener("pointerdown", event => {
     event.preventDefault();
 
-    if (worldState.overlay.open) {
-      return;
-    }
-
-    if (bubbleOverlay.style.display === "block") {
-      return;
-    }
-
-    if (player.binocularMode) {
-      return;
-    }
-
     toggleAimMode();
+
+    setMessage(
+      worldState.aimMode
+        ? "AIM MODE ON"
+        : "AIM MODE OFF"
+    );
   });
 }
 
