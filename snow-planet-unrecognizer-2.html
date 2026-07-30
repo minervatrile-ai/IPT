@@ -170,6 +170,7 @@
   background: rgba(0, 20, 55, 0.45);
   display: none;
 }
+
     /* =========================================================
        WEATHER VISUALS
        clear    = overlay hidden
@@ -482,6 +483,37 @@
 
 /* Applied to AIM and straight directions during Aim Mode */
 .mobileButton.aimModeActive {
+  background: #000;
+  color: #ff3333;
+  border-color: #ff3333;
+}
+
+/* =========================================================
+   DRIVING MODE
+   Vehicle controls glow teal while driving.
+   ========================================================= */
+
+#mobileControls.driving .mobileButton:not(.mobileFireDiagonal) {
+  background: #006d73;
+  border-color: #00d4d4;
+  color: #ffffff;
+}
+
+/*
+  Keep diagonal fire buttons red while walking.
+
+  When driving, they become teal because they now move
+  the vehicle instead of always firing.
+*/
+#mobileControls.driving .mobileFireDiagonal {
+  background: #006d73;
+  border-color: #00d4d4;
+  color: #ffffff;
+}
+
+/* Aim Mode always wins visually. */
+
+#mobileControls .mobileButton.aimModeActive {
   background: #000;
   color: #ff3333;
   border-color: #ff3333;
@@ -11136,7 +11168,9 @@ function enterVehicle(vehicle) {
   }
 
   player.mode = "driving";
-  player.vehicleId = vehicle.id;
+updateMobileDrivingAppearance();
+
+player.vehicleId = vehicle.id;
   player.mapId = vehicle.mapId;
   player.x = vehicle.x;
   player.y = vehicle.y;
@@ -11202,7 +11236,9 @@ function exitVehicle() {
   const definition = getVehicleDefinition(vehicle);
 
   player.mode = "walking";
-  player.vehicleId = null;
+updateMobileDrivingAppearance();
+
+player.vehicleId = null;
   player.x = exitSpot.x;
   player.y = exitSpot.y;
   player.mapId = worldState.currentMapId;
@@ -17736,6 +17772,18 @@ function openAtlasInformation() {
   });
 }
 
+function updateMobileDrivingAppearance() {
+  const mobileControls =
+    document.getElementById("mobileControls");
+
+  if (!mobileControls) return;
+
+  mobileControls.classList.toggle(
+    "driving",
+    player.mode === "driving"
+  );
+}
+
 /* =============================================================
    MOBILE DIRECTIONAL INPUT
 
@@ -17816,6 +17864,21 @@ function connectMobileFireButton(
       }
 
       if (player.binocularMode) {
+        return;
+      }
+
+      /*
+        While driving with Aim Mode off,
+        diagonal buttons move the vehicle.
+
+        On foot, or while Aim Mode is on,
+        diagonal buttons fire the equipped weapon.
+      */
+      if (
+        player.mode === "driving" &&
+        !worldState.aimMode
+      ) {
+        moveVehicle(direction);
         return;
       }
 
