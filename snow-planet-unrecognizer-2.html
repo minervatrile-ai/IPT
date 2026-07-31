@@ -897,6 +897,9 @@ campfireSmoldering:
 architecture: {
   /* Full outside building stamps */
 
+  checkpointLeft: 
+  "gallery/0-gallery/architecture/checkpoint-left.png",
+
   hospital: 
   "gallery/0-gallery/architecture/hospital.png",
 
@@ -2568,17 +2571,17 @@ const DD_MAP = [
   "PP..........................",
   "pP..........................",
   "Pp..........................",
-  "pp...PPpPpP........pPPPpPpPp",
-  "PP...PpPPP.........PPPPPPPPp",
-  "PP...PppPpp........PpPPPPpPp",
+  "pp...PPpP..........pPPPpPpPp",
+  "PP...PpPP..........PPPPPPPPp",
+  "PP...PppP..........PpPPPPpPp",
   "===================PpPPpPpPP",
   "===================PPPPP....",
   "===================ppPp.....",
   "===================PPPp.....",
   "===================PPpP...PP",
-  "PP...PPPppPPPp.....pPPP...Pp",
-  "PP...ppPpPPPPp.....PpPP...PP",
-  "pp...PPPpPpppP.....PPPP...Pp",
+  "PP...PPPp..........pPPP...Pp",
+  "PP...ppPp..........PpPP...PP",
+  "pp...PPPp..........PPPP...Pp",
   "PP...PPPpp.........pPpP.....",
   "PP...PPPp..........P.pP.....",
   "pPP.PppPP..............P....",
@@ -7417,6 +7420,31 @@ const characters = [
 
 const BUILDING_DEFINITIONS = {
 
+  checkpointLeft: {
+    image: ASSETS.architecture.checkpointLeft,
+
+    width: 9,
+    height: 15,
+
+    collisionMask: [
+      "XXXXXXXXX",
+      "XXXXXXXXX",
+      "XXXXXXXXX",
+      "XXXXXXXXX",
+      "XXXXXXXXX",
+      ".........",
+      ".........",
+      ".........",
+      ".........",
+      ".........",
+      "XXXXXXXXX",
+      "XXXXXXXXX",
+      "XXXXXXXXX",
+      "XXXXXXXXX",
+      "XXXXXXXXX"
+    ]
+  },
+
   hospital: {
     image: ASSETS.architecture.hospital,
 
@@ -7627,6 +7655,14 @@ const BUILDING_DEFINITIONS = {
 };
 
 const buildingStamps = [
+
+  {
+  id: "checkpoint-dd",
+  definitionId: "checkpointLeft",
+  mapId: "DD",
+  x: 9,
+  y: 10
+  },
 
   {
   id: "hospital-bc",
