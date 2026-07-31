@@ -775,6 +775,16 @@ const OUTSIDE_MAP_SIZE = 28;
 const ATLAS_SIZE = 8;
 const ATLAS_LETTERS = "ABCDEFGH";
 
+const HALLUCINATION_DURATION = 20000;
+const HALLUCINATION_TREE_CHANCE = 0.20;
+
+const HALLUCINATION_FACE_IDS = [
+  "a", "b", "c", "d", "e",
+  "f", "g", "h", "i", "j",
+  "k", "l", "m", "n", "o",
+  "p", "q", "r", "s", "t"
+];
+
 const game = document.getElementById("game");
 const camera = document.getElementById("camera");
 const hud = document.getElementById("hud");
@@ -835,6 +845,29 @@ const ASSETS = {
     pineLarge: "gallery/ground/tree-pine.png",
     pineSmall: "gallery/ground/tree-pine-2.png"
   },
+
+  hallucination: {
+  a: "gallery/0-gallery/hallucination/a.png",
+  b: "gallery/0-gallery/hallucination/b.png",
+  c: "gallery/0-gallery/hallucination/c.png",
+  d: "gallery/0-gallery/hallucination/d.png",
+  e: "gallery/0-gallery/hallucination/e.png",
+  f: "gallery/0-gallery/hallucination/f.png",
+  g: "gallery/0-gallery/hallucination/g.png",
+  h: "gallery/0-gallery/hallucination/h.png",
+  i: "gallery/0-gallery/hallucination/i.png",
+  j: "gallery/0-gallery/hallucination/j.png",
+  k: "gallery/0-gallery/hallucination/k.png",
+  l: "gallery/0-gallery/hallucination/l.png",
+  m: "gallery/0-gallery/hallucination/m.png",
+  n: "gallery/0-gallery/hallucination/n.png",
+  o: "gallery/0-gallery/hallucination/o.png",
+  p: "gallery/0-gallery/hallucination/p.png",
+  q: "gallery/0-gallery/hallucination/q.png",
+  r: "gallery/0-gallery/hallucination/r.png",
+  s: "gallery/0-gallery/hallucination/s.png",
+  t: "gallery/0-gallery/hallucination/t.png"
+},
 
   props: {
 
@@ -8396,7 +8429,8 @@ const player = {
     "unrecognizerWatch",
     "firstAidKit",
     "laserShield",
-    "basicLaserHandgun"
+    "basicLaserHandgun",
+    "fullPillBottle"
   ],
 
   inventoryCapacity: 20,
@@ -8481,6 +8515,13 @@ weatherEndsAt: null,
 
 deployedLaserShields: [],
 aimMode: false,
+
+hallucination: {
+  active: false,
+  faceByTile: {},
+  timer: null,
+  endsAt: null
+},
 
 droppedHereoBackpack: null,
 droppedItems: [],
@@ -12559,6 +12600,21 @@ if (itemId === "coffeeThermos") {
     action: openCoffeeThermosMenu
   });
 
+}
+
+if (itemId === "fullPillBottle") {
+  options.push({
+    label: "Take Pill",
+
+    image: item.image,
+
+    text:
+      "Take one UNRECOGNIZER capsule. " +
+      "The visual effect lasts approximately 20 seconds. " +
+      "The bottle contains an effectively unlimited supply.",
+
+    action: takeUnrecognizerPill
+  });
 }
 
 if (itemId === "heatedMealRation") {
@@ -17280,6 +17336,145 @@ function toggleDayNight() {
 }
 
 /* =============================================================
+   UNRECOGNIZER HALLUCINATION SYSTEM
+
+   A full pill bottle provides unlimited doses.
+
+   Each dose:
+   - lasts 20 seconds
+   - rerolls the hallucination
+   - gives each outside pine tree a 20% chance of appearing
+     as one stable hallucination face
+   - changes visuals only, never collision or behavior
+   ============================================================= */
+
+function getRandomHallucinationFaceId() {
+  const randomIndex = Math.floor(
+    Math.random() * HALLUCINATION_FACE_IDS.length
+  );
+
+  return HALLUCINATION_FACE_IDS[randomIndex];
+}
+
+function getHallucinationTileKey(mapId, x, y) {
+  return `${mapId}:${x}:${y}`;
+}
+
+function getHallucinationImage({
+  mapId,
+  x,
+  y,
+  symbol,
+  normalImage
+}) {
+  /*
+    Hallucinations currently affect outside pine trees only.
+  */
+  if (
+    !worldState.hallucination.active ||
+    !isOutsideMap(mapId) ||
+    (symbol !== "P" && symbol !== "p")
+  ) {
+    return normalImage;
+  }
+
+  const tileKey =
+    getHallucinationTileKey(mapId, x, y);
+
+  /*
+    undefined means this tree has not yet been rolled
+    during the current hallucination.
+  */
+  if (
+    worldState.hallucination.faceByTile[tileKey] === undefined
+  ) {
+    const becomesFace =
+      Math.random() < HALLUCINATION_TREE_CHANCE;
+
+    worldState.hallucination.faceByTile[tileKey] =
+      becomesFace
+        ? getRandomHallucinationFaceId()
+        : null;
+  }
+
+  const faceId =
+    worldState.hallucination.faceByTile[tileKey];
+
+  /*
+    A null result means this tree remains normal
+    for the duration of the current pill.
+  */
+  if (!faceId) {
+    return normalImage;
+  }
+
+  return ASSETS.hallucination[faceId] || normalImage;
+}
+
+function endUnrecognizerHallucination() {
+  if (worldState.hallucination.timer) {
+    clearTimeout(
+      worldState.hallucination.timer
+    );
+  }
+
+  worldState.hallucination.active = false;
+  worldState.hallucination.faceByTile = {};
+  worldState.hallucination.timer = null;
+  worldState.hallucination.endsAt = null;
+
+  drawGame();
+
+  showBubble(
+    "UNRECOGNIZER",
+    "The landscape settles back into its ordinarily recognizable arrangement."
+  );
+}
+
+function takeUnrecognizerPill() {
+  if (!hasItem("fullPillBottle")) {
+    closeOverlay();
+
+    showBubble(
+      "UNRECOGNIZER",
+      "Yoi does not have a bottle of UNRECOGNIZER pills."
+    );
+
+    return false;
+  }
+
+  /*
+    Taking another pill replaces the current hallucination
+    and restarts the full 20-second duration.
+  */
+  if (worldState.hallucination.timer) {
+    clearTimeout(
+      worldState.hallucination.timer
+    );
+  }
+
+  worldState.hallucination.active = true;
+  worldState.hallucination.faceByTile = {};
+  worldState.hallucination.endsAt =
+    Date.now() + HALLUCINATION_DURATION;
+
+  worldState.hallucination.timer = setTimeout(
+    endUnrecognizerHallucination,
+    HALLUCINATION_DURATION
+  );
+
+  closeOverlay();
+  drawGame();
+
+  showBubble(
+    "UNRECOGNIZER",
+    "Yoi swallows one capsule. Certain trees immediately become difficult to recognize."
+  );
+
+  return true;
+}
+
+/* =============================================================
    22. RENDERING
    ============================================================= */
 
@@ -17312,20 +17507,37 @@ drawPlayer();
 }
 
 function drawTiles(map) {
-  const tileLegend = isOutsideMap(getViewedMapId())
-  ? OUTSIDE_TILES
-  : INTERIOR_TILES;
+  const viewedMapId = getViewedMapId();
+
+  const tileLegend = isOutsideMap(viewedMapId)
+    ? OUTSIDE_TILES
+    : INTERIOR_TILES;
 
   for (let y = 0; y < map.tiles.length; y++) {
     for (let x = 0; x < map.tiles[y].length; x++) {
       const symbol = map.tiles[y][x];
       const tileDefinition = tileLegend[symbol];
 
+      const normalImage =
+        tileDefinition?.image ||
+        ASSETS.ground.snow;
+
+      const displayedImage =
+        getHallucinationImage({
+          mapId: viewedMapId,
+          x,
+          y,
+          symbol,
+          normalImage
+        });
+
       const tile = document.createElement("div");
       tile.className = "tile";
-      tile.style.backgroundImage = tileDefinition?.image
-        ? `url("${tileDefinition.image}")`
-        : `url("${ASSETS.ground.snow}")`;
+
+      tile.style.backgroundImage =
+        displayedImage
+          ? `url("${displayedImage}")`
+          : "";
 
       game.appendChild(tile);
     }
